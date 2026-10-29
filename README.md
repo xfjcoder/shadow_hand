@@ -53,10 +53,42 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    <p align="center"><sub>Stage 1: each actuator swept to the top and bottom of its range and back
    (real-time playback), then the object dropped into the open palm.</sub></p>
 
-2. **Contact-face tooling + a stable one-ball hold.** Port the Allegro's contact classifier
-   (segment x face: palmar / dorsal / side / tip) to this model, using `palmar_axis`. Grasp one
-   human-sized ball (40-50mm) palm-up and hold it under the torque limits, verified by which faces
-   touch, not just whether the ball stays put.
+2. **Contact-face tooling + a stable one-ball hold -- DONE.** One 45mm / 80g ball
+   (`assets/scene_one_ball.xml`).
+
+   - **Classifier**: `hand_env.classify_contacts` labels every hand contact on a body by digit,
+     segment and FACE -- palmar (pad), DORSAL (back), side, or tip (the very end of a distal
+     segment) -- from the contact point's offset from the segment's own long axis, measured against
+     `palmar_axis`. `eval_stage2_classifier.py` touches the ball to every flexion segment from known
+     directions: 65/65 labelled correctly.
+   - **Hold test**: the hand closes on the ball, then gravity is pointed in six directions -- palm
+     up, palm DOWN, fingers up, fingers down, either side down (the same physics as turning a
+     fixed-base hand over). Held = the ball moves under 1cm in the palm frame over 2s.
+   - **Grasp search** (`search_stage2_grasp.py`, cross-entropy method over the 18 finger and thumb
+     targets): holding turned out to be the easy part -- most random samples already held in all
+     six directions, by caging the ball with fingertip ENDS and the sides of segments. The search
+     only found real wraps once the score rewarded pad contacts specifically (and penalized
+     fingertip ends), and only found ones that STAY wraps once those contact terms were averaged
+     over 7 perturbed copies of each candidate: the first 4-pad grasp lost its pads to the
+     4th-decimal rounding of its own targets.
+   - **Result** (`hand_env.ONE_BALL_GRASP`, `eval_stage2_hold.py`): mf, rf and lf wrap the ball
+     with the palmar faces of their proximal and distal segments. Held in all six directions
+     (drift 0.5-1.9mm), peak effort 22% of the force limits; under 100 perturbed trials (every
+     target +-0.05 rad, placement +-3mm, mass 40-150g, friction 0.5-1.0) held 100/100, three pads
+     on the ball in 85, no dorsal contact in any.
+
+   <p align="center">
+     <img src="media/stage2_grasp_d_robust_no_thumb.png" width="720">
+   </p>
+
+   What it does NOT do: the thumb lies across the palm, off the ball, and the ball is wrapped up
+   near the knuckles rather than sitting in the palm. Raising the thumb's weight in the score got
+   the thumb on only as a 0.3N graze (`media/stage2_grasp_e_robust_light_thumb.png`); placing the
+   ball mid-palm and holding it while the hand closes (it rolls off an open hand) gave grasps that
+   held just as well but with a single pad. Left there deliberately: one 45mm ball in a palm built
+   for two is a poor stand-in for baoding, where the two touching balls fill the palm's whole
+   length and the thumb's job is pushing, not pinching. The earlier search rounds are kept as
+   `media/stage2_grasp_{a,b,c}_*.png`.
 3. **Two-ball cupped hold, reviewed as an image first.** Two touching balls resting in the palm,
    the fingers cupped around them with their pads on the balls, the little finger and thumb on the
    outsides -- found by a static search scored on contact face, shown to the user before anything
@@ -75,10 +107,16 @@ shadow_hand/
 │   ├── right_hand.xml, scene_right.xml, keyframes.xml   # vendored, see NOTICE.md
 │   ├── assets/                            # meshes (vendored)
 │   ├── LICENSE.shadow_hand, CHANGELOG.shadow_hand.md, NOTICE.md
-├── hand_env.py                            # joint/actuator/segment names, palmar_axis
+│   ├── scene_one_ball.xml                 # Stage 2: hand + one 45mm ball
+│   └── scene_two_balls.xml                # Stage 3: hand + two 45mm balls
+├── hand_env.py                            # names, palmar_axis, contact-face classifier, grasp/hold tests
 ├── eval_stage1_verify.py                  # Stage 1: tracking / palmar axis / coupling / gravity checks
 ├── demo_stage1_kinematic_sweep.py         # Stage 1: actuator sweep GIF
+├── eval_stage2_classifier.py              # Stage 2: classifier probe check
+├── search_stage2_grasp.py                 # Stage 2: CEM grasp search
+├── eval_stage2_hold.py                    # Stage 2: six-direction hold + perturbation test
 ├── media/
-│   └── stage1_kinematic_sweep.gif
+│   ├── stage1_kinematic_sweep.gif
+│   └── stage2_grasp_*.png                 # grasp renders, a-e in search order (d = final)
 └── README.md
 ```
