@@ -89,13 +89,39 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    for two is a poor stand-in for baoding, where the two touching balls fill the palm's whole
    length and the thumb's job is pushing, not pinching. The earlier search rounds are kept as
    `media/stage2_grasp_{a,b,c}_*.png`.
-3. **Two-ball cupped hold, reviewed as an image first.** Two touching balls resting in the palm,
-   the fingers cupped around them with their pads on the balls, the little finger and thumb on the
-   outsides -- found by a static search scored on contact face, shown to the user before anything
-   is built on it.
-4. **Scripted baoding.** The human technique: little finger and thumb push the balls around a
-   circuit while the middle fingers form the cup. Judged on each ball's own cumulative angle
-   around the palm center, and on whether the two balls actually swap places.
+3. **Two-ball bowl, reviewed as images -- DONE.** Two touching 45mm balls
+   (`assets/scene_two_balls.xml`). The shape is the user's: *"all 5 finger point up and curl a
+   little inside and make bowl shape with two balls sit in the palm"*, then *"tips of 5 fingers
+   almost like in same height"*, then *"make 4 fingers separated more to make gap between fingers
+   and thumb smaller on both side"*. Found by `search_stage3_bowl.py` (CEM over all 20 targets plus
+   where the pair is placed; both balls are held in place while the hand closes, then released),
+   each round restricted and scored toward that shape and reviewed as a render
+   (`show_stage3_bowl.py`):
+
+   | round | image | what it showed |
+   |---|---|---|
+   | cradle | `stage3_cradle_a.png` | thumb and little finger on the outsides, but mf/rf curled under the balls -- no bowl |
+   | hand-set | `stage3_bowl_manual.png` | the finger shape, but a LEVEL palm is open at the wrist side: one ball rolled out. The wrist became part of the search; tilting the palm ~25 deg toward the fingers settles the balls into the cup |
+   | a | `stage3_bowl_a.png` | fingers standing up, thumb sticking out sideways |
+   | b | `stage3_bowl_b.png` | five tips at one height (8.2-9.0cm); tips bunched (5.7cm span) |
+   | c | `stage3_bowl_c.png` | an "even gaps" term was GAMED: the thumb moved in across the palm, the finger span shrank |
+   | d | `stage3_bowl_d.png` | fingers forced to their widest (9.4cm span): they lie down, the bowl opens, balls separate |
+   | **e** | `stage3_bowl_e.png` | **chosen**: moderate fan (6.8cm span), tips 8.0-8.9cm, balls held + touching in all perturbed runs |
+
+   Why the fingers can't fan much wider: a finger's spread joint (J4) swings it about the palm's
+   normal, and a finger standing up lies ALONG that axis -- spreading just twists it (0.2 rad moves
+   the tip <= 0.3cm). To move a tip sideways the finger must lean, and leaning also tips it forward,
+   out of the bowl wall. `hand_env.BOWL_GRASP`: ~1.4 N total finger force, so the balls are cradled,
+   not clamped -- free to roll, which is the point.
+
+   <p align="center">
+     <img src="media/stage3_bowl_e.png" width="720">
+   </p>
+
+4. **Scripted baoding.** All five digits take part, each pressing in when it helps -- the user:
+   *"not only little finger and thumb, all fingers should involved as needed to make baoding
+   trick"*. Judged on each ball's own cumulative angle around the palm center, and on whether the
+   two balls actually swap places.
 5. **RL baoding** from the reviewed grasp, reward keyed to same-direction per-ball progress and to
    contact face, only if the scripted stage shows what's physically possible and where it stalls.
 
@@ -115,8 +141,11 @@ shadow_hand/
 ├── eval_stage2_classifier.py              # Stage 2: classifier probe check
 ├── search_stage2_grasp.py                 # Stage 2: CEM grasp search
 ├── eval_stage2_hold.py                    # Stage 2: six-direction hold + perturbation test
+├── search_stage3_bowl.py                  # Stage 3: CEM bowl search (two balls)
+├── show_stage3_bowl.py                    # Stage 3: palm-aligned render of a bowl
 ├── media/
 │   ├── stage1_kinematic_sweep.gif
-│   └── stage2_grasp_*.png                 # grasp renders, a-e in search order (d = final)
+│   ├── stage2_grasp_*.png                 # grasp renders, a-e in search order (d = final)
+│   └── stage3_*.png                       # bowl renders (stage3_bowl_e = final)
 └── README.md
 ```

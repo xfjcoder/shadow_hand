@@ -224,6 +224,72 @@ ONE_BALL_PLACE = np.array([0.3076, 0.0042, 0.06])   # dropped from here (pin=Fal
 ONE_BALL_PIN = False
 
 
+# Stage 3: two balls, touching, cradled palm-up -- the starting grasp for baoding.
+TWO_BALL_SCENE = "assets/scene_two_balls.xml"
+BALLS = ("ball1", "ball2")
+
+
+def two_ball_places(center, angle):
+    """Centers of two touching balls whose midpoint is `center` (world xyz) and whose line makes
+    `angle` (rad) with the fingers' direction (+x) in the palm plane: 0 = one behind the other along
+    the palm, pi/2 = side by side across it."""
+    d = BALL_RADIUS * np.array([np.cos(angle), np.sin(angle), 0.0])
+    return np.array(center) - d, np.array(center) + d
+
+
+def grasp_balls(model, data, target, places, close_time=0.6, settle_time=0.3):
+    """Two-ball version of `grasp_ball(pin=True)`: both balls held at `places` while the hand ramps
+    from rest to `target` over `close_time` s, then released and left `settle_time` s."""
+    mj.mj_resetData(model, data)
+    model.opt.gravity[:] = (0, 0, -9.81)
+    lo, hi = model.actuator_ctrlrange[:, 0], model.actuator_ctrlrange[:, 1]
+    rest, target = np.clip(0.0, lo, hi), np.clip(target, lo, hi)
+    adr = [(model.jnt_qposadr[model.body(b).jntadr[0]], model.jnt_dofadr[model.body(b).jntadr[0]])
+           for b in BALLS]
+    data.ctrl[:] = rest
+    n = int(close_time / model.opt.timestep)
+    for k in range(n):
+        data.ctrl[:] = rest + (target - rest) * (k + 1) / n
+        for (q, v), p in zip(adr, places):
+            data.qpos[q:q + 3], data.qpos[q + 3:q + 7], data.qvel[v:v + 6] = p, (1, 0, 0, 0), 0.0
+        mj.mj_step(model, data)
+    for _ in range(int(settle_time / model.opt.timestep)):
+        mj.mj_step(model, data)
+
+
+def balls_in_palm(model, data):
+    """Each ball's center in the palm body's frame."""
+    R = data.body("rh_palm").xmat.reshape(3, 3)
+    return [R.T @ (data.body(b).xpos - data.body("rh_palm").xpos) for b in BALLS]
+
+
+# The Stage 3 bowl, reviewed by the user as an image (media/stage3_bowl_e.png): all five digits
+# standing up off the palm with their tips at one height (8.0-8.9cm) and curled a little in, the two
+# touching balls resting on the palm inside (gold on the thumb side, red on the little-finger side),
+# the wrist tilting the palm ~25 deg toward the fingers so the balls settle into the cup instead of
+# rolling out of its open wrist side. Light: ~1.4 N total finger force, the balls free to roll.
+# From `search_stage3_bowl.py --seed 3 --init <previous bowl>`; held both balls, touching, on the
+# palm in all 6 runs (nominal + 5 perturbed).
+BOWL_GRASP = {
+    "rh_A_WRJ2": 0.0019, "rh_A_WRJ1": -0.4441,
+    "rh_A_THJ5": -0.1528, "rh_A_THJ4": 1.2217, "rh_A_THJ3": 0.142, "rh_A_THJ2": 0.061,
+    "rh_A_THJ1": 1.0921,
+    "rh_A_FFJ4": -0.1527, "rh_A_FFJ3": 1.147, "rh_A_FFJ0": 0.8176,
+    "rh_A_MFJ4": -0.2669, "rh_A_MFJ3": 1.128, "rh_A_MFJ0": 0.2817,
+    "rh_A_RFJ4": 0.1308, "rh_A_RFJ3": 1.4069, "rh_A_RFJ0": 0.2109,
+    "rh_A_LFJ5": 0.0423, "rh_A_LFJ4": -0.0376, "rh_A_LFJ3": 1.5419, "rh_A_LFJ0": 0.8765,
+}
+BOWL_BALLS_CENTER = np.array([0.3116, -0.0011, 0.0445])
+BOWL_BALLS_ANGLE = 2.4911
+
+
+def bowl_target():
+    t = np.zeros(N_ACTUATORS)
+    for name, v in BOWL_GRASP.items():
+        t[ACTUATOR_NAMES.index(name)] = v
+    return t
+
+
 def contact_summary(contacts, min_force=0.05, pad_faces=("palmar", "tip")):
     """(digits touching with a `pad_faces` face of their middle/distal segment, count of DORSAL
     contacts, whether the palm touches), ignoring touches under `min_force` N."""
