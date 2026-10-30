@@ -36,7 +36,18 @@ Score, per run:
       - 5 per DORSAL contact, - 1 per SIDE contact
       - 1 per N of total finger force on the balls above 8 N (a bowl, not a clamp: the balls must
         stay free to roll round each other)
-      - 200 * mean drift of the held balls.
+      - 200 * mean drift of the held balls
+      + (`--circulate`) `--circ-weight` (10) * the ideal-push circulation, capped at 2 pi: with the
+        hand holding the bowl still, a tangential `PUSH_FORCE` on each ball round the pair's
+        midpoint (`hand_env.push_forces`) for `PUSH_TIME` s, each way from the same settled state;
+        circulation = the better way's min over the two balls of that ball's own angle
+        (`hand_env.BallAngles`), 0 if a ball leaves the bowl during that push, and - 20 more if both
+        ways drop one. Added for Stage 4: in bowl e the scripted wave only rocked the balls, and even this ideal push stalled them after ~1/4 turn -- the gold
+        ball jams against the ff/mf bases or the thumb's proximal segment lying across the palm, the
+        red against the lf base (media/stage4_wave_and_push.gif). Only on the nominal run and the
+        first `--push-runs` - 1 perturbed ones (it costs 4x the hold), and the WORST of those runs
+        counts, added once to the run-averaged score: with the mean, a bowl averaged 2.2 rad from push
+        runs of 0.46 (nominal), 0.42 and one lucky 5.6 -- it didn't circulate
 averaged over the nominal run and `--perturbed` fixed perturbations (targets +-0.05 rad, placement
 +-3mm, mass 40-150g, friction 0.5-1.0 -- the Stage 2 ranges).
 
@@ -52,8 +63,9 @@ import mujoco as mj
 import numpy as np
 
 from eval_stage2_hold import FRICTION_RANGE, MASS_RANGE, PLACE_NOISE, TARGET_NOISE
-from hand_env import (ACTUATOR_NAMES, BALL_PLACE, BALLS, TWO_BALL_SCENE, balls_in_palm,
-                      _segment_top, classify_contacts, grasp_balls, two_ball_places)
+from hand_env import (ACTUATOR_NAMES, BALL_PLACE, BALLS, BALL_RADIUS, TWO_BALL_SCENE, BallAngles,
+                      balls_in_palm, _segment_top, classify_contacts, grasp_balls, push_forces,
+                      set_ball_radius, two_ball_places)
 
 FREE = np.arange(len(ACTUATOR_NAMES))
 # The bowl shape: fingers standing up (J3), tips only a little curled in (J0). Other actuators keep
@@ -65,15 +77,23 @@ RING = (0.025, 0.06)
 SPAN = {"ff": 0.045, "lf": 0.04, "th": 0.04}   # min outward tip offset across the palm (m)   # tip distance from the ball pair's midpoint, in the palm plane (m)
 PAD_FORCE = 0.2
 HOLD_TIME = 1.5
+PUSH_FORCE = 1.0
+PUSH_TIME = 3.0
 # Extra search dimensions after the actuator targets: pair midpoint dx, dy (m), pair angle (rad).
 EXTRA_LO, EXTRA_HI = np.array([-0.02, -0.02, 0.0]), np.array([0.02, 0.02, np.pi])
-_model = _data = _perturbations = None
+_model = _data = _snap = _perturbations = None
+_push_runs = 0
+_circ_weight = 10.0
+_radius = BALL_RADIUS
 
 
-def _init(n_perturbed):
-    global _model, _data, _perturbations
+def _init(n_perturbed, push_runs=0, circ_weight=10.0, radius=BALL_RADIUS):
+    global _model, _data, _snap, _perturbations, _push_runs, _circ_weight, _radius
+    _push_runs, _circ_weight, _radius = push_runs, circ_weight, radius
     _model = mj.MjModel.from_xml_path(TWO_BALL_SCENE)
+    set_ball_radius(_model, radius)
     _data = mj.MjData(_model)
+    _snap = mj.MjData(_model)
     rng = np.random.default_rng(12345)
     _perturbations = [dict(dt=rng.uniform(-TARGET_NOISE, TARGET_NOISE, len(ACTUATOR_NAMES)),
                            dd=np.append(rng.uniform(-PLACE_NOISE, PLACE_NOISE, 2), 0.0),
@@ -103,9 +123,41 @@ def tip_positions(model, data):
     return out
 
 
-def run_once(target, center, angle):
+def push_circulation():
+    """The ideal-push test from the current (settled) state, both ways: (circulation, dropped) of
+    the better way. The state is restored afterwards."""
+    mj.mj_copyData(_snap, _model, _data)
+    ball_ids = [_model.body(b).id for b in BALLS]
+    best = (-np.inf, True)
+    for sign in (1.0, -1.0):
+        mj.mj_copyData(_data, _model, _snap)
+        tracker = BallAngles(_model, _data)
+        dropped = False
+        dt = _model.opt.timestep
+        for k in range(int(PUSH_TIME / dt)):
+            f = sign * PUSH_FORCE * min(1.0, k * dt / 0.3)
+            for bid, fv in zip(ball_ids, push_forces(_model, _data, tracker.center, f)):
+                _data.xfrc_applied[bid, :3] = fv
+            mj.mj_step(_model, _data)
+            if k % 10 == 0:
+                tracker.update(_model, _data)
+                if any(r > 0.06 or h > 0.05 + _radius for r, h in tracker.offsets(_model, _data)):
+                    dropped = True
+                    break
+        # A dropped push earns no circulation: the first version kept the angle gained up to the
+        # drop, and the search found bowls where the push flings the balls round and out (4.5 rad,
+        # 2 of 3 pushes dropping a ball).
+        circ = 0.0 if dropped else float(min(sign * tracker.total[0], sign * tracker.total[1]))
+        if (circ - 2.0 * dropped) > (best[0] - 2.0 * best[1]):
+            best = (circ, dropped)
+    _data.xfrc_applied[:] = 0.0
+    mj.mj_copyData(_data, _model, _snap)
+    return best
+
+
+def run_once(target, center, angle, push=False):
     """One cradle run; returns its score terms."""
-    grasp_balls(_model, _data, target, two_ball_places(center, angle))
+    grasp_balls(_model, _data, target, two_ball_places(center, angle, _radius))
     p0 = balls_in_palm(_model, _data)
     contacts = []
     for b in BALLS:
@@ -113,6 +165,7 @@ def run_once(target, center, angle):
     for _ in range(int(HOLD_TIME / _model.opt.timestep)):
         mj.mj_step(_model, _data)
     p1 = balls_in_palm(_model, _data)
+    circ, push_dropped = push_circulation() if push else (0.0, False)
     tips = tip_positions(_model, _data)
     heights = [t[1] for t in tips]
     upright = sum(min(max(h, 0.0), TIP_HEIGHT) / TIP_HEIGHT for h in heights)
@@ -135,14 +188,14 @@ def run_once(target, center, angle):
     n_dorsal = sum(c[2] == "DORSAL" for c in firm)
     n_side = sum(c[2] == "side" for c in firm)
     grip = sum(c[3] for c in contacts if c[0] != "palm")
-    score = (15 * len(held) + 8 * (gap < 2 * 0.0225 + 0.003) + 6 * on_palm + 4 * len(walls)
+    score = (15 * len(held) + 8 * (gap < 2 * _radius + 0.003) + 6 * on_palm + 4 * len(walls)
              + 3 * upright - 400 * rim_std - 300 * ring_out - 800 * gap_std - 300 * span_in - 5 * n_dorsal - n_side - max(0.0, grip - 8.0)
-             - 200 * (np.mean(held) if held else 0.0))
-    return dict(score=score, n_held=len(held), touching=gap < 2 * 0.0225 + 0.003, on_palm=on_palm,
+             - 200 * (np.mean(held) if held else 0.0) - 20 * push_dropped)
+    return dict(score=score, n_held=len(held), touching=gap < 2 * _radius + 0.003, on_palm=on_palm,
                 walls=sorted(walls), upright=upright, rim_std=rim_std, ring_out=ring_out,
                 gaps=gaps, gap_std=gap_std, span_in=span_in,
                 tips_across=[float(t[0]) for t in tips],
-                n_dorsal=n_dorsal, grip=grip)
+                n_dorsal=n_dorsal, grip=grip, push=push, circ=circ, push_dropped=bool(push_dropped))
 
 
 def evaluate(x):
@@ -151,14 +204,16 @@ def evaluate(x):
     ball_ids = [_model.body(b).id for b in BALLS]
     geom_ids = [_model.geom(b).id for b in BALLS]
     m0, f0 = _model.body_mass[ball_ids[0]], _model.geom_friction[geom_ids[0], 0]
-    runs = [run_once(target, center, angle)]
-    for p in _perturbations:
+    runs = [run_once(target, center, angle, push=_push_runs > 0)]
+    for i, p in enumerate(_perturbations):
         _model.body_mass[ball_ids] = p["mass"]
         _model.geom_friction[geom_ids, 0] = p["friction"]
-        runs.append(run_once(target + p["dt"], center + p["dd"], angle))
+        runs.append(run_once(target + p["dt"], center + p["dd"], angle, push=i + 1 < _push_runs))
     _model.body_mass[ball_ids], _model.geom_friction[geom_ids, 0] = m0, f0
     nominal = runs[0]
-    return dict(score=float(np.mean([r["score"] for r in runs])), x=[float(v) for v in x],
+    circs = [r["circ"] for r in runs if r["push"]] or [0.0]
+    return dict(score=float(np.mean([r["score"] for r in runs]) + _circ_weight * min(min(circs), 2 * np.pi)),
+                x=[float(v) for v in x], circs=circs,
                 nominal={k: (bool(v) if isinstance(v, (bool, np.bool_)) else v) for k, v in nominal.items()},
                 frac_both_held=float(np.mean([r["n_held"] == 2 for r in runs])),
                 frac_touching=float(np.mean([r["touching"] for r in runs])),
@@ -168,7 +223,9 @@ def evaluate(x):
                 mean_rim_std=float(np.mean([r["rim_std"] for r in runs])),
                 mean_ring_out=float(np.mean([r["ring_out"] for r in runs])),
                 mean_gap_std=float(np.mean([r["gap_std"] for r in runs])),
-                mean_span_in=float(np.mean([r["span_in"] for r in runs])))
+                mean_span_in=float(np.mean([r["span_in"] for r in runs])),
+                mean_circ=float(min(circs)),
+                frac_push_dropped=float(np.mean([r["push_dropped"] for r in runs if r["push"]] or [0.0])))
 
 
 def main():
@@ -180,11 +237,18 @@ def main():
     ap.add_argument("--std-floor", type=float, default=0.06)
     ap.add_argument("--perturbed", type=int, default=5)
     ap.add_argument("--out", type=str, default="data/stage3_bowl_search.json")
+    ap.add_argument("--circulate", action="store_true", help="add the ideal-push circulation term")
+    ap.add_argument("--push-runs", type=int, default=4)
+    ap.add_argument("--ball-radius", type=float, default=BALL_RADIUS)
+    ap.add_argument("--circ-weight", type=float, default=10.0,
+                    help="per rad of worst-case push circulation; 10 left the bowl shape dominating "
+                         "(search from bowl e ended at 0.27-0.57 rad)")
     ap.add_argument("--init", type=str, default=None,
                     help="start the search around a previous result's x (std 10%% of each range)")
     args = ap.parse_args()
 
-    _init(args.perturbed)   # fail here, not in a Pool that respawns crashing workers
+    push_runs = args.push_runs if args.circulate else 0
+    _init(args.perturbed, push_runs, args.circ_weight, args.ball_radius)   # fail here, not in a Pool that respawns crashing workers
     lo, hi = _model.actuator_ctrlrange[FREE, 0].copy(), _model.actuator_ctrlrange[FREE, 1].copy()
     for name, (a, b) in SHAPE_RANGES.items():
         lo[ACTUATOR_NAMES.index(name)], hi[ACTUATOR_NAMES.index(name)] = a, b
@@ -194,7 +258,7 @@ def main():
     if args.init:
         mean, std = np.array(json.loads(Path(args.init).read_text())["x"]), 0.1 * (hi - lo)
     best = None
-    with Pool(16, initializer=_init, initargs=(args.perturbed,)) as pool:
+    with Pool(16, initializer=_init, initargs=(args.perturbed, push_runs, args.circ_weight, args.ball_radius)) as pool:
         for it in range(args.iters):
             xs = np.clip(rng.normal(mean, std, size=(args.pop, len(lo))), lo, hi)
             if best is not None:
@@ -211,10 +275,12 @@ def main():
                   f"gap std {100 * best['mean_gap_std']:.1f}cm span in {100 * best['mean_span_in']:.1f}cm | "
                   f"tips across {[round(100 * a, 1) for a in best['nominal']['tips_across']]} gaps "
                   f"{[round(100 * g, 1) for g in best['nominal']['gaps']]} "
-                  f"walls {best['nominal']['walls']} grip {best['nominal']['grip']:.1f}N", flush=True)
+                  f"walls {best['nominal']['walls']} grip {best['nominal']['grip']:.1f}N | circ "
+                  f"{[round(c, 2) for c in best['circs']]} rad push-dropped {best['frac_push_dropped']:.2f}", flush=True)
     target, center, angle = decode(np.array(best["x"]))
     best["targets"] = {ACTUATOR_NAMES[i]: float(target[i]) for i in FREE}
     best["center"], best["angle"] = [float(v) for v in center], float(angle)
+    best["ball_radius"] = args.ball_radius
     Path(args.out).parent.mkdir(parents=True, exist_ok=True)
     Path(args.out).write_text(json.dumps(best, indent=1))
     print(json.dumps(best["targets"]), best["center"], best["angle"])

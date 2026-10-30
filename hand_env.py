@@ -229,12 +229,24 @@ TWO_BALL_SCENE = "assets/scene_two_balls.xml"
 BALLS = ("ball1", "ball2")
 
 
-def two_ball_places(center, angle):
+def two_ball_places(center, angle, radius=BALL_RADIUS):
     """Centers of two touching balls whose midpoint is `center` (world xyz) and whose line makes
     `angle` (rad) with the fingers' direction (+x) in the palm plane: 0 = one behind the other along
     the palm, pi/2 = side by side across it."""
-    d = BALL_RADIUS * np.array([np.cos(angle), np.sin(angle), 0.0])
+    d = radius * np.array([np.cos(angle), np.sin(angle), 0.0])
     return np.array(center) - d, np.array(center) + d
+
+
+def set_ball_radius(model, radius):
+    """Resize both balls of the two-ball scene to `radius` (m), mass and inertia scaled with
+    volume (a smaller ball of the same material). Stage 4: two 45mm balls have no room to pass
+    each other between the knuckle row and the thumb's base segment, even under an ideal push."""
+    for b in BALLS:
+        g, bid = model.geom(b).id, model.body(b).id
+        k = radius / model.geom_size[g, 0]
+        model.geom_size[g, 0] = model.geom_rbound[g] = radius
+        model.body_mass[bid] *= k ** 3
+        model.body_inertia[bid] *= k ** 5
 
 
 def grasp_balls(model, data, target, places, close_time=0.6, settle_time=0.3):
@@ -288,6 +300,166 @@ def bowl_target():
     for name, v in BOWL_GRASP.items():
         t[ACTUATOR_NAMES.index(name)] = v
     return t
+
+
+# Stage 4: scripted baoding from the bowl. Every digit takes part -- the user: "not only little
+# finger and thumb, all fingers should involved as needed to make baoding trick".
+# Each digit presses with two joints: a finger leans in at its base (J3) and curls (J0, the coupled
+# middle+distal); the thumb swings across at its base (THJ5) and flexes its middle joint (THJ2).
+PRESS_JOINTS = {
+    "ff": ("rh_A_FFJ3", "rh_A_FFJ0"), "mf": ("rh_A_MFJ3", "rh_A_MFJ0"),
+    "rf": ("rh_A_RFJ3", "rh_A_RFJ0"), "lf": ("rh_A_LFJ3", "rh_A_LFJ0"),
+    "th": ("rh_A_THJ5", "rh_A_THJ2"),
+}
+PRESS_DIGITS = ("ff", "mf", "rf", "lf", "th")
+
+
+class BaodingWave:
+    """A travelling press wave around the bowl's rim. Every digit's two press joints are offset
+    from the bowl grasp by amp * s_i(t), s_i(t) = 0.5 * (1 + sin(2 pi f t - phase_i)) in [0, 1]: each
+    digit presses in and relaxes once per cycle, and the phases order the presses around the rim, so
+    the push travels round the bowl and drags the balls with it. The wrist can add a small circular
+    tilt (WRJ1 sin, WRJ2 cos, same frequency) -- the cup itself circling, as a human hand does.
+    Ramps in over the first `ramp` s so the balls start from the settled bowl.
+
+    params: freq (Hz), phase[5], amp1[5], amp2[5] (rad, signed; per PRESS_DIGITS / PRESS_JOINTS),
+    wrist_amp (WRJ1, WRJ2) (rad), wrist_phase."""
+
+    N_PARAMS = 1 + 5 * 3 + 3
+
+    def __init__(self, params, ramp=0.5, base=None):
+        p = np.asarray(params, float)
+        self.freq = p[0]
+        self.phase, self.amp1, self.amp2 = p[1:6], p[6:11], p[11:16]
+        self.wrist_amp, self.wrist_phase = p[16:18], p[18]
+        self.ramp = ramp
+        self.base = bowl_target() if base is None else np.array(base, float)
+        self.idx = [(ACTUATOR_NAMES.index(a), ACTUATOR_NAMES.index(b))
+                    for a, b in (PRESS_JOINTS[d] for d in PRESS_DIGITS)]
+        self.wrist = (ACTUATOR_NAMES.index("rh_A_WRJ1"), ACTUATOR_NAMES.index("rh_A_WRJ2"))
+
+    def ctrl(self, t):
+        k = min(1.0, t / self.ramp)
+        w = 2 * np.pi * self.freq * t
+        u = self.base.copy()
+        s = 0.5 * (1 + np.sin(w - self.phase))
+        for (i, j), a1, a2, si in zip(self.idx, self.amp1, self.amp2, s):
+            u[i] += k * a1 * si
+            u[j] += k * a2 * si
+        u[self.wrist[0]] += k * self.wrist_amp[0] * np.sin(w - self.wrist_phase)
+        u[self.wrist[1]] += k * self.wrist_amp[1] * np.cos(w - self.wrist_phase)
+        return u
+
+
+class BaodingCircle(BaodingWave):
+    """Each fingertip traces a small LOOP instead of pressing along a line -- the user, on the press
+    wave's GIF (balls only rocked): "fingers maybe should make circular move to push balls cross
+    each other". A digit's two press joints get offsets a1 sin(w t - phase_i) and
+    a2 sin(w t - phase_i - lag_i): with lag ~ +-pi/2 the tip goes round an ellipse (one way or the
+    other), pushing the ball along while touching it and coming back clear of it; lag 0 or pi
+    collapses it to the old in-out press. Plus each finger's spread (J4) a3 sin(w t - phase_i - lag_i/2)
+    -- small, it twists an upright finger, letting its pad roll the ball sideways.
+
+    params: freq (Hz), phase[5], amp1[5], amp2[5], lag[5], amp3[4] (ff/mf/rf/lf J4), wrist_amp
+    (WRJ1, WRJ2), wrist_phase."""
+
+    N_PARAMS = 1 + 5 * 4 + 4 + 3
+    SPREAD = ("rh_A_FFJ4", "rh_A_MFJ4", "rh_A_RFJ4", "rh_A_LFJ4")
+
+    def __init__(self, params, ramp=0.5, base=None):
+        p = np.asarray(params, float)
+        super().__init__(np.concatenate([p[:16], p[25:28]]), ramp, base)
+        self.lag, self.amp3 = p[16:21], p[21:25]
+        self.spread = [ACTUATOR_NAMES.index(a) for a in self.SPREAD]
+
+    def ctrl(self, t):
+        k = min(1.0, t / self.ramp)
+        w = 2 * np.pi * self.freq * t
+        u = self.base.copy()
+        for n, ((i, j), a1, a2, ph, lag) in enumerate(zip(self.idx, self.amp1, self.amp2, self.phase, self.lag)):
+            u[i] += k * a1 * np.sin(w - ph)
+            u[j] += k * a2 * np.sin(w - ph - lag)
+            if n < 4:
+                u[self.spread[n]] += k * self.amp3[n] * np.sin(w - ph - 0.5 * lag)
+        u[self.wrist[0]] += k * self.wrist_amp[0] * np.sin(w - self.wrist_phase)
+        u[self.wrist[1]] += k * self.wrist_amp[1] * np.cos(w - self.wrist_phase)
+        return u
+
+
+class BallAngles:
+    """Each ball's OWN cumulative angle (unwrapped, rad) around a fixed point in the palm plane --
+    the midpoint of the pair at the start -- measured in the palm frame so the wrist moving the hand
+    doesn't count. Lesson from the Allegro: the angle of the vector BETWEEN the balls also turns when
+    one ball just wobbles; each ball's own angle only grows if that ball actually travels round."""
+
+    def __init__(self, model, data):
+        p = balls_in_palm(model, data)
+        self.center = 0.5 * (p[0] + p[1])
+        self.prev = [self._angle(q) for q in p]
+        self.total = np.zeros(2)
+
+    def _angle(self, q):
+        d = q - self.center
+        return float(np.arctan2(d[2], d[0]))   # palm frame: x across, z along toward the fingers
+
+    def update(self, model, data):
+        for k, q in enumerate(balls_in_palm(model, data)):
+            a = self._angle(q)
+            self.total[k] += (a - self.prev[k] + np.pi) % (2 * np.pi) - np.pi
+            self.prev[k] = a
+        return self.total
+
+    def offsets(self, model, data):
+        """Each ball's distance from the center (m), in the palm plane and along the palm normal."""
+        out = []
+        for q in balls_in_palm(model, data):
+            d = q - self.center
+            out.append((float(np.hypot(d[0], d[2])), float(-d[1])))
+        return out
+
+
+def run_baoding(model, data, controller, seconds, on_step=None, tracker_out=None, bowl=None):
+    """Bowl grasp, then `controller.ctrl(t)` for `seconds`. Returns (angles[2] rad, dropped,
+    digits that touched a ball with >= 0.2 N, t_end). A ball counts as dropped once it is more than
+    6cm from the start center in the palm plane or 5cm off the palm; the run stops there.
+    `on_step(k, t)` is called after every physics step; if `tracker_out` is a list, the BallAngles
+    tracker is appended to it (so on_step can read the running angles). `bowl` = (target, pair center,
+    pair angle) of another bowl; default the frozen Stage 3 one."""
+    target, center, angle = bowl if bowl is not None else (bowl_target(), BOWL_BALLS_CENTER, BOWL_BALLS_ANGLE)
+    grasp_balls(model, data, target, two_ball_places(center, angle))
+    tracker = BallAngles(model, data)
+    if tracker_out is not None:
+        tracker_out.append(tracker)
+    touched = set()
+    dt = model.opt.timestep
+    n = int(seconds / dt)
+    for k in range(n):
+        t = k * dt
+        data.ctrl[:] = controller.ctrl(t)
+        mj.mj_step(model, data)
+        if k % 10 == 0:
+            tracker.update(model, data)
+            for b in BALLS:
+                touched |= {c[0] for c in classify_contacts(model, data, b)
+                            if c[3] >= 0.2 and c[0] != "palm"}
+            if any(r > 0.06 or h > 0.05 + BALL_RADIUS for r, h in tracker.offsets(model, data)):
+                return tracker.total.copy(), True, touched, t
+        if on_step is not None:
+            on_step(k, t)
+    return tracker.total.copy(), False, touched, seconds
+
+
+def push_forces(model, data, center, force):
+    """Stage 4 diagnostic, the ideal push: a tangential world force (N) on each ball around `center`
+    (palm frame), in the palm plane, to apply with `data.xfrc_applied`. If the bowl holds still and
+    even this cannot carry the balls round each other, no finger motion inside that bowl will."""
+    R = data.body("rh_palm").xmat.reshape(3, 3)
+    out = []
+    for q in balls_in_palm(model, data):
+        d = q - center
+        t = np.array([-d[2], 0.0, d[0]])
+        out.append(force * R @ (t / max(np.linalg.norm(t), 1e-6)))
+    return out
 
 
 def contact_summary(contacts, min_force=0.05, pad_faces=("palmar", "tip")):

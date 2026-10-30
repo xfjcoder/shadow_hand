@@ -118,10 +118,43 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
      <img src="media/stage3_bowl_e.png" width="720">
    </p>
 
-4. **Scripted baoding.** All five digits take part, each pressing in when it helps -- the user:
-   *"not only little finger and thumb, all fingers should involved as needed to make baoding
-   trick"*. Judged on each ball's own cumulative angle around the palm center, and on whether the
-   two balls actually swap places.
+4. **Scripted baoding -- tried, does not circulate (negative result).** All five digits take
+   part -- the user: *"not only little finger and thumb, all fingers should involved as needed to
+   make baoding trick"*. Judged on each ball's OWN cumulative angle around the pair's starting
+   midpoint (`hand_env.BallAngles`, palm frame), the worse of the two balls, worst value over the
+   last 2.5s of a 10s run -- a swap needs both past pi.
+
+   - **Press wave** (`hand_env.BaodingWave`, `search_stage4_baoding.py`): every digit presses in
+     and relaxes once per cycle, phases ordering the presses round the rim, plus a small wrist
+     circle. The first search scored the angle at the final instant and found a wave that just
+     rocks the jammed pair +-0.4 rad and ends on the top of a rock; with the worst-over-a-cycle
+     score the best is 0.25 rad: rocking.
+   - **Circular fingertip motion** (`hand_env.BaodingCircle`, `--controller circle`) -- the user,
+     on the press-wave GIF: *"fingers maybe should make circular move to push balls cross each
+     other"*. Each digit's two joints are driven a quarter-cycle apart so the tip traces a loop;
+     plus the finger spread joints. Best after 20 CEM rounds: 0.10 rad -- still rocking.
+   - **Why: the ideal-push test** (`hand_env.push_forces`): the hand holds the bowl still while a
+     1 N tangential force on each ball drives them round the midpoint. In bowl e the gold ball
+     stalls after ~1/4 turn either way -- against the ff/mf proximal segments (the knuckle row:
+     upright fingers make a wall there) or the BACK of the thumb's proximal segment, which lies
+     across the palm's thumb/wrist corner. Adding this test to the bowl search
+     (`search_stage3_bowl.py --circulate`, worst of 4 perturbed pushes; the first two versions were
+     gamed by angle gained before a drop and by one lucky run in a mean): from bowl e 0.27-0.57 rad;
+     weighting circulation 10x (bowl shape mostly lost, fingers off the balls) ~1.4 rad; 40mm balls
+     (`--ball-radius 0.02`) 1.31-1.47 rad. In every bowl the thumb's base joint THJ4 sits at its
+     limit. Adding a centering spring to the push changes nothing.
+
+   So no FIXED bowl lets the balls pass each other here, and no fixed periodic motion clears the
+   way: baoding needs digits that move out of a ball's path as it arrives (the thumb lifting as the
+   gold ball comes round) and push it from behind -- motion keyed to where the balls are. That is
+   Stage 5.
+
+   <p align="center">
+     <img src="media/stage4_circle.gif" width="580">
+   </p>
+   <p align="center"><sub>Stage 4: the best circular fingertip motion (8s, balls rock in place),
+   then the bowl held still under the ideal 1 N push each way -- the gold ball jams after ~1/4
+   turn. The press wave's version: `media/stage4_wave_and_push.gif`.</sub></p>
 5. **RL baoding** from the reviewed grasp, reward keyed to same-direction per-ball progress and to
    contact face, only if the scripted stage shows what's physically possible and where it stalls.
 
@@ -143,9 +176,12 @@ shadow_hand/
 ├── eval_stage2_hold.py                    # Stage 2: six-direction hold + perturbation test
 ├── search_stage3_bowl.py                  # Stage 3: CEM bowl search (two balls)
 ├── show_stage3_bowl.py                    # Stage 3: palm-aligned render of a bowl
+├── search_stage4_baoding.py               # Stage 4: CEM over the press wave / circular motion
+├── demo_stage4_baoding.py                 # Stage 4: controller + ideal-push GIF
 ├── media/
 │   ├── stage1_kinematic_sweep.gif
 │   ├── stage2_grasp_*.png                 # grasp renders, a-e in search order (d = final)
-│   └── stage3_*.png                       # bowl renders (stage3_bowl_e = final)
+│   ├── stage3_*.png                       # bowl renders (stage3_bowl_e = final)
+│   └── stage4_*.gif                       # scripted baoding attempts + ideal-push test
 └── README.md
 ```
