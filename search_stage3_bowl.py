@@ -13,7 +13,8 @@ Score, per run:
       + 15 per ball still in place (moved < 1cm in the palm frame over the 1.5s)
       + 8 if the two balls touch each other
       + 6 per ball resting on the palm ("sit in the palm")
-      + 4 per digit touching a ball with anything but its back (the bowl's walls)
+      + 4 (`--wall-weight`) per digit touching a ball with anything but its back (the bowl's walls), the
+        thumb counted twice
       + up to 3 per digit for its tip standing up off the palm (full at 7cm, along the palm normal),
         thumb included -- it is a wall too, not a bar across the palm
       - 400 * the std of the five tip heights (m): the user, on the first bowl, whose thumb stuck
@@ -34,6 +35,7 @@ Score, per run:
         shrank (5.7 -> 5.3cm). Kinematically, with tips 7cm up, ff can reach 5.1cm out and lf 4.6cm
         (spread joints at their outward limit, J3 ~0.7-0.8)
       - 5 per DORSAL contact, - 1 per SIDE contact
+      - (`--min-ball-z`) 1000 per m a ball rests closer than that to the wrist along the palm
       - 1 per N of total finger force on the balls above 8 N (a bowl, not a clamp: the balls must
         stay free to roll round each other)
       - 200 * mean drift of the held balls
@@ -85,11 +87,13 @@ _model = _data = _snap = _perturbations = None
 _push_runs = 0
 _circ_weight = 10.0
 _radius = BALL_RADIUS
+_wall_weight = 4.0
+_min_ball_z = 0.0
 
 
-def _init(n_perturbed, push_runs=0, circ_weight=10.0, radius=BALL_RADIUS):
-    global _model, _data, _snap, _perturbations, _push_runs, _circ_weight, _radius
-    _push_runs, _circ_weight, _radius = push_runs, circ_weight, radius
+def _init(n_perturbed, push_runs=0, circ_weight=10.0, radius=BALL_RADIUS, wall_weight=4.0, min_ball_z=0.0):
+    global _model, _data, _snap, _perturbations, _push_runs, _circ_weight, _radius, _wall_weight, _min_ball_z
+    _push_runs, _circ_weight, _radius, _wall_weight, _min_ball_z = push_runs, circ_weight, radius, wall_weight, min_ball_z
     _model = mj.MjModel.from_xml_path(TWO_BALL_SCENE)
     set_ball_radius(_model, radius)
     _data = mj.MjData(_model)
@@ -105,7 +109,7 @@ def decode(x):
     target = np.zeros(len(ACTUATOR_NAMES))
     target[FREE] = x[:len(FREE)]
     dx, dy, angle = x[len(FREE):]
-    return target, BALL_PLACE + np.array([dx, dy, 0.0]), angle
+    return target, BALL_PLACE + np.array([dx, dy, _radius - BALL_RADIUS]), angle   # resting on the palm at any size
 
 
 def tip_positions(model, data):
@@ -188,9 +192,10 @@ def run_once(target, center, angle, push=False):
     n_dorsal = sum(c[2] == "DORSAL" for c in firm)
     n_side = sum(c[2] == "side" for c in firm)
     grip = sum(c[3] for c in contacts if c[0] != "palm")
-    score = (15 * len(held) + 8 * (gap < 2 * _radius + 0.003) + 6 * on_palm + 4 * len(walls)
+    score = (15 * len(held) + 8 * (gap < 2 * _radius + 0.003) + 6 * on_palm + _wall_weight * (len(walls) + ('th' in walls))
              + 3 * upright - 400 * rim_std - 300 * ring_out - 800 * gap_std - 300 * span_in - 5 * n_dorsal - n_side - max(0.0, grip - 8.0)
-             - 200 * (np.mean(held) if held else 0.0) - 20 * push_dropped)
+             - 200 * (np.mean(held) if held else 0.0) - 20 * push_dropped
+             - 1000 * sum(max(0.0, _min_ball_z - float(p[2])) for p in p1))
     return dict(score=score, n_held=len(held), touching=gap < 2 * _radius + 0.003, on_palm=on_palm,
                 walls=sorted(walls), upright=upright, rim_std=rim_std, ring_out=ring_out,
                 gaps=gaps, gap_std=gap_std, span_in=span_in,
@@ -240,15 +245,21 @@ def main():
     ap.add_argument("--circulate", action="store_true", help="add the ideal-push circulation term")
     ap.add_argument("--push-runs", type=int, default=4)
     ap.add_argument("--ball-radius", type=float, default=BALL_RADIUS)
+    ap.add_argument("--wall-weight", type=float, default=4.0,
+                    help="per digit touching a ball, the thumb counted twice (Stage 5, 50mm balls: 4 left "
+                         "the thumb off the balls)")
     ap.add_argument("--circ-weight", type=float, default=10.0,
                     help="per rad of worst-case push circulation; 10 left the bowl shape dominating "
                          "(search from bowl e ended at 0.27-0.57 rad)")
+    ap.add_argument("--min-ball-z", type=float, default=0.0,
+                    help="- 1000 per m a ball rests closer than this to the wrist along the palm (Stage 5, 50mm: "
+                         "one ball sank into the thumb-base/wrist corner, ~4cm)")
     ap.add_argument("--init", type=str, default=None,
                     help="start the search around a previous result's x (std 10%% of each range)")
     args = ap.parse_args()
 
     push_runs = args.push_runs if args.circulate else 0
-    _init(args.perturbed, push_runs, args.circ_weight, args.ball_radius)   # fail here, not in a Pool that respawns crashing workers
+    _init(args.perturbed, push_runs, args.circ_weight, args.ball_radius, args.wall_weight, args.min_ball_z)   # fail here, not in a Pool that respawns crashing workers
     lo, hi = _model.actuator_ctrlrange[FREE, 0].copy(), _model.actuator_ctrlrange[FREE, 1].copy()
     for name, (a, b) in SHAPE_RANGES.items():
         lo[ACTUATOR_NAMES.index(name)], hi[ACTUATOR_NAMES.index(name)] = a, b
@@ -258,7 +269,7 @@ def main():
     if args.init:
         mean, std = np.array(json.loads(Path(args.init).read_text())["x"]), 0.1 * (hi - lo)
     best = None
-    with Pool(16, initializer=_init, initargs=(args.perturbed, push_runs, args.circ_weight, args.ball_radius)) as pool:
+    with Pool(16, initializer=_init, initargs=(args.perturbed, push_runs, args.circ_weight, args.ball_radius, args.wall_weight, args.min_ball_z)) as pool:
         for it in range(args.iters):
             xs = np.clip(rng.normal(mean, std, size=(args.pop, len(lo))), lo, hi)
             if best is not None:

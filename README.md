@@ -155,8 +155,57 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    <p align="center"><sub>Stage 4: the best circular fingertip motion (8s, balls rock in place),
    then the bowl held still under the ideal 1 N push each way -- the gold ball jams after ~1/4
    turn. The press wave's version: `media/stage4_wave_and_push.gif`.</sub></p>
-5. **RL baoding** from the reviewed grasp, reward keyed to same-direction per-ball progress and to
-   contact face, only if the scripted stage shows what's physically possible and where it stalls.
+5. **RL baoding -- DONE: two 50mm balls swap ~5-8 times per 20 s, all five digits relaying.** PPO
+   (stable-baselines3, 16 envs, ~1.5k steps/s), the wrist held still, only the 18 finger and thumb
+   targets are actions. Progress = the LEAST of each ball's own arc round the pair's centre and the
+   rotation of the line between them (both must go round together: rocking, one ball circling or
+   jiggling earn nothing); a swap is pi.
+
+   <p align="center">
+     <img src="media/stage5_baoding_13_44M_small.gif" width="580">
+   </p>
+   <p align="center"><sub>Stage 5 (baoding_13 @44M, 50mm balls, a bowl start): 10 swaps in 20 s,
+   no drop, real-time playback. Pads face the balls, no back-of-finger contact, the balls stay on
+   the palm.</sub></p>
+
+   Thirteen runs; what each taught:
+
+   | runs | env | what happened |
+   |---|---|---|
+   | 01 | `rl_env_baoding` | a per-step "matched angle" reward was GAMED by jiggling the balls at the centre -> progress as above |
+   | 02-03 | same | ~1 swap then a deliberate drop (a flat drop cost makes swap-then-drop optimal); the little finger rolled its back to the balls |
+   | 04-06 | same + style terms | per-joint caps, pad-facing, five-pad, relay-handoff, relay-clock, ball-on-palm rewards: by 06 it LOOKED right (pads on, relay order, balls on palm) at 0.38 rad per 20 s -- the style terms paid ~180/episode, a swap ~51. Lesson: positive reward ONLY for ball motion; shape is limits and penalties |
+   | 07 | `BaodingEnv2` | reward rebuilt: finger credit = pad force along the orbit x the ball's forward speed, swap bonus 25, penalties for tips leaving the bowl, pads facing away, back-of-finger contact; ball-size curriculum 40->45mm. Capped at 0.36 rad = the ideal-push ceiling of the still bowl: in NO bowl does a pushed pair pass with the hand still, so the 1.5cm tip band forbade the swap |
+   | 08-09 | `BaodingEnv2/3` | band 3.5cm, direction -1: 1.2 rad in 1 s then clamp -- one ball sunk in the thumb-base/wrist corner. A stall penalty didn't help; an open-loop trajectory search from that corner reached 0.04 rad: a physical wall |
+   | 10 | `BaodingEnv4` | joint limits widened (flexion full range, tip band 6cm; the search then escaped the corner 2.31 rad). Passes the corner, but uncapped work credit paid for pushing HARDER, not further |
+   | 11 | `BaodingEnv5` | work credit capped per rad of progress. Broke through at ~17M; by 30M the curriculum reached 44mm and bowl starts swap ~3x per 20 s |
+   | 12 | `BaodingEnv6` | 50mm balls from scratch (the user: balls should *"completely occupy the as big as possible bowl shaped by five fingers"*): holds, but ~1.2 rad per 20 s at 30M, never a swap |
+   | **13** | `BaodingEnv7` | **11 continued, the curriculum extended to 50mm**: 45->47->48->50mm by 33.8M, trained to 45M |
+
+   Evaluation (`--start-seed` 0-31: randomized start arrangement, ball mass, friction, target noise;
+   50mm balls, 20 s, deterministic policy):
+
+   | checkpoint | >= 1 swap | dropped | mean swaps, bowl starts / other starts |
+   |---|---|---|---|
+   | 13 @36M | 20/32 | 21/32 | 2.4 / 5.2 |
+   | 13 @40M | 30/32 | 14/32 | 5.2 / 7.6 |
+   | **13 @44M** | **29/32** | **14/32** | **5.5 / 8.4** |
+
+   Half of the bowl starts give 8-10 swaps without a drop. What it does NOT do yet: it still drops
+   in 14/32 (most after a few swaps), and the work is uneven -- the index finger does most of the
+   pushing (~1.7 J per 20 s against 0.1-0.2 J for mf/rf/lf), the thumb mostly brakes.
+   For comparison: `media/stage5_baoding_11_30M_small.gif` (44mm, 6 swaps) and
+   `media/stage5_baoding_12_30M_small.gif` (50mm from scratch, no swap).
+
+   ```
+   python3 train_stage5_baoding_rl.py --run-name baoding_11 --env 5 --direction -1 --timesteps 30000000
+   python3 train_stage5_baoding_rl.py --run-name baoding_13 --env 7 --level 3 --direction -1 \
+       --timesteps 15000000 --resume runs/baoding_11/checkpoints/ppo_30000000_steps.zip
+   python3 demo_stage5_baoding_rl2.py runs/baoding_13/checkpoints/ppo_44000000_steps.zip --env 7 \
+       --direction -1 --level 6 --start-seed 21 --record media/stage5_baoding_13_44M.gif
+   ```
+   (baoding_11 was trained 0-22M then resumed to 30M, its first part warm-started from baoding_10
+   @10M; `--resume` adds `--timesteps` to the count.)
 
 ## Repository layout
 
@@ -178,10 +227,17 @@ shadow_hand/
 ├── show_stage3_bowl.py                    # Stage 3: palm-aligned render of a bowl
 ├── search_stage4_baoding.py               # Stage 4: CEM over the press wave / circular motion
 ├── demo_stage4_baoding.py                 # Stage 4: controller + ideal-push GIF
+├── rl_env_baoding.py                      # Stage 5 runs 01-06: first RL env (style rewards)
+├── rl_env_baoding2.py                     # Stage 5 runs 07-13: BaodingEnv2..7 (motion-only reward)
+├── train_stage5_baoding_rl.py             # Stage 5: PPO training, --env 1-7, ball-size curriculum
+├── demo_stage5_baoding_rl.py              # Stage 5: rollout GIF for runs 01-06
+├── demo_stage5_baoding_rl2.py             # Stage 5: rollout GIF + per-digit work for runs 07+
+├── data/stage5_bowl_e_50mm.json           # Stage 5: bowl e for 50mm balls (BaodingEnv6)
 ├── media/
 │   ├── stage1_kinematic_sweep.gif
 │   ├── stage2_grasp_*.png                 # grasp renders, a-e in search order (d = final)
 │   ├── stage3_*.png                       # bowl renders (stage3_bowl_e = final)
-│   └── stage4_*.gif                       # scripted baoding attempts + ideal-push test
+│   ├── stage4_*.gif                       # scripted baoding attempts + ideal-push test
+│   └── stage5_*_small.gif                 # RL baoding: runs 11, 12, 13 (13 = final)
 └── README.md
 ```

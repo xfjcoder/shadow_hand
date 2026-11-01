@@ -73,12 +73,12 @@ PALM_BODIES = ("rh_palm", "rh_lfmetacarpal")
 TIP_SEGMENTS = ("ffdistal", "mfdistal", "rfdistal", "lfdistal", "thdistal")
 
 
-def classify_contacts(model, data, obj):
+def classify_contacts(model, data, obj, with_index=False):
     """List of (digit, segment, face, normal_force) for every hand contact on body `obj`.
 
     `digit` is ff/mf/rf/lf/th, or "palm" for the palm and the little finger's metacarpal. Face of a
     flexion segment (proximal/middle/distal), from the contact point's offset from the segment's own
-    long axis (local z), in the segment's frame:
+    long axis (local z), in the segment's frame (`with_index` appends the index into data.contact):
       - "tip"    -- distal segments only: past the start of the rounded end cap and within 45 deg
                     of the long axis (the very end of the finger, not its pad);
       - "palmar" -- the offset is within 60 deg of `palmar_axis` (the inside face; the pad);
@@ -88,6 +88,7 @@ def classify_contacts(model, data, obj):
     "root". The force is the contact's normal force (N), so callers can ignore grazing touches."""
     obj_id = model.body(obj).id
     out = []
+    tag = (lambda *t: t + (i,)) if with_index else (lambda *t: t)
     force = np.zeros(6)
     for i in range(data.ncon):
         c = data.contact[i]
@@ -98,13 +99,13 @@ def classify_contacts(model, data, obj):
         mj.mj_contactForce(model, data, i, force)
         fn = float(force[0])
         if hand_body in PALM_BODIES:
-            out.append(("palm", hand_body[3:], "palm", fn))
+            out.append(tag("palm", hand_body[3:], "palm", fn))
             continue
         if hand_body not in BODY_SEGMENT:
             continue
         digit, seg = BODY_SEGMENT[hand_body]
         if seg not in [s[3 + len(digit):] for s in FLEX_SEGMENTS[digit]]:
-            out.append((digit, seg, "root", fn))
+            out.append(tag(digit, seg, "root", fn))
             continue
         bid = model.body(hand_body).id
         p = data.xmat[bid].reshape(3, 3).T @ (c.pos - data.xpos[bid])
@@ -113,11 +114,11 @@ def classify_contacts(model, data, obj):
             top, cap_r = _segment_top(model, bid)
             cap = p - np.array([0.0, 0.0, top - cap_r])
             if cap[2] > 0 and cap[2] > np.linalg.norm(radial):
-                out.append((digit, seg, "tip", fn))
+                out.append(tag(digit, seg, "tip", fn))
                 continue
         cos = radial @ palmar_axis(model, hand_body) / max(np.linalg.norm(radial), 1e-9)
         face = "palmar" if cos > 0.5 else "DORSAL" if cos < -0.5 else "side"
-        out.append((digit, seg, face, fn))
+        out.append(tag(digit, seg, face, fn))
     return out
 
 
