@@ -16,7 +16,7 @@ from stable_baselines3.common.callbacks import BaseCallback, CallbackList, Check
 from stable_baselines3.common.vec_env import SubprocVecEnv, VecMonitor, VecNormalize
 
 from rl_env_baoding import BaodingEnv
-from rl_env_baoding2 import RADII, RADII_TO_50, BaodingEnv2, BaodingEnv3, BaodingEnv4, BaodingEnv5, BaodingEnv6, BaodingEnv7, BaodingEnv8
+from rl_env_baoding2 import RADII, RADII_TO_50, BaodingEnv2, BaodingEnv3, BaodingEnv4, BaodingEnv5, BaodingEnv6, BaodingEnv7, BaodingEnv8, BaodingEnv9
 
 HERE = Path(__file__).parent
 
@@ -64,7 +64,7 @@ class Curriculum(BaseCallback):
 
 def make_env(seed, direction, env_version=1, level=0):
     def _init():
-        env = ({2: BaodingEnv2, 3: BaodingEnv3, 4: BaodingEnv4, 5: BaodingEnv5, 6: BaodingEnv6, 7: BaodingEnv7, 8: BaodingEnv8}[env_version](direction=direction, level=level) if env_version >= 2
+        env = ({2: BaodingEnv2, 3: BaodingEnv3, 4: BaodingEnv4, 5: BaodingEnv5, 6: BaodingEnv6, 7: BaodingEnv7, 8: BaodingEnv8, 9: BaodingEnv9}[env_version](direction=direction, level=level) if env_version >= 2
                else BaodingEnv(direction=direction))
         env.reset(seed=seed)
         return env
@@ -85,7 +85,7 @@ def main():
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--resume", default=None, help="checkpoint .zip; its vecnormalize .pkl is found next to it")
     ap.add_argument("--checkpoint-freq", type=int, default=2_000_000)
-    ap.add_argument("--env", type=int, default=1, choices=(1, 2, 3, 4, 5, 6, 7, 8))
+    ap.add_argument("--env", type=int, default=1, choices=(1, 2, 3, 4, 5, 6, 7, 8, 9))
     ap.add_argument("--level", type=int, default=0, help="--env 2/3: starting curriculum level")
     args = ap.parse_args()
     torch.set_num_threads(1)   # more threads spin on the 16-obs rollout batches and starve the envs

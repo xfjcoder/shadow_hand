@@ -19,7 +19,7 @@ from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
 
 from demo_stage5_baoding_rl import vecnormalize_path
 from hand_env import DIGITS
-from rl_env_baoding2 import RADII, BaodingEnv2, BaodingEnv3, BaodingEnv4, BaodingEnv5, BaodingEnv6, BaodingEnv7, BaodingEnv8
+from rl_env_baoding2 import RADII, BaodingEnv2, BaodingEnv3, BaodingEnv4, BaodingEnv5, BaodingEnv6, BaodingEnv7, BaodingEnv8, BaodingEnv9
 
 
 def main():
@@ -29,13 +29,13 @@ def main():
     ap.add_argument("--record", default=None)
     ap.add_argument("--seconds", type=float, default=20.0)
     ap.add_argument("--direction", type=float, default=1.0)
-    ap.add_argument("--env", type=int, default=2, choices=(2, 3, 4, 5, 6, 7, 8), help="the env version the run trained on")
+    ap.add_argument("--env", type=int, default=2, choices=(2, 3, 4, 5, 6, 7, 8, 9), help="the env version the run trained on")
     ap.add_argument("--start-seed", type=int, default=None,
                     help="start from a randomized training start (ball arrangement, mass, friction) chosen by this seed")
     ap.add_argument("--frame-every", type=int, default=5, help="control steps per GIF frame")
     args = ap.parse_args()
 
-    env = {2: BaodingEnv2, 3: BaodingEnv3, 4: BaodingEnv4, 5: BaodingEnv5, 6: BaodingEnv6, 7: BaodingEnv7, 8: BaodingEnv8}[args.env](direction=args.direction, randomize=args.start_seed is not None, episode_seconds=args.seconds, level=args.level)
+    env = {2: BaodingEnv2, 3: BaodingEnv3, 4: BaodingEnv4, 5: BaodingEnv5, 6: BaodingEnv6, 7: BaodingEnv7, 8: BaodingEnv8, 9: BaodingEnv9}[args.env](direction=args.direction, randomize=args.start_seed is not None, episode_seconds=args.seconds, level=args.level)
     venv = VecNormalize.load(str(vecnormalize_path(args.checkpoint)), DummyVecEnv([lambda: env]))
     venv.training, venv.norm_reward = False, False
     model = PPO.load(args.checkpoint, device="cpu")

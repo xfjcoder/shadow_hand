@@ -15,7 +15,7 @@ from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
 
 from demo_stage5_baoding_rl import vecnormalize_path
 from hand_env import balls_in_palm
-from rl_env_baoding2 import BaodingEnv2, BaodingEnv3, BaodingEnv4, BaodingEnv5, BaodingEnv6, BaodingEnv7, BaodingEnv8
+from rl_env_baoding2 import BaodingEnv2, BaodingEnv3, BaodingEnv4, BaodingEnv5, BaodingEnv6, BaodingEnv7, BaodingEnv8, BaodingEnv9
 
 ARRANGEMENTS = {"bowl": (0.38, -2.77), "corner": (-0.75, 2.39), "third": (1.7, -1.45)}   # pair angle, dir -1
 
@@ -28,13 +28,13 @@ def arrangement(a):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("checkpoint")
-    ap.add_argument("--env", type=int, default=8, choices=(2, 3, 4, 5, 6, 7, 8))
+    ap.add_argument("--env", type=int, default=8, choices=(2, 3, 4, 5, 6, 7, 8, 9))
     ap.add_argument("--level", type=int, default=6)
     ap.add_argument("--n", type=int, default=32)
     ap.add_argument("--direction", type=float, default=-1.0)
     args = ap.parse_args()
     cls = {2: BaodingEnv2, 3: BaodingEnv3, 4: BaodingEnv4, 5: BaodingEnv5, 6: BaodingEnv6, 7: BaodingEnv7,
-           8: BaodingEnv8}[args.env]
+           8: BaodingEnv8, 9: BaodingEnv9}[args.env]
     model = PPO.load(args.checkpoint, device="cpu")
     rows = []
     for seed in range(args.n):

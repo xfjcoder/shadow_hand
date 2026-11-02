@@ -174,6 +174,14 @@ class BaodingEnv2(BaodingEnv):
                 work[digit] = work.get(digit, 0.0) + float((R.T @ f_world) @ tangent) * v_t
         return work, n_dorsal
 
+    def _credit(self, work, turn_digit):
+        """Work credited this step (J) from {digit: work rate}, and add it to `work_credit`."""
+        w = sum(p * (TURN_WEIGHT if dg == turn_digit else 1.0) for dg, p in work.items()) * CONTROL_DT
+        if w > 0:   # positive work only on new ground (rocking back and forth earns it once)
+            w = 0.0 if self.progress < self.best - FRONTIER else min(w, max(0.0, self.work_cap - self.work_credit))
+            self.work_credit += w
+        return w
+
     def _no_credit(self):
         """Indices of balls whose forward work earns nothing."""
         return ()
@@ -211,11 +219,8 @@ class BaodingEnv2(BaodingEnv):
         d_progress, self.progress = progress - self.progress, progress
 
         work, n_dorsal = self._pad_work()
-        w = sum(p * (TURN_WEIGHT if dg == turn_digit else 1.0) for dg, p in work.items()) * CONTROL_DT
         self.best = max(self.best, self.progress)
-        if w > 0:   # positive work only on new ground (rocking back and forth earns it once)
-            w = 0.0 if self.progress < self.best - FRONTIER else min(w, max(0.0, self.work_cap - self.work_credit))
-            self.work_credit += w
+        w = self._credit(work, turn_digit)
         tips = self._tips()
         stray_cm = float(np.sum(np.maximum(0.0, np.linalg.norm(tips - self.tips0, axis=1) - self.shape_band))) * 100
         ball_z = [float(q[2]) for q in balls_in_palm(self.model, self.data)]
@@ -470,3 +475,36 @@ class BaodingEnv8(BaodingEnv7):
                     and max(np.hypot(*(q - mid)[[0, 2]]) for q in p) < 0.029):
                 return out
         return out
+
+
+# ---- the work shared among the digits (runs baoding_15+)
+# baoding_14 @52M swaps ~10x per 20 s, but the index finger does ~87% of the forward work on the balls
+# (1.9 J of 2.2 J in a 20 s demo); mf, rf, lf and the thumb mostly steer and brake. Each digit now
+# earns credit for at most DIGIT_SHARE of the progress-bounded work cap, so the index finger alone can
+# collect at most 30% of it; the rest only by other digits pushing. Braking (negative work) still
+# counts in full for every digit. The cap itself is unchanged, so this re-divides the credit, it does
+# not add any.
+DIGIT_SHARE = 0.3
+
+
+class BaodingEnv9(BaodingEnv8):
+
+    def reset(self, seed=None, options=None):
+        obs, info = super().reset(seed=seed, options=options)
+        self.digit_credit = {dg: 0.0 for dg in DIGITS}
+        return obs, info
+
+    def _credit(self, work, turn_digit):
+        new_ground = self.progress >= self.best - FRONTIER
+        w = 0.0
+        for dg, p in work.items():
+            x = p * (TURN_WEIGHT if dg == turn_digit else 1.0) * CONTROL_DT
+            if x > 0:
+                if not new_ground:
+                    continue
+                x = min(x, max(0.0, DIGIT_SHARE * self.work_cap - self.digit_credit[dg]),
+                        max(0.0, self.work_cap - self.work_credit))
+                self.digit_credit[dg] += x
+                self.work_credit += x
+            w += x
+        return w
