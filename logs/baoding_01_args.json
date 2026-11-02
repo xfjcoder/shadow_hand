@@ -1,0 +1,14 @@
+{
+  "run_name": "baoding_01",
+  "timesteps": 20000000,
+  "n_envs": 16,
+  "direction": 1.0,
+  "lr": 0.0003,
+  "n_steps": 2048,
+  "batch_size": 8192,
+  "n_epochs": 5,
+  "gamma": 0.99,
+  "seed": 0,
+  "resume": null,
+  "checkpoint_freq": 2000000
+}

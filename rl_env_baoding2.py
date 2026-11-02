@@ -81,6 +81,8 @@ MOVING = [i for i in range(len(ACTUATOR_NAMES)) if i not in WRIST]
 class BaodingEnv2(BaodingEnv):
     work_cap = WORK_CAP
     shape_band = SHAPE_BAND
+    max_r = MAX_R
+    drop_per_second = DROP_PER_SECOND
 
     def __init__(self, direction=1.0, randomize=True, episode_seconds=20.0, level=0):
         super().__init__(direction=direction, randomize=randomize, episode_seconds=episode_seconds)
@@ -223,9 +225,9 @@ class BaodingEnv2(BaodingEnv):
 
         reward = (W_WORK * w - W_SHAPE * stray_cm - W_OUT * out_cm - W_FACE * away - W_DORSAL * n_dorsal
                   - W_RATE * float(np.sum((ctrl - prev_ctrl) ** 2)))
-        dropped = any(r > MAX_R or h > MAX_H for r, h in offsets) or max(ball_z) > BALL_Z_DROP
+        dropped = any(r > self.max_r or h > MAX_H for r, h in offsets) or max(ball_z) > BALL_Z_DROP
         if dropped:
-            reward -= DROP + DROP_PER_SECOND * (self.episode_steps - self.t) * CONTROL_DT
+            reward -= DROP + self.drop_per_second * (self.episode_steps - self.t) * CONTROL_DT
         else:
             reward += W_ORBIT * d_progress
             while self.progress >= self.next_swap:
@@ -437,5 +439,34 @@ class BaodingEnv7(BaodingEnv5):
             out = super()._settle(rng)
             ball_z = [float(q[2]) for q in balls_in_palm(self.model, self.data)]
             if max(ball_z) < BALL_Z_DROP - 0.01:
+                return out
+        return out
+
+
+# ---- fewer drops at 50mm (runs baoding_14+)
+# baoding_13 @44M dropped in 14/32 evaluation episodes. Of those: 3 were starts settling at a limit
+# (ended in < 0.2 s); 3 were a 50mm ball touching the 6cm sideways limit (set for 40-45mm balls) and
+# staying in the hand -- with the limit lifted those episodes went on to 9-10 swaps; the rest really
+# left (out to 7-10cm, or up past the knuckles). And a drop cost little: 10 + 3 per second left,
+# against ~50 per second earned while swapping, with gamma 0.99 seeing ~2 s ahead.
+MAX_R_50MM = 0.065             # m: the 6cm limit + the 5mm larger ball diameter
+DROP_PER_SECOND_SAFE = 10.0    # per second left (was 3): a drop at 10 s now costs ~110, about two swaps
+
+
+class BaodingEnv8(BaodingEnv7):
+    max_r = MAX_R_50MM
+    drop_per_second = DROP_PER_SECOND_SAFE
+
+    # also redraw starts where a ball is still rolling (seen up to 1.1 m/s) or the pair settled apart
+    # (each > 2.9cm from their midpoint; touching 50mm balls are 2.5cm) -- those ended in < 0.2 s
+    def _settle(self, rng):
+        for _ in range(20):
+            out = BaodingEnv5._settle(self, rng)
+            m, d = self.model, self.data
+            p = balls_in_palm(m, d)
+            mid = 0.5 * (p[0] + p[1])
+            speed = [np.linalg.norm(d.qvel[m.jnt_dofadr[m.body_jntadr[b]]:][:3]) for b in self.ball_ids]
+            if (max(q[2] for q in p) < BALL_Z_DROP - 0.015 and max(speed) < 0.05
+                    and max(np.hypot(*(q - mid)[[0, 2]]) for q in p) < 0.029):
                 return out
         return out

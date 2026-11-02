@@ -162,7 +162,7 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    jiggling earn nothing); a swap is pi.
 
    <p align="center">
-     <img src="media/stage5_baoding_13_44M_small.gif" width="580">
+     <img src="media/stage5_baoding_13_44M.gif" width="580">
    </p>
    <p align="center"><sub>Stage 5 (baoding_13 @44M, 50mm balls, a bowl start): 10 swaps in 20 s,
    no drop, real-time playback. Pads face the balls, no back-of-finger contact, the balls stay on
@@ -191,11 +191,38 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    | 13 @40M | 30/32 | 14/32 | 5.2 / 7.6 |
    | **13 @44M** | **29/32** | **14/32** | **5.5 / 8.4** |
 
-   Half of the bowl starts give 8-10 swaps without a drop. What it does NOT do yet: it still drops
-   in 14/32 (most after a few swaps), and the work is uneven -- the index finger does most of the
-   pushing (~1.7 J per 20 s against 0.1-0.2 J for mf/rf/lf), the thumb mostly brakes.
-   For comparison: `media/stage5_baoding_11_30M_small.gif` (44mm, 6 swaps) and
-   `media/stage5_baoding_12_30M_small.gif` (50mm from scratch, no swap).
+   Half of the bowl starts give 8-10 swaps without a drop. The work is uneven -- the index finger
+   does most of the pushing (~1.7 J per 20 s against 0.1-0.2 J for mf/rf/lf), the thumb mostly
+   brakes.
+
+   **The drops, examined** (in progress): of the 14, three were starts that settled with a ball
+   still rolling or the pair apart (over in < 0.2 s), and three were a 50mm ball touching the 6cm
+   sideways limit (sized for 40-45mm balls) and staying in the hand -- with the limit lifted, those
+   episodes went on to 9-10 swaps. `BaodingEnv8` (`--env 8`): 6.5cm limit, such starts redrawn, and
+   a drop costs 10 per second left instead of 3 (it was cheap next to ~50 per second earned while
+   swapping). The same 44M policy under it, untrained: **31/32 swap, 6/32 drop, 8.3 swaps per 20 s**
+   (`eval_stage5_baoding.py`). baoding_14 continues training on it from 44M.
+
+   Every GIF along the way (`media/`, 2x slowed frame rate, real-time playback):
+
+   | GIF | what it shows |
+   |---|---|
+   | `stage5_baoding_02_2M`, `_02_14M` | progress metric fixed after run 01's exploit; by 14M ~1 swap, then a deliberate drop |
+   | `stage5_baoding_03_18M` | the little finger rolled over (LFJ5 + LFJ4 maxed), its back to the balls |
+   | `stage5_baoding_04_4M`, `_10M`, `_final` | pad-facing caps: balls kept, but only ff and rf push, ~2.3 rad per 20 s |
+   | `stage5_baoding_05_4M`, `_10M`, `_final` | relay-handoff bonus: handoffs happen, ff pushes backward, a ball rides up on the ring finger |
+   | `stage5_baoding_06_4M`, `_final` | relay clock + ball-on-palm terms: looks right, 0.38 rad per 20 s, the wrist wobbles |
+   | `stage5_baoding_07_4M` | motion-only reward, tight 1.5cm bowl: stuck at the still bowl's 0.36 rad ceiling |
+   | `stage5_baoding_08_4M`, `_10M` | band 3.5cm: 1.2 rad in the first second, then a ball clamped in the thumb/wrist corner |
+   | `stage5_baoding_09_16M` | + stall penalty: the same clamp |
+   | `stage5_baoding_10_4M`, `_10M` | wider limits: passes the corner from some starts; from the bowl the balls rock |
+   | `stage5_baoding_11_14M`, `_22M` | capped work credit, before and after the breakthrough (bowl start still < 2 rad) |
+   | `stage5_baoding_11_22M_swap` | 11 @22M from a corner start: 3 swaps, th -> lf -> rf -> mf -> ff relay |
+   | `stage5_baoding_11_30M` | 44mm balls, bowl start: 6 swaps |
+   | `stage5_baoding_12_4M`, `_10M`, `_20M`, `_30M` | 50mm from scratch: learns to hold, never swaps |
+   | `stage5_baoding_13_36M`, **`_44M`** | the curriculum reaches 50mm: 8 and 10 swaps in 20 s |
+
+   Training logs and arguments of every run: `logs/`.
 
    ```
    python3 train_stage5_baoding_rl.py --run-name baoding_11 --env 5 --direction -1 --timesteps 30000000
@@ -228,16 +255,18 @@ shadow_hand/
 ├── search_stage4_baoding.py               # Stage 4: CEM over the press wave / circular motion
 ├── demo_stage4_baoding.py                 # Stage 4: controller + ideal-push GIF
 ├── rl_env_baoding.py                      # Stage 5 runs 01-06: first RL env (style rewards)
-├── rl_env_baoding2.py                     # Stage 5 runs 07-13: BaodingEnv2..7 (motion-only reward)
-├── train_stage5_baoding_rl.py             # Stage 5: PPO training, --env 1-7, ball-size curriculum
+├── rl_env_baoding2.py                     # Stage 5 runs 07+: BaodingEnv2..8 (motion-only reward)
+├── train_stage5_baoding_rl.py             # Stage 5: PPO training, --env 1-8, ball-size curriculum
 ├── demo_stage5_baoding_rl.py              # Stage 5: rollout GIF for runs 01-06
 ├── demo_stage5_baoding_rl2.py             # Stage 5: rollout GIF + per-digit work for runs 07+
+├── eval_stage5_baoding.py                 # Stage 5: swaps / drops over randomized starts
 ├── data/stage5_bowl_e_50mm.json           # Stage 5: bowl e for 50mm balls (BaodingEnv6)
+├── logs/                                  # Stage 5: training output + args of every run
 ├── media/
 │   ├── stage1_kinematic_sweep.gif
 │   ├── stage2_grasp_*.png                 # grasp renders, a-e in search order (d = final)
 │   ├── stage3_*.png                       # bowl renders (stage3_bowl_e = final)
 │   ├── stage4_*.gif                       # scripted baoding attempts + ideal-push test
-│   └── stage5_*_small.gif                 # RL baoding: runs 11, 12, 13 (13 = final)
+│   └── stage5_baoding_*.gif               # RL baoding, every run (13_44M = final)
 └── README.md
 ```

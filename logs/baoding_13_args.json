@@ -1,0 +1,16 @@
+{
+  "run_name": "baoding_13",
+  "timesteps": 15000000,
+  "n_envs": 16,
+  "direction": -1.0,
+  "lr": 0.0003,
+  "n_steps": 2048,
+  "batch_size": 8192,
+  "n_epochs": 5,
+  "gamma": 0.99,
+  "seed": 0,
+  "resume": "runs/baoding_11/checkpoints/ppo_30000000_steps.zip",
+  "checkpoint_freq": 2000000,
+  "env": 7,
+  "level": 3
+}

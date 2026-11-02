@@ -1,0 +1,4253 @@
+Logging to /home/cstu/robo/shadow_hand/runs/baoding_02/logs/PPO_1
+---------------------------------
+| baoding/           |          |
+|    kept_balls      | 0        |
+|    progress        | 3.51     |
+|    progress_max    | 3.72     |
+| rollout/           |          |
+|    ep_len_mean     | 556      |
+|    ep_rew_mean     | 38.2     |
+| time/              |          |
+|    fps             | 1624     |
+|    iterations      | 1        |
+|    time_elapsed    | 20       |
+|    total_timesteps | 14032768 |
+---------------------------------
+------------------------------------------
+| baoding/                |              |
+|    kept_balls           | 0            |
+|    progress             | 3.51         |
+|    progress_max         | 3.71         |
+| rollout/                |              |
+|    ep_len_mean          | 575          |
+|    ep_rew_mean          | 18.2         |
+| time/                   |              |
+|    fps                  | 1529         |
+|    iterations           | 2            |
+|    time_elapsed         | 42           |
+|    total_timesteps      | 14065536     |
+| train/                  |              |
+|    approx_kl            | 0.0150591675 |
+|    clip_fraction        | 0.153        |
+|    clip_range           | 0.2          |
+|    entropy_loss         | -21.7        |
+|    explained_variance   | 0.886        |
+|    learning_rate        | 0.0003       |
+|    loss                 | 0.0301       |
+|    n_updates            | 2140         |
+|    policy_gradient_loss | -0.00648     |
+|    std                  | 0.722        |
+|    value_loss           | 0.106        |
+------------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.53        |
+|    progress_max         | 3.67        |
+| rollout/                |             |
+|    ep_len_mean          | 563         |
+|    ep_rew_mean          | 17.6        |
+| time/                   |             |
+|    fps                  | 1524        |
+|    iterations           | 3           |
+|    time_elapsed         | 64          |
+|    total_timesteps      | 14098304    |
+| train/                  |             |
+|    approx_kl            | 0.011453366 |
+|    clip_fraction        | 0.147       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.7       |
+|    explained_variance   | 0.924       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0341      |
+|    n_updates            | 2145        |
+|    policy_gradient_loss | -0.00266    |
+|    std                  | 0.722       |
+|    value_loss           | 0.0873      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.52        |
+|    progress_max         | 3.69        |
+| rollout/                |             |
+|    ep_len_mean          | 555         |
+|    ep_rew_mean          | 17          |
+| time/                   |             |
+|    fps                  | 1520        |
+|    iterations           | 4           |
+|    time_elapsed         | 86          |
+|    total_timesteps      | 14131072    |
+| train/                  |             |
+|    approx_kl            | 0.016664915 |
+|    clip_fraction        | 0.153       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.7       |
+|    explained_variance   | 0.94        |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0317      |
+|    n_updates            | 2150        |
+|    policy_gradient_loss | -0.00263    |
+|    std                  | 0.722       |
+|    value_loss           | 0.082       |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.5         |
+|    progress_max         | 3.69        |
+| rollout/                |             |
+|    ep_len_mean          | 565         |
+|    ep_rew_mean          | 17.4        |
+| time/                   |             |
+|    fps                  | 1519        |
+|    iterations           | 5           |
+|    time_elapsed         | 107         |
+|    total_timesteps      | 14163840    |
+| train/                  |             |
+|    approx_kl            | 0.013095589 |
+|    clip_fraction        | 0.14        |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.6       |
+|    explained_variance   | 0.937       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0297      |
+|    n_updates            | 2155        |
+|    policy_gradient_loss | -0.0041     |
+|    std                  | 0.722       |
+|    value_loss           | 0.0879      |
+-----------------------------------------
+----------------------------------------
+| baoding/                |            |
+|    kept_balls           | 0          |
+|    progress             | 3.46       |
+|    progress_max         | 3.69       |
+| rollout/                |            |
+|    ep_len_mean          | 563        |
+|    ep_rew_mean          | 16.8       |
+| time/                   |            |
+|    fps                  | 1518       |
+|    iterations           | 6          |
+|    time_elapsed         | 129        |
+|    total_timesteps      | 14196608   |
+| train/                  |            |
+|    approx_kl            | 0.01199034 |
+|    clip_fraction        | 0.139      |
+|    clip_range           | 0.2        |
+|    entropy_loss         | -21.6      |
+|    explained_variance   | 0.96       |
+|    learning_rate        | 0.0003     |
+|    loss                 | 0.0197     |
+|    n_updates            | 2160       |
+|    policy_gradient_loss | -0.00416   |
+|    std                  | 0.722      |
+|    value_loss           | 0.0622     |
+----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.46        |
+|    progress_max         | 3.7         |
+| rollout/                |             |
+|    ep_len_mean          | 552         |
+|    ep_rew_mean          | 16.2        |
+| time/                   |             |
+|    fps                  | 1514        |
+|    iterations           | 7           |
+|    time_elapsed         | 151         |
+|    total_timesteps      | 14229376    |
+| train/                  |             |
+|    approx_kl            | 0.013231545 |
+|    clip_fraction        | 0.161       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.6       |
+|    explained_variance   | 0.922       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0412      |
+|    n_updates            | 2165        |
+|    policy_gradient_loss | -0.00678    |
+|    std                  | 0.721       |
+|    value_loss           | 0.113       |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0.01        |
+|    progress             | 3.5         |
+|    progress_max         | 3.7         |
+| rollout/                |             |
+|    ep_len_mean          | 591         |
+|    ep_rew_mean          | 19.3        |
+| time/                   |             |
+|    fps                  | 1514        |
+|    iterations           | 8           |
+|    time_elapsed         | 173         |
+|    total_timesteps      | 14262144    |
+| train/                  |             |
+|    approx_kl            | 0.014160908 |
+|    clip_fraction        | 0.156       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.6       |
+|    explained_variance   | 0.954       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0288      |
+|    n_updates            | 2170        |
+|    policy_gradient_loss | -0.00475    |
+|    std                  | 0.721       |
+|    value_loss           | 0.0714      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0.01        |
+|    progress             | 3.49        |
+|    progress_max         | 3.67        |
+| rollout/                |             |
+|    ep_len_mean          | 609         |
+|    ep_rew_mean          | 20.1        |
+| time/                   |             |
+|    fps                  | 1516        |
+|    iterations           | 9           |
+|    time_elapsed         | 194         |
+|    total_timesteps      | 14294912    |
+| train/                  |             |
+|    approx_kl            | 0.015600578 |
+|    clip_fraction        | 0.162       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.6       |
+|    explained_variance   | 0.961       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0081      |
+|    n_updates            | 2175        |
+|    policy_gradient_loss | -0.00688    |
+|    std                  | 0.721       |
+|    value_loss           | 0.0515      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.49        |
+|    progress_max         | 3.67        |
+| rollout/                |             |
+|    ep_len_mean          | 587         |
+|    ep_rew_mean          | 18.6        |
+| time/                   |             |
+|    fps                  | 1516        |
+|    iterations           | 10          |
+|    time_elapsed         | 216         |
+|    total_timesteps      | 14327680    |
+| train/                  |             |
+|    approx_kl            | 0.011499608 |
+|    clip_fraction        | 0.155       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.6       |
+|    explained_variance   | 0.97        |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00741     |
+|    n_updates            | 2180        |
+|    policy_gradient_loss | -0.00567    |
+|    std                  | 0.721       |
+|    value_loss           | 0.0477      |
+-----------------------------------------
+----------------------------------------
+| baoding/                |            |
+|    kept_balls           | 0          |
+|    progress             | 3.51       |
+|    progress_max         | 3.69       |
+| rollout/                |            |
+|    ep_len_mean          | 560        |
+|    ep_rew_mean          | 17.3       |
+| time/                   |            |
+|    fps                  | 1516       |
+|    iterations           | 11         |
+|    time_elapsed         | 237        |
+|    total_timesteps      | 14360448   |
+| train/                  |            |
+|    approx_kl            | 0.01571967 |
+|    clip_fraction        | 0.165      |
+|    clip_range           | 0.2        |
+|    entropy_loss         | -21.6      |
+|    explained_variance   | 0.955      |
+|    learning_rate        | 0.0003     |
+|    loss                 | 0.0232     |
+|    n_updates            | 2185       |
+|    policy_gradient_loss | -0.00528   |
+|    std                  | 0.72       |
+|    value_loss           | 0.0682     |
+----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0.01        |
+|    progress             | 3.52        |
+|    progress_max         | 3.69        |
+| rollout/                |             |
+|    ep_len_mean          | 599         |
+|    ep_rew_mean          | 19.8        |
+| time/                   |             |
+|    fps                  | 1515        |
+|    iterations           | 12          |
+|    time_elapsed         | 259         |
+|    total_timesteps      | 14393216    |
+| train/                  |             |
+|    approx_kl            | 0.013655246 |
+|    clip_fraction        | 0.168       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.6       |
+|    explained_variance   | 0.951       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0223      |
+|    n_updates            | 2190        |
+|    policy_gradient_loss | -0.0054     |
+|    std                  | 0.72        |
+|    value_loss           | 0.0775      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0.01        |
+|    progress             | 3.52        |
+|    progress_max         | 3.71        |
+| rollout/                |             |
+|    ep_len_mean          | 633         |
+|    ep_rew_mean          | 21.9        |
+| time/                   |             |
+|    fps                  | 1516        |
+|    iterations           | 13          |
+|    time_elapsed         | 280         |
+|    total_timesteps      | 14425984    |
+| train/                  |             |
+|    approx_kl            | 0.011188496 |
+|    clip_fraction        | 0.163       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.6       |
+|    explained_variance   | 0.975       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00526     |
+|    n_updates            | 2195        |
+|    policy_gradient_loss | -0.00425    |
+|    std                  | 0.72        |
+|    value_loss           | 0.0315      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.52        |
+|    progress_max         | 3.71        |
+| rollout/                |             |
+|    ep_len_mean          | 628         |
+|    ep_rew_mean          | 21.5        |
+| time/                   |             |
+|    fps                  | 1517        |
+|    iterations           | 14          |
+|    time_elapsed         | 302         |
+|    total_timesteps      | 14458752    |
+| train/                  |             |
+|    approx_kl            | 0.010708567 |
+|    clip_fraction        | 0.132       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.6       |
+|    explained_variance   | 0.976       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00732     |
+|    n_updates            | 2200        |
+|    policy_gradient_loss | -0.00397    |
+|    std                  | 0.719       |
+|    value_loss           | 0.0341      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.52        |
+|    progress_max         | 3.69        |
+| rollout/                |             |
+|    ep_len_mean          | 619         |
+|    ep_rew_mean          | 21          |
+| time/                   |             |
+|    fps                  | 1515        |
+|    iterations           | 15          |
+|    time_elapsed         | 324         |
+|    total_timesteps      | 14491520    |
+| train/                  |             |
+|    approx_kl            | 0.015044963 |
+|    clip_fraction        | 0.182       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.6       |
+|    explained_variance   | 0.97        |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0136      |
+|    n_updates            | 2205        |
+|    policy_gradient_loss | -0.00351    |
+|    std                  | 0.719       |
+|    value_loss           | 0.0404      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.53        |
+|    progress_max         | 3.66        |
+| rollout/                |             |
+|    ep_len_mean          | 614         |
+|    ep_rew_mean          | 20.8        |
+| time/                   |             |
+|    fps                  | 1515        |
+|    iterations           | 16          |
+|    time_elapsed         | 345         |
+|    total_timesteps      | 14524288    |
+| train/                  |             |
+|    approx_kl            | 0.021279009 |
+|    clip_fraction        | 0.192       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.6       |
+|    explained_variance   | 0.966       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0193      |
+|    n_updates            | 2210        |
+|    policy_gradient_loss | -0.00522    |
+|    std                  | 0.72        |
+|    value_loss           | 0.0531      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.53        |
+|    progress_max         | 3.66        |
+| rollout/                |             |
+|    ep_len_mean          | 629         |
+|    ep_rew_mean          | 21.7        |
+| time/                   |             |
+|    fps                  | 1515        |
+|    iterations           | 17          |
+|    time_elapsed         | 367         |
+|    total_timesteps      | 14557056    |
+| train/                  |             |
+|    approx_kl            | 0.014916135 |
+|    clip_fraction        | 0.203       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.6       |
+|    explained_variance   | 0.974       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00851     |
+|    n_updates            | 2215        |
+|    policy_gradient_loss | -0.00428    |
+|    std                  | 0.719       |
+|    value_loss           | 0.0379      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.52        |
+|    progress_max         | 3.66        |
+| rollout/                |             |
+|    ep_len_mean          | 663         |
+|    ep_rew_mean          | 23.8        |
+| time/                   |             |
+|    fps                  | 1514        |
+|    iterations           | 18          |
+|    time_elapsed         | 389         |
+|    total_timesteps      | 14589824    |
+| train/                  |             |
+|    approx_kl            | 0.015050812 |
+|    clip_fraction        | 0.154       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.6       |
+|    explained_variance   | 0.976       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00527     |
+|    n_updates            | 2220        |
+|    policy_gradient_loss | -0.0049     |
+|    std                  | 0.719       |
+|    value_loss           | 0.0313      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.51        |
+|    progress_max         | 3.7         |
+| rollout/                |             |
+|    ep_len_mean          | 655         |
+|    ep_rew_mean          | 23.1        |
+| time/                   |             |
+|    fps                  | 1515        |
+|    iterations           | 19          |
+|    time_elapsed         | 410         |
+|    total_timesteps      | 14622592    |
+| train/                  |             |
+|    approx_kl            | 0.011841238 |
+|    clip_fraction        | 0.156       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.5       |
+|    explained_variance   | 0.982       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.000219    |
+|    n_updates            | 2225        |
+|    policy_gradient_loss | -0.00399    |
+|    std                  | 0.718       |
+|    value_loss           | 0.0217      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.51        |
+|    progress_max         | 3.7         |
+| rollout/                |             |
+|    ep_len_mean          | 614         |
+|    ep_rew_mean          | 20.7        |
+| time/                   |             |
+|    fps                  | 1515        |
+|    iterations           | 20          |
+|    time_elapsed         | 432         |
+|    total_timesteps      | 14655360    |
+| train/                  |             |
+|    approx_kl            | 0.013578187 |
+|    clip_fraction        | 0.194       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.5       |
+|    explained_variance   | 0.962       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0116      |
+|    n_updates            | 2230        |
+|    policy_gradient_loss | -0.00522    |
+|    std                  | 0.717       |
+|    value_loss           | 0.0531      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0.01        |
+|    progress             | 3.5         |
+|    progress_max         | 3.68        |
+| rollout/                |             |
+|    ep_len_mean          | 606         |
+|    ep_rew_mean          | 20.2        |
+| time/                   |             |
+|    fps                  | 1514        |
+|    iterations           | 21          |
+|    time_elapsed         | 454         |
+|    total_timesteps      | 14688128    |
+| train/                  |             |
+|    approx_kl            | 0.018121395 |
+|    clip_fraction        | 0.244       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.5       |
+|    explained_variance   | 0.939       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0317      |
+|    n_updates            | 2235        |
+|    policy_gradient_loss | -0.00566    |
+|    std                  | 0.717       |
+|    value_loss           | 0.0807      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0.01        |
+|    progress             | 3.51        |
+|    progress_max         | 3.67        |
+| rollout/                |             |
+|    ep_len_mean          | 644         |
+|    ep_rew_mean          | 22.7        |
+| time/                   |             |
+|    fps                  | 1513        |
+|    iterations           | 22          |
+|    time_elapsed         | 476         |
+|    total_timesteps      | 14720896    |
+| train/                  |             |
+|    approx_kl            | 0.017515475 |
+|    clip_fraction        | 0.185       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.5       |
+|    explained_variance   | 0.966       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.014       |
+|    n_updates            | 2240        |
+|    policy_gradient_loss | -0.00452    |
+|    std                  | 0.717       |
+|    value_loss           | 0.0437      |
+-----------------------------------------
+----------------------------------------
+| baoding/                |            |
+|    kept_balls           | 0          |
+|    progress             | 3.52       |
+|    progress_max         | 3.67       |
+| rollout/                |            |
+|    ep_len_mean          | 659        |
+|    ep_rew_mean          | 23.8       |
+| time/                   |            |
+|    fps                  | 1513       |
+|    iterations           | 23         |
+|    time_elapsed         | 497        |
+|    total_timesteps      | 14753664   |
+| train/                  |            |
+|    approx_kl            | 0.01717661 |
+|    clip_fraction        | 0.179      |
+|    clip_range           | 0.2        |
+|    entropy_loss         | -21.5      |
+|    explained_variance   | 0.967      |
+|    learning_rate        | 0.0003     |
+|    loss                 | 0.0154     |
+|    n_updates            | 2245       |
+|    policy_gradient_loss | -0.00465   |
+|    std                  | 0.717      |
+|    value_loss           | 0.0379     |
+----------------------------------------
+----------------------------------------
+| baoding/                |            |
+|    kept_balls           | 0          |
+|    progress             | 3.52       |
+|    progress_max         | 3.7        |
+| rollout/                |            |
+|    ep_len_mean          | 633        |
+|    ep_rew_mean          | 22.2       |
+| time/                   |            |
+|    fps                  | 1512       |
+|    iterations           | 24         |
+|    time_elapsed         | 519        |
+|    total_timesteps      | 14786432   |
+| train/                  |            |
+|    approx_kl            | 0.01321662 |
+|    clip_fraction        | 0.191      |
+|    clip_range           | 0.2        |
+|    entropy_loss         | -21.5      |
+|    explained_variance   | 0.974      |
+|    learning_rate        | 0.0003     |
+|    loss                 | 0.00761    |
+|    n_updates            | 2250       |
+|    policy_gradient_loss | -0.00428   |
+|    std                  | 0.716      |
+|    value_loss           | 0.0328     |
+----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.51        |
+|    progress_max         | 3.7         |
+| rollout/                |             |
+|    ep_len_mean          | 627         |
+|    ep_rew_mean          | 21.7        |
+| time/                   |             |
+|    fps                  | 1512        |
+|    iterations           | 25          |
+|    time_elapsed         | 541         |
+|    total_timesteps      | 14819200    |
+| train/                  |             |
+|    approx_kl            | 0.015166934 |
+|    clip_fraction        | 0.191       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.5       |
+|    explained_variance   | 0.968       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.011       |
+|    n_updates            | 2255        |
+|    policy_gradient_loss | -0.00386    |
+|    std                  | 0.716       |
+|    value_loss           | 0.0437      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.49        |
+|    progress_max         | 3.63        |
+| rollout/                |             |
+|    ep_len_mean          | 591         |
+|    ep_rew_mean          | 19.3        |
+| time/                   |             |
+|    fps                  | 1512        |
+|    iterations           | 26          |
+|    time_elapsed         | 563         |
+|    total_timesteps      | 14851968    |
+| train/                  |             |
+|    approx_kl            | 0.012951778 |
+|    clip_fraction        | 0.176       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.4       |
+|    explained_variance   | 0.967       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0123      |
+|    n_updates            | 2260        |
+|    policy_gradient_loss | -0.00359    |
+|    std                  | 0.715       |
+|    value_loss           | 0.0436      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.51        |
+|    progress_max         | 3.72        |
+| rollout/                |             |
+|    ep_len_mean          | 582         |
+|    ep_rew_mean          | 19          |
+| time/                   |             |
+|    fps                  | 1512        |
+|    iterations           | 27          |
+|    time_elapsed         | 584         |
+|    total_timesteps      | 14884736    |
+| train/                  |             |
+|    approx_kl            | 0.015804753 |
+|    clip_fraction        | 0.208       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.4       |
+|    explained_variance   | 0.952       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0238      |
+|    n_updates            | 2265        |
+|    policy_gradient_loss | -0.00577    |
+|    std                  | 0.714       |
+|    value_loss           | 0.0749      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0.01        |
+|    progress             | 3.52        |
+|    progress_max         | 3.72        |
+| rollout/                |             |
+|    ep_len_mean          | 607         |
+|    ep_rew_mean          | 20.7        |
+| time/                   |             |
+|    fps                  | 1512        |
+|    iterations           | 28          |
+|    time_elapsed         | 606         |
+|    total_timesteps      | 14917504    |
+| train/                  |             |
+|    approx_kl            | 0.015664767 |
+|    clip_fraction        | 0.184       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.4       |
+|    explained_variance   | 0.967       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0106      |
+|    n_updates            | 2270        |
+|    policy_gradient_loss | -0.00706    |
+|    std                  | 0.714       |
+|    value_loss           | 0.0505      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0.01        |
+|    progress             | 3.51        |
+|    progress_max         | 3.68        |
+| rollout/                |             |
+|    ep_len_mean          | 610         |
+|    ep_rew_mean          | 20.8        |
+| time/                   |             |
+|    fps                  | 1512        |
+|    iterations           | 29          |
+|    time_elapsed         | 628         |
+|    total_timesteps      | 14950272    |
+| train/                  |             |
+|    approx_kl            | 0.013281523 |
+|    clip_fraction        | 0.162       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.4       |
+|    explained_variance   | 0.967       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0118      |
+|    n_updates            | 2275        |
+|    policy_gradient_loss | -0.00567    |
+|    std                  | 0.714       |
+|    value_loss           | 0.0466      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0.01        |
+|    progress             | 3.5         |
+|    progress_max         | 3.68        |
+| rollout/                |             |
+|    ep_len_mean          | 651         |
+|    ep_rew_mean          | 23.2        |
+| time/                   |             |
+|    fps                  | 1513        |
+|    iterations           | 30          |
+|    time_elapsed         | 649         |
+|    total_timesteps      | 14983040    |
+| train/                  |             |
+|    approx_kl            | 0.015596963 |
+|    clip_fraction        | 0.182       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.4       |
+|    explained_variance   | 0.963       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0189      |
+|    n_updates            | 2280        |
+|    policy_gradient_loss | -0.00484    |
+|    std                  | 0.713       |
+|    value_loss           | 0.0474      |
+-----------------------------------------
+----------------------------------------
+| baoding/                |            |
+|    kept_balls           | 0.01       |
+|    progress             | 3.51       |
+|    progress_max         | 3.65       |
+| rollout/                |            |
+|    ep_len_mean          | 656        |
+|    ep_rew_mean          | 23.6       |
+| time/                   |            |
+|    fps                  | 1513       |
+|    iterations           | 31         |
+|    time_elapsed         | 671        |
+|    total_timesteps      | 15015808   |
+| train/                  |            |
+|    approx_kl            | 0.01403312 |
+|    clip_fraction        | 0.17       |
+|    clip_range           | 0.2        |
+|    entropy_loss         | -21.4      |
+|    explained_variance   | 0.975      |
+|    learning_rate        | 0.0003     |
+|    loss                 | 0.00107    |
+|    n_updates            | 2285       |
+|    policy_gradient_loss | -0.00515   |
+|    std                  | 0.713      |
+|    value_loss           | 0.0295     |
+----------------------------------------
+----------------------------------------
+| baoding/                |            |
+|    kept_balls           | 0          |
+|    progress             | 3.51       |
+|    progress_max         | 3.67       |
+| rollout/                |            |
+|    ep_len_mean          | 645        |
+|    ep_rew_mean          | 23         |
+| time/                   |            |
+|    fps                  | 1513       |
+|    iterations           | 32         |
+|    time_elapsed         | 692        |
+|    total_timesteps      | 15048576   |
+| train/                  |            |
+|    approx_kl            | 0.01619626 |
+|    clip_fraction        | 0.202      |
+|    clip_range           | 0.2        |
+|    entropy_loss         | -21.4      |
+|    explained_variance   | 0.967      |
+|    learning_rate        | 0.0003     |
+|    loss                 | 0.0111     |
+|    n_updates            | 2290       |
+|    policy_gradient_loss | -0.00506   |
+|    std                  | 0.713      |
+|    value_loss           | 0.0427     |
+----------------------------------------
+----------------------------------------
+| baoding/                |            |
+|    kept_balls           | 0.02       |
+|    progress             | 3.5        |
+|    progress_max         | 3.67       |
+| rollout/                |            |
+|    ep_len_mean          | 646        |
+|    ep_rew_mean          | 23.1       |
+| time/                   |            |
+|    fps                  | 1513       |
+|    iterations           | 33         |
+|    time_elapsed         | 714        |
+|    total_timesteps      | 15081344   |
+| train/                  |            |
+|    approx_kl            | 0.01600966 |
+|    clip_fraction        | 0.201      |
+|    clip_range           | 0.2        |
+|    entropy_loss         | -21.4      |
+|    explained_variance   | 0.965      |
+|    learning_rate        | 0.0003     |
+|    loss                 | 0.0114     |
+|    n_updates            | 2295       |
+|    policy_gradient_loss | -0.00489   |
+|    std                  | 0.712      |
+|    value_loss           | 0.0377     |
+----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0.03        |
+|    progress             | 3.5         |
+|    progress_max         | 3.66        |
+| rollout/                |             |
+|    ep_len_mean          | 640         |
+|    ep_rew_mean          | 22.8        |
+| time/                   |             |
+|    fps                  | 1512        |
+|    iterations           | 34          |
+|    time_elapsed         | 736         |
+|    total_timesteps      | 15114112    |
+| train/                  |             |
+|    approx_kl            | 0.015104697 |
+|    clip_fraction        | 0.19        |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.3       |
+|    explained_variance   | 0.966       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00874     |
+|    n_updates            | 2300        |
+|    policy_gradient_loss | -0.00713    |
+|    std                  | 0.712       |
+|    value_loss           | 0.0451      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0.01        |
+|    progress             | 3.52        |
+|    progress_max         | 3.66        |
+| rollout/                |             |
+|    ep_len_mean          | 632         |
+|    ep_rew_mean          | 22.3        |
+| time/                   |             |
+|    fps                  | 1512        |
+|    iterations           | 35          |
+|    time_elapsed         | 758         |
+|    total_timesteps      | 15146880    |
+| train/                  |             |
+|    approx_kl            | 0.015722144 |
+|    clip_fraction        | 0.191       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.3       |
+|    explained_variance   | 0.974       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00678     |
+|    n_updates            | 2305        |
+|    policy_gradient_loss | -0.0052     |
+|    std                  | 0.712       |
+|    value_loss           | 0.0337      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.52        |
+|    progress_max         | 3.65        |
+| rollout/                |             |
+|    ep_len_mean          | 637         |
+|    ep_rew_mean          | 22.5        |
+| time/                   |             |
+|    fps                  | 1512        |
+|    iterations           | 36          |
+|    time_elapsed         | 779         |
+|    total_timesteps      | 15179648    |
+| train/                  |             |
+|    approx_kl            | 0.013051439 |
+|    clip_fraction        | 0.156       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.3       |
+|    explained_variance   | 0.978       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00516     |
+|    n_updates            | 2310        |
+|    policy_gradient_loss | -0.0048     |
+|    std                  | 0.711       |
+|    value_loss           | 0.0332      |
+-----------------------------------------
+------------------------------------------
+| baoding/                |              |
+|    kept_balls           | 0.01         |
+|    progress             | 3.53         |
+|    progress_max         | 3.71         |
+| rollout/                |              |
+|    ep_len_mean          | 666          |
+|    ep_rew_mean          | 24.4         |
+| time/                   |              |
+|    fps                  | 1512         |
+|    iterations           | 37           |
+|    time_elapsed         | 801          |
+|    total_timesteps      | 15212416     |
+| train/                  |              |
+|    approx_kl            | 0.0136889815 |
+|    clip_fraction        | 0.152        |
+|    clip_range           | 0.2          |
+|    entropy_loss         | -21.3        |
+|    explained_variance   | 0.97         |
+|    learning_rate        | 0.0003       |
+|    loss                 | 0.00271      |
+|    n_updates            | 2315         |
+|    policy_gradient_loss | -0.00801     |
+|    std                  | 0.711        |
+|    value_loss           | 0.0347       |
+------------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0.01        |
+|    progress             | 3.54        |
+|    progress_max         | 3.71        |
+| rollout/                |             |
+|    ep_len_mean          | 698         |
+|    ep_rew_mean          | 26.5        |
+| time/                   |             |
+|    fps                  | 1512        |
+|    iterations           | 38          |
+|    time_elapsed         | 823         |
+|    total_timesteps      | 15245184    |
+| train/                  |             |
+|    approx_kl            | 0.013301613 |
+|    clip_fraction        | 0.174       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.3       |
+|    explained_variance   | 0.976       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00588     |
+|    n_updates            | 2320        |
+|    policy_gradient_loss | -0.00366    |
+|    std                  | 0.71        |
+|    value_loss           | 0.0273      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0.02        |
+|    progress             | 3.54        |
+|    progress_max         | 3.71        |
+| rollout/                |             |
+|    ep_len_mean          | 709         |
+|    ep_rew_mean          | 27.4        |
+| time/                   |             |
+|    fps                  | 1512        |
+|    iterations           | 39          |
+|    time_elapsed         | 844         |
+|    total_timesteps      | 15277952    |
+| train/                  |             |
+|    approx_kl            | 0.010049298 |
+|    clip_fraction        | 0.163       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.3       |
+|    explained_variance   | 0.982       |
+|    learning_rate        | 0.0003      |
+|    loss                 | -0.00176    |
+|    n_updates            | 2325        |
+|    policy_gradient_loss | -0.00393    |
+|    std                  | 0.71        |
+|    value_loss           | 0.0191      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0.02        |
+|    progress             | 3.5         |
+|    progress_max         | 3.69        |
+| rollout/                |             |
+|    ep_len_mean          | 671         |
+|    ep_rew_mean          | 24.9        |
+| time/                   |             |
+|    fps                  | 1512        |
+|    iterations           | 40          |
+|    time_elapsed         | 866         |
+|    total_timesteps      | 15310720    |
+| train/                  |             |
+|    approx_kl            | 0.011943545 |
+|    clip_fraction        | 0.176       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.3       |
+|    explained_variance   | 0.981       |
+|    learning_rate        | 0.0003      |
+|    loss                 | -0.00255    |
+|    n_updates            | 2330        |
+|    policy_gradient_loss | -0.00445    |
+|    std                  | 0.709       |
+|    value_loss           | 0.0209      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.49        |
+|    progress_max         | 3.71        |
+| rollout/                |             |
+|    ep_len_mean          | 642         |
+|    ep_rew_mean          | 22.9        |
+| time/                   |             |
+|    fps                  | 1512        |
+|    iterations           | 41          |
+|    time_elapsed         | 888         |
+|    total_timesteps      | 15343488    |
+| train/                  |             |
+|    approx_kl            | 0.016637392 |
+|    clip_fraction        | 0.205       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.3       |
+|    explained_variance   | 0.955       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00863     |
+|    n_updates            | 2335        |
+|    policy_gradient_loss | -0.00561    |
+|    std                  | 0.709       |
+|    value_loss           | 0.052       |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.52        |
+|    progress_max         | 3.71        |
+| rollout/                |             |
+|    ep_len_mean          | 667         |
+|    ep_rew_mean          | 24.7        |
+| time/                   |             |
+|    fps                  | 1511        |
+|    iterations           | 42          |
+|    time_elapsed         | 910         |
+|    total_timesteps      | 15376256    |
+| train/                  |             |
+|    approx_kl            | 0.015023852 |
+|    clip_fraction        | 0.196       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.3       |
+|    explained_variance   | 0.966       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00504     |
+|    n_updates            | 2340        |
+|    policy_gradient_loss | -0.00553    |
+|    std                  | 0.709       |
+|    value_loss           | 0.038       |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.51        |
+|    progress_max         | 3.63        |
+| rollout/                |             |
+|    ep_len_mean          | 670         |
+|    ep_rew_mean          | 24.6        |
+| time/                   |             |
+|    fps                  | 1512        |
+|    iterations           | 43          |
+|    time_elapsed         | 931         |
+|    total_timesteps      | 15409024    |
+| train/                  |             |
+|    approx_kl            | 0.015665328 |
+|    clip_fraction        | 0.176       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.3       |
+|    explained_variance   | 0.979       |
+|    learning_rate        | 0.0003      |
+|    loss                 | -0.00205    |
+|    n_updates            | 2345        |
+|    policy_gradient_loss | -0.0047     |
+|    std                  | 0.709       |
+|    value_loss           | 0.0226      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.5         |
+|    progress_max         | 3.62        |
+| rollout/                |             |
+|    ep_len_mean          | 647         |
+|    ep_rew_mean          | 23.2        |
+| time/                   |             |
+|    fps                  | 1512        |
+|    iterations           | 44          |
+|    time_elapsed         | 953         |
+|    total_timesteps      | 15441792    |
+| train/                  |             |
+|    approx_kl            | 0.019893935 |
+|    clip_fraction        | 0.169       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.3       |
+|    explained_variance   | 0.964       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0152      |
+|    n_updates            | 2350        |
+|    policy_gradient_loss | -0.00459    |
+|    std                  | 0.709       |
+|    value_loss           | 0.0434      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.51        |
+|    progress_max         | 3.62        |
+| rollout/                |             |
+|    ep_len_mean          | 658         |
+|    ep_rew_mean          | 24.1        |
+| time/                   |             |
+|    fps                  | 1512        |
+|    iterations           | 45          |
+|    time_elapsed         | 974         |
+|    total_timesteps      | 15474560    |
+| train/                  |             |
+|    approx_kl            | 0.012211721 |
+|    clip_fraction        | 0.175       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.2       |
+|    explained_variance   | 0.967       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00786     |
+|    n_updates            | 2355        |
+|    policy_gradient_loss | -0.00617    |
+|    std                  | 0.708       |
+|    value_loss           | 0.0391      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.5         |
+|    progress_max         | 3.62        |
+| rollout/                |             |
+|    ep_len_mean          | 653         |
+|    ep_rew_mean          | 23.8        |
+| time/                   |             |
+|    fps                  | 1512        |
+|    iterations           | 46          |
+|    time_elapsed         | 996         |
+|    total_timesteps      | 15507328    |
+| train/                  |             |
+|    approx_kl            | 0.012759303 |
+|    clip_fraction        | 0.165       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.2       |
+|    explained_variance   | 0.982       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00128     |
+|    n_updates            | 2360        |
+|    policy_gradient_loss | -0.00258    |
+|    std                  | 0.707       |
+|    value_loss           | 0.0214      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.5         |
+|    progress_max         | 3.6         |
+| rollout/                |             |
+|    ep_len_mean          | 654         |
+|    ep_rew_mean          | 23.9        |
+| time/                   |             |
+|    fps                  | 1513        |
+|    iterations           | 47          |
+|    time_elapsed         | 1017        |
+|    total_timesteps      | 15540096    |
+| train/                  |             |
+|    approx_kl            | 0.014375901 |
+|    clip_fraction        | 0.161       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.2       |
+|    explained_variance   | 0.97        |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00997     |
+|    n_updates            | 2365        |
+|    policy_gradient_loss | -0.00488    |
+|    std                  | 0.706       |
+|    value_loss           | 0.0387      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.51        |
+|    progress_max         | 3.6         |
+| rollout/                |             |
+|    ep_len_mean          | 672         |
+|    ep_rew_mean          | 25.2        |
+| time/                   |             |
+|    fps                  | 1513        |
+|    iterations           | 48          |
+|    time_elapsed         | 1039        |
+|    total_timesteps      | 15572864    |
+| train/                  |             |
+|    approx_kl            | 0.015116619 |
+|    clip_fraction        | 0.172       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.2       |
+|    explained_variance   | 0.986       |
+|    learning_rate        | 0.0003      |
+|    loss                 | -0.00477    |
+|    n_updates            | 2370        |
+|    policy_gradient_loss | -0.00625    |
+|    std                  | 0.706       |
+|    value_loss           | 0.0161      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.5         |
+|    progress_max         | 3.57        |
+| rollout/                |             |
+|    ep_len_mean          | 658         |
+|    ep_rew_mean          | 24.3        |
+| time/                   |             |
+|    fps                  | 1513        |
+|    iterations           | 49          |
+|    time_elapsed         | 1060        |
+|    total_timesteps      | 15605632    |
+| train/                  |             |
+|    approx_kl            | 0.014046756 |
+|    clip_fraction        | 0.166       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.2       |
+|    explained_variance   | 0.984       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00566     |
+|    n_updates            | 2375        |
+|    policy_gradient_loss | -0.00257    |
+|    std                  | 0.706       |
+|    value_loss           | 0.0201      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.49        |
+|    progress_max         | 3.58        |
+| rollout/                |             |
+|    ep_len_mean          | 663         |
+|    ep_rew_mean          | 24.5        |
+| time/                   |             |
+|    fps                  | 1513        |
+|    iterations           | 50          |
+|    time_elapsed         | 1082        |
+|    total_timesteps      | 15638400    |
+| train/                  |             |
+|    approx_kl            | 0.014239104 |
+|    clip_fraction        | 0.16        |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.1       |
+|    explained_variance   | 0.983       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.000574    |
+|    n_updates            | 2380        |
+|    policy_gradient_loss | -0.00419    |
+|    std                  | 0.705       |
+|    value_loss           | 0.0211      |
+-----------------------------------------
+----------------------------------------
+| baoding/                |            |
+|    kept_balls           | 0          |
+|    progress             | 3.49       |
+|    progress_max         | 3.63       |
+| rollout/                |            |
+|    ep_len_mean          | 656        |
+|    ep_rew_mean          | 24.1       |
+| time/                   |            |
+|    fps                  | 1513       |
+|    iterations           | 51         |
+|    time_elapsed         | 1103       |
+|    total_timesteps      | 15671168   |
+| train/                  |            |
+|    approx_kl            | 0.01271739 |
+|    clip_fraction        | 0.153      |
+|    clip_range           | 0.2        |
+|    entropy_loss         | -21.1      |
+|    explained_variance   | 0.983      |
+|    learning_rate        | 0.0003     |
+|    loss                 | 0.00289    |
+|    n_updates            | 2385       |
+|    policy_gradient_loss | -0.00415   |
+|    std                  | 0.704      |
+|    value_loss           | 0.0212     |
+----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.49        |
+|    progress_max         | 3.63        |
+| rollout/                |             |
+|    ep_len_mean          | 643         |
+|    ep_rew_mean          | 23.3        |
+| time/                   |             |
+|    fps                  | 1514        |
+|    iterations           | 52          |
+|    time_elapsed         | 1125        |
+|    total_timesteps      | 15703936    |
+| train/                  |             |
+|    approx_kl            | 0.016058926 |
+|    clip_fraction        | 0.209       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.1       |
+|    explained_variance   | 0.975       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00541     |
+|    n_updates            | 2390        |
+|    policy_gradient_loss | -0.00469    |
+|    std                  | 0.704       |
+|    value_loss           | 0.0311      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.47        |
+|    progress_max         | 3.61        |
+| rollout/                |             |
+|    ep_len_mean          | 616         |
+|    ep_rew_mean          | 21.4        |
+| time/                   |             |
+|    fps                  | 1513        |
+|    iterations           | 53          |
+|    time_elapsed         | 1147        |
+|    total_timesteps      | 15736704    |
+| train/                  |             |
+|    approx_kl            | 0.015019262 |
+|    clip_fraction        | 0.199       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.1       |
+|    explained_variance   | 0.968       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0135      |
+|    n_updates            | 2395        |
+|    policy_gradient_loss | -0.00333    |
+|    std                  | 0.705       |
+|    value_loss           | 0.042       |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.46        |
+|    progress_max         | 3.56        |
+| rollout/                |             |
+|    ep_len_mean          | 609         |
+|    ep_rew_mean          | 21          |
+| time/                   |             |
+|    fps                  | 1513        |
+|    iterations           | 54          |
+|    time_elapsed         | 1169        |
+|    total_timesteps      | 15769472    |
+| train/                  |             |
+|    approx_kl            | 0.014225852 |
+|    clip_fraction        | 0.161       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.1       |
+|    explained_variance   | 0.952       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0127      |
+|    n_updates            | 2400        |
+|    policy_gradient_loss | -0.0062     |
+|    std                  | 0.705       |
+|    value_loss           | 0.0566      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.47        |
+|    progress_max         | 3.57        |
+| rollout/                |             |
+|    ep_len_mean          | 634         |
+|    ep_rew_mean          | 22.7        |
+| time/                   |             |
+|    fps                  | 1513        |
+|    iterations           | 55          |
+|    time_elapsed         | 1190        |
+|    total_timesteps      | 15802240    |
+| train/                  |             |
+|    approx_kl            | 0.012533622 |
+|    clip_fraction        | 0.162       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.1       |
+|    explained_variance   | 0.967       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00944     |
+|    n_updates            | 2405        |
+|    policy_gradient_loss | -0.00288    |
+|    std                  | 0.704       |
+|    value_loss           | 0.039       |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.47        |
+|    progress_max         | 3.57        |
+| rollout/                |             |
+|    ep_len_mean          | 645         |
+|    ep_rew_mean          | 23.4        |
+| time/                   |             |
+|    fps                  | 1513        |
+|    iterations           | 56          |
+|    time_elapsed         | 1212        |
+|    total_timesteps      | 15835008    |
+| train/                  |             |
+|    approx_kl            | 0.016834006 |
+|    clip_fraction        | 0.198       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.1       |
+|    explained_variance   | 0.97        |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00437     |
+|    n_updates            | 2410        |
+|    policy_gradient_loss | -0.00603    |
+|    std                  | 0.703       |
+|    value_loss           | 0.0359      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.47        |
+|    progress_max         | 3.58        |
+| rollout/                |             |
+|    ep_len_mean          | 650         |
+|    ep_rew_mean          | 23.9        |
+| time/                   |             |
+|    fps                  | 1513        |
+|    iterations           | 57          |
+|    time_elapsed         | 1234        |
+|    total_timesteps      | 15867776    |
+| train/                  |             |
+|    approx_kl            | 0.012278829 |
+|    clip_fraction        | 0.161       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.1       |
+|    explained_variance   | 0.97        |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00869     |
+|    n_updates            | 2415        |
+|    policy_gradient_loss | -0.00562    |
+|    std                  | 0.703       |
+|    value_loss           | 0.037       |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.48        |
+|    progress_max         | 3.58        |
+| rollout/                |             |
+|    ep_len_mean          | 657         |
+|    ep_rew_mean          | 24.2        |
+| time/                   |             |
+|    fps                  | 1512        |
+|    iterations           | 58          |
+|    time_elapsed         | 1256        |
+|    total_timesteps      | 15900544    |
+| train/                  |             |
+|    approx_kl            | 0.015091803 |
+|    clip_fraction        | 0.173       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.1       |
+|    explained_variance   | 0.975       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00383     |
+|    n_updates            | 2420        |
+|    policy_gradient_loss | -0.00671    |
+|    std                  | 0.703       |
+|    value_loss           | 0.0291      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.49        |
+|    progress_max         | 3.59        |
+| rollout/                |             |
+|    ep_len_mean          | 641         |
+|    ep_rew_mean          | 23.3        |
+| time/                   |             |
+|    fps                  | 1512        |
+|    iterations           | 59          |
+|    time_elapsed         | 1278        |
+|    total_timesteps      | 15933312    |
+| train/                  |             |
+|    approx_kl            | 0.011852352 |
+|    clip_fraction        | 0.13        |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.1       |
+|    explained_variance   | 0.984       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.000182    |
+|    n_updates            | 2425        |
+|    policy_gradient_loss | -0.00492    |
+|    std                  | 0.703       |
+|    value_loss           | 0.0189      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.48        |
+|    progress_max         | 3.59        |
+| rollout/                |             |
+|    ep_len_mean          | 620         |
+|    ep_rew_mean          | 21.9        |
+| time/                   |             |
+|    fps                  | 1512        |
+|    iterations           | 60          |
+|    time_elapsed         | 1299        |
+|    total_timesteps      | 15966080    |
+| train/                  |             |
+|    approx_kl            | 0.013987723 |
+|    clip_fraction        | 0.173       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21.1       |
+|    explained_variance   | 0.974       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00833     |
+|    n_updates            | 2430        |
+|    policy_gradient_loss | -0.00478    |
+|    std                  | 0.702       |
+|    value_loss           | 0.0327      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.49        |
+|    progress_max         | 3.59        |
+| rollout/                |             |
+|    ep_len_mean          | 619         |
+|    ep_rew_mean          | 21.9        |
+| time/                   |             |
+|    fps                  | 1512        |
+|    iterations           | 61          |
+|    time_elapsed         | 1321        |
+|    total_timesteps      | 15998848    |
+| train/                  |             |
+|    approx_kl            | 0.014215657 |
+|    clip_fraction        | 0.161       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21         |
+|    explained_variance   | 0.976       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00991     |
+|    n_updates            | 2435        |
+|    policy_gradient_loss | -0.00399    |
+|    std                  | 0.702       |
+|    value_loss           | 0.0329      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.48        |
+|    progress_max         | 3.57        |
+| rollout/                |             |
+|    ep_len_mean          | 600         |
+|    ep_rew_mean          | 20.6        |
+| time/                   |             |
+|    fps                  | 1511        |
+|    iterations           | 62          |
+|    time_elapsed         | 1343        |
+|    total_timesteps      | 16031616    |
+| train/                  |             |
+|    approx_kl            | 0.011625402 |
+|    clip_fraction        | 0.158       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21         |
+|    explained_variance   | 0.975       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00499     |
+|    n_updates            | 2440        |
+|    policy_gradient_loss | -0.0041     |
+|    std                  | 0.702       |
+|    value_loss           | 0.0325      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.47        |
+|    progress_max         | 3.58        |
+| rollout/                |             |
+|    ep_len_mean          | 600         |
+|    ep_rew_mean          | 20.4        |
+| time/                   |             |
+|    fps                  | 1511        |
+|    iterations           | 63          |
+|    time_elapsed         | 1365        |
+|    total_timesteps      | 16064384    |
+| train/                  |             |
+|    approx_kl            | 0.012949811 |
+|    clip_fraction        | 0.153       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21         |
+|    explained_variance   | 0.964       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0126      |
+|    n_updates            | 2445        |
+|    policy_gradient_loss | -0.00515    |
+|    std                  | 0.702       |
+|    value_loss           | 0.0485      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.47        |
+|    progress_max         | 3.58        |
+| rollout/                |             |
+|    ep_len_mean          | 618         |
+|    ep_rew_mean          | 21.6        |
+| time/                   |             |
+|    fps                  | 1511        |
+|    iterations           | 64          |
+|    time_elapsed         | 1387        |
+|    total_timesteps      | 16097152    |
+| train/                  |             |
+|    approx_kl            | 0.015816675 |
+|    clip_fraction        | 0.181       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21         |
+|    explained_variance   | 0.974       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00356     |
+|    n_updates            | 2450        |
+|    policy_gradient_loss | -0.00297    |
+|    std                  | 0.701       |
+|    value_loss           | 0.0336      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.45        |
+|    progress_max         | 3.56        |
+| rollout/                |             |
+|    ep_len_mean          | 632         |
+|    ep_rew_mean          | 22.3        |
+| time/                   |             |
+|    fps                  | 1510        |
+|    iterations           | 65          |
+|    time_elapsed         | 1409        |
+|    total_timesteps      | 16129920    |
+| train/                  |             |
+|    approx_kl            | 0.014273067 |
+|    clip_fraction        | 0.185       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21         |
+|    explained_variance   | 0.98        |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00654     |
+|    n_updates            | 2455        |
+|    policy_gradient_loss | -0.00503    |
+|    std                  | 0.7         |
+|    value_loss           | 0.027       |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.43        |
+|    progress_max         | 3.55        |
+| rollout/                |             |
+|    ep_len_mean          | 633         |
+|    ep_rew_mean          | 22.3        |
+| time/                   |             |
+|    fps                  | 1510        |
+|    iterations           | 66          |
+|    time_elapsed         | 1431        |
+|    total_timesteps      | 16162688    |
+| train/                  |             |
+|    approx_kl            | 0.013790037 |
+|    clip_fraction        | 0.176       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21         |
+|    explained_variance   | 0.971       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00936     |
+|    n_updates            | 2460        |
+|    policy_gradient_loss | -0.00586    |
+|    std                  | 0.7         |
+|    value_loss           | 0.0358      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.44        |
+|    progress_max         | 3.55        |
+| rollout/                |             |
+|    ep_len_mean          | 636         |
+|    ep_rew_mean          | 22.7        |
+| time/                   |             |
+|    fps                  | 1510        |
+|    iterations           | 67          |
+|    time_elapsed         | 1453        |
+|    total_timesteps      | 16195456    |
+| train/                  |             |
+|    approx_kl            | 0.018855816 |
+|    clip_fraction        | 0.205       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -21         |
+|    explained_variance   | 0.966       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00899     |
+|    n_updates            | 2465        |
+|    policy_gradient_loss | -0.0055     |
+|    std                  | 0.699       |
+|    value_loss           | 0.044       |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.45        |
+|    progress_max         | 3.58        |
+| rollout/                |             |
+|    ep_len_mean          | 637         |
+|    ep_rew_mean          | 22.7        |
+| time/                   |             |
+|    fps                  | 1511        |
+|    iterations           | 68          |
+|    time_elapsed         | 1474        |
+|    total_timesteps      | 16228224    |
+| train/                  |             |
+|    approx_kl            | 0.017377464 |
+|    clip_fraction        | 0.173       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.9       |
+|    explained_variance   | 0.982       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00997     |
+|    n_updates            | 2470        |
+|    policy_gradient_loss | -0.00298    |
+|    std                  | 0.699       |
+|    value_loss           | 0.0219      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.45        |
+|    progress_max         | 3.58        |
+| rollout/                |             |
+|    ep_len_mean          | 643         |
+|    ep_rew_mean          | 23.2        |
+| time/                   |             |
+|    fps                  | 1511        |
+|    iterations           | 69          |
+|    time_elapsed         | 1495        |
+|    total_timesteps      | 16260992    |
+| train/                  |             |
+|    approx_kl            | 0.013144448 |
+|    clip_fraction        | 0.18        |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.9       |
+|    explained_variance   | 0.971       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0113      |
+|    n_updates            | 2475        |
+|    policy_gradient_loss | -0.00203    |
+|    std                  | 0.698       |
+|    value_loss           | 0.0375      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.44        |
+|    progress_max         | 3.56        |
+| rollout/                |             |
+|    ep_len_mean          | 632         |
+|    ep_rew_mean          | 22.4        |
+| time/                   |             |
+|    fps                  | 1511        |
+|    iterations           | 70          |
+|    time_elapsed         | 1517        |
+|    total_timesteps      | 16293760    |
+| train/                  |             |
+|    approx_kl            | 0.013204843 |
+|    clip_fraction        | 0.182       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.9       |
+|    explained_variance   | 0.979       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00112     |
+|    n_updates            | 2480        |
+|    policy_gradient_loss | -0.00544    |
+|    std                  | 0.698       |
+|    value_loss           | 0.0255      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.43        |
+|    progress_max         | 3.56        |
+| rollout/                |             |
+|    ep_len_mean          | 619         |
+|    ep_rew_mean          | 21.3        |
+| time/                   |             |
+|    fps                  | 1511        |
+|    iterations           | 71          |
+|    time_elapsed         | 1538        |
+|    total_timesteps      | 16326528    |
+| train/                  |             |
+|    approx_kl            | 0.021573393 |
+|    clip_fraction        | 0.2         |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.9       |
+|    explained_variance   | 0.958       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0232      |
+|    n_updates            | 2485        |
+|    policy_gradient_loss | -0.00133    |
+|    std                  | 0.698       |
+|    value_loss           | 0.0554      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.43        |
+|    progress_max         | 3.56        |
+| rollout/                |             |
+|    ep_len_mean          | 628         |
+|    ep_rew_mean          | 22.1        |
+| time/                   |             |
+|    fps                  | 1512        |
+|    iterations           | 72          |
+|    time_elapsed         | 1560        |
+|    total_timesteps      | 16359296    |
+| train/                  |             |
+|    approx_kl            | 0.017807655 |
+|    clip_fraction        | 0.19        |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.9       |
+|    explained_variance   | 0.965       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0105      |
+|    n_updates            | 2490        |
+|    policy_gradient_loss | -0.00278    |
+|    std                  | 0.697       |
+|    value_loss           | 0.0447      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.44        |
+|    progress_max         | 3.56        |
+| rollout/                |             |
+|    ep_len_mean          | 622         |
+|    ep_rew_mean          | 21.9        |
+| time/                   |             |
+|    fps                  | 1512        |
+|    iterations           | 73          |
+|    time_elapsed         | 1581        |
+|    total_timesteps      | 16392064    |
+| train/                  |             |
+|    approx_kl            | 0.013535022 |
+|    clip_fraction        | 0.17        |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.9       |
+|    explained_variance   | 0.972       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00607     |
+|    n_updates            | 2495        |
+|    policy_gradient_loss | -0.00474    |
+|    std                  | 0.697       |
+|    value_loss           | 0.0315      |
+-----------------------------------------
+------------------------------------------
+| baoding/                |              |
+|    kept_balls           | 0            |
+|    progress             | 3.45         |
+|    progress_max         | 3.55         |
+| rollout/                |              |
+|    ep_len_mean          | 611          |
+|    ep_rew_mean          | 21.4         |
+| time/                   |              |
+|    fps                  | 1512         |
+|    iterations           | 74           |
+|    time_elapsed         | 1603         |
+|    total_timesteps      | 16424832     |
+| train/                  |              |
+|    approx_kl            | 0.0131569505 |
+|    clip_fraction        | 0.145        |
+|    clip_range           | 0.2          |
+|    entropy_loss         | -20.9        |
+|    explained_variance   | 0.981        |
+|    learning_rate        | 0.0003       |
+|    loss                 | 0.00407      |
+|    n_updates            | 2500         |
+|    policy_gradient_loss | -0.00428     |
+|    std                  | 0.697        |
+|    value_loss           | 0.0249       |
+------------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.45        |
+|    progress_max         | 3.55        |
+| rollout/                |             |
+|    ep_len_mean          | 598         |
+|    ep_rew_mean          | 20.7        |
+| time/                   |             |
+|    fps                  | 1512        |
+|    iterations           | 75          |
+|    time_elapsed         | 1624        |
+|    total_timesteps      | 16457600    |
+| train/                  |             |
+|    approx_kl            | 0.013090825 |
+|    clip_fraction        | 0.15        |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.9       |
+|    explained_variance   | 0.97        |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00397     |
+|    n_updates            | 2505        |
+|    policy_gradient_loss | -0.00425    |
+|    std                  | 0.696       |
+|    value_loss           | 0.0359      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.44        |
+|    progress_max         | 3.55        |
+| rollout/                |             |
+|    ep_len_mean          | 577         |
+|    ep_rew_mean          | 19.3        |
+| time/                   |             |
+|    fps                  | 1512        |
+|    iterations           | 76          |
+|    time_elapsed         | 1646        |
+|    total_timesteps      | 16490368    |
+| train/                  |             |
+|    approx_kl            | 0.011371378 |
+|    clip_fraction        | 0.153       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.9       |
+|    explained_variance   | 0.978       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00897     |
+|    n_updates            | 2510        |
+|    policy_gradient_loss | -0.00266    |
+|    std                  | 0.696       |
+|    value_loss           | 0.0304      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.44        |
+|    progress_max         | 3.54        |
+| rollout/                |             |
+|    ep_len_mean          | 574         |
+|    ep_rew_mean          | 19.1        |
+| time/                   |             |
+|    fps                  | 1513        |
+|    iterations           | 77          |
+|    time_elapsed         | 1667        |
+|    total_timesteps      | 16523136    |
+| train/                  |             |
+|    approx_kl            | 0.013367569 |
+|    clip_fraction        | 0.179       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.8       |
+|    explained_variance   | 0.964       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0106      |
+|    n_updates            | 2515        |
+|    policy_gradient_loss | -0.00485    |
+|    std                  | 0.695       |
+|    value_loss           | 0.0488      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.44        |
+|    progress_max         | 3.54        |
+| rollout/                |             |
+|    ep_len_mean          | 601         |
+|    ep_rew_mean          | 20.7        |
+| time/                   |             |
+|    fps                  | 1513        |
+|    iterations           | 78          |
+|    time_elapsed         | 1688        |
+|    total_timesteps      | 16555904    |
+| train/                  |             |
+|    approx_kl            | 0.014025803 |
+|    clip_fraction        | 0.159       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.8       |
+|    explained_variance   | 0.975       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00513     |
+|    n_updates            | 2520        |
+|    policy_gradient_loss | -0.00452    |
+|    std                  | 0.695       |
+|    value_loss           | 0.0339      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.44        |
+|    progress_max         | 3.59        |
+| rollout/                |             |
+|    ep_len_mean          | 617         |
+|    ep_rew_mean          | 21.7        |
+| time/                   |             |
+|    fps                  | 1514        |
+|    iterations           | 79          |
+|    time_elapsed         | 1709        |
+|    total_timesteps      | 16588672    |
+| train/                  |             |
+|    approx_kl            | 0.011827577 |
+|    clip_fraction        | 0.142       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.8       |
+|    explained_variance   | 0.979       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00999     |
+|    n_updates            | 2525        |
+|    policy_gradient_loss | -0.0039     |
+|    std                  | 0.694       |
+|    value_loss           | 0.0292      |
+-----------------------------------------
+------------------------------------------
+| baoding/                |              |
+|    kept_balls           | 0            |
+|    progress             | 3.42         |
+|    progress_max         | 3.59         |
+| rollout/                |              |
+|    ep_len_mean          | 612          |
+|    ep_rew_mean          | 21.2         |
+| time/                   |              |
+|    fps                  | 1514         |
+|    iterations           | 80           |
+|    time_elapsed         | 1730         |
+|    total_timesteps      | 16621440     |
+| train/                  |              |
+|    approx_kl            | 0.0124935005 |
+|    clip_fraction        | 0.157        |
+|    clip_range           | 0.2          |
+|    entropy_loss         | -20.8        |
+|    explained_variance   | 0.982        |
+|    learning_rate        | 0.0003       |
+|    loss                 | 0.00117      |
+|    n_updates            | 2530         |
+|    policy_gradient_loss | -0.00549     |
+|    std                  | 0.694        |
+|    value_loss           | 0.0247       |
+------------------------------------------
+----------------------------------------
+| baoding/                |            |
+|    kept_balls           | 0          |
+|    progress             | 3.4        |
+|    progress_max         | 3.53       |
+| rollout/                |            |
+|    ep_len_mean          | 595        |
+|    ep_rew_mean          | 19.8       |
+| time/                   |            |
+|    fps                  | 1515       |
+|    iterations           | 81         |
+|    time_elapsed         | 1751       |
+|    total_timesteps      | 16654208   |
+| train/                  |            |
+|    approx_kl            | 0.01324686 |
+|    clip_fraction        | 0.141      |
+|    clip_range           | 0.2        |
+|    entropy_loss         | -20.8      |
+|    explained_variance   | 0.965      |
+|    learning_rate        | 0.0003     |
+|    loss                 | 0.0199     |
+|    n_updates            | 2535       |
+|    policy_gradient_loss | -0.00535   |
+|    std                  | 0.693      |
+|    value_loss           | 0.0494     |
+----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.38        |
+|    progress_max         | 3.52        |
+| rollout/                |             |
+|    ep_len_mean          | 578         |
+|    ep_rew_mean          | 18.6        |
+| time/                   |             |
+|    fps                  | 1515        |
+|    iterations           | 82          |
+|    time_elapsed         | 1772        |
+|    total_timesteps      | 16686976    |
+| train/                  |             |
+|    approx_kl            | 0.016598865 |
+|    clip_fraction        | 0.16        |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.8       |
+|    explained_variance   | 0.96        |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0143      |
+|    n_updates            | 2540        |
+|    policy_gradient_loss | -0.00477    |
+|    std                  | 0.693       |
+|    value_loss           | 0.0571      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.42        |
+|    progress_max         | 3.54        |
+| rollout/                |             |
+|    ep_len_mean          | 596         |
+|    ep_rew_mean          | 20.2        |
+| time/                   |             |
+|    fps                  | 1516        |
+|    iterations           | 83          |
+|    time_elapsed         | 1793        |
+|    total_timesteps      | 16719744    |
+| train/                  |             |
+|    approx_kl            | 0.013166178 |
+|    clip_fraction        | 0.16        |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.7       |
+|    explained_variance   | 0.962       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00874     |
+|    n_updates            | 2545        |
+|    policy_gradient_loss | -0.00637    |
+|    std                  | 0.692       |
+|    value_loss           | 0.0489      |
+-----------------------------------------
+------------------------------------------
+| baoding/                |              |
+|    kept_balls           | 0            |
+|    progress             | 3.43         |
+|    progress_max         | 3.54         |
+| rollout/                |              |
+|    ep_len_mean          | 593          |
+|    ep_rew_mean          | 20.1         |
+| time/                   |              |
+|    fps                  | 1516         |
+|    iterations           | 84           |
+|    time_elapsed         | 1815         |
+|    total_timesteps      | 16752512     |
+| train/                  |              |
+|    approx_kl            | 0.0123600215 |
+|    clip_fraction        | 0.162        |
+|    clip_range           | 0.2          |
+|    entropy_loss         | -20.7        |
+|    explained_variance   | 0.981        |
+|    learning_rate        | 0.0003       |
+|    loss                 | 0.003        |
+|    n_updates            | 2550         |
+|    policy_gradient_loss | -0.00445     |
+|    std                  | 0.692        |
+|    value_loss           | 0.0282       |
+------------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0.01        |
+|    progress             | 3.41        |
+|    progress_max         | 3.53        |
+| rollout/                |             |
+|    ep_len_mean          | 570         |
+|    ep_rew_mean          | 18.5        |
+| time/                   |             |
+|    fps                  | 1516        |
+|    iterations           | 85          |
+|    time_elapsed         | 1837        |
+|    total_timesteps      | 16785280    |
+| train/                  |             |
+|    approx_kl            | 0.014412755 |
+|    clip_fraction        | 0.164       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.7       |
+|    explained_variance   | 0.974       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00744     |
+|    n_updates            | 2555        |
+|    policy_gradient_loss | -0.007      |
+|    std                  | 0.692       |
+|    value_loss           | 0.0363      |
+-----------------------------------------
+------------------------------------------
+| baoding/                |              |
+|    kept_balls           | 0            |
+|    progress             | 3.4          |
+|    progress_max         | 3.53         |
+| rollout/                |              |
+|    ep_len_mean          | 551          |
+|    ep_rew_mean          | 17.2         |
+| time/                   |              |
+|    fps                  | 1515         |
+|    iterations           | 86           |
+|    time_elapsed         | 1859         |
+|    total_timesteps      | 16818048     |
+| train/                  |              |
+|    approx_kl            | 0.0138876075 |
+|    clip_fraction        | 0.166        |
+|    clip_range           | 0.2          |
+|    entropy_loss         | -20.7        |
+|    explained_variance   | 0.983        |
+|    learning_rate        | 0.0003       |
+|    loss                 | 0.00315      |
+|    n_updates            | 2560         |
+|    policy_gradient_loss | -0.00555     |
+|    std                  | 0.691        |
+|    value_loss           | 0.0283       |
+------------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.4         |
+|    progress_max         | 3.53        |
+| rollout/                |             |
+|    ep_len_mean          | 570         |
+|    ep_rew_mean          | 18.1        |
+| time/                   |             |
+|    fps                  | 1515        |
+|    iterations           | 87          |
+|    time_elapsed         | 1880        |
+|    total_timesteps      | 16850816    |
+| train/                  |             |
+|    approx_kl            | 0.012797389 |
+|    clip_fraction        | 0.155       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.7       |
+|    explained_variance   | 0.973       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0109      |
+|    n_updates            | 2565        |
+|    policy_gradient_loss | -0.00525    |
+|    std                  | 0.691       |
+|    value_loss           | 0.0416      |
+-----------------------------------------
+------------------------------------------
+| baoding/                |              |
+|    kept_balls           | 0            |
+|    progress             | 3.4          |
+|    progress_max         | 3.53         |
+| rollout/                |              |
+|    ep_len_mean          | 583          |
+|    ep_rew_mean          | 19           |
+| time/                   |              |
+|    fps                  | 1516         |
+|    iterations           | 88           |
+|    time_elapsed         | 1901         |
+|    total_timesteps      | 16883584     |
+| train/                  |              |
+|    approx_kl            | 0.0142285535 |
+|    clip_fraction        | 0.164        |
+|    clip_range           | 0.2          |
+|    entropy_loss         | -20.7        |
+|    explained_variance   | 0.984        |
+|    learning_rate        | 0.0003       |
+|    loss                 | 0.00313      |
+|    n_updates            | 2570         |
+|    policy_gradient_loss | -0.00514     |
+|    std                  | 0.69         |
+|    value_loss           | 0.0255       |
+------------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.39        |
+|    progress_max         | 3.53        |
+| rollout/                |             |
+|    ep_len_mean          | 565         |
+|    ep_rew_mean          | 17.8        |
+| time/                   |             |
+|    fps                  | 1516        |
+|    iterations           | 89          |
+|    time_elapsed         | 1923        |
+|    total_timesteps      | 16916352    |
+| train/                  |             |
+|    approx_kl            | 0.018072043 |
+|    clip_fraction        | 0.156       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.7       |
+|    explained_variance   | 0.958       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0119      |
+|    n_updates            | 2575        |
+|    policy_gradient_loss | -0.00527    |
+|    std                  | 0.69        |
+|    value_loss           | 0.0655      |
+-----------------------------------------
+------------------------------------------
+| baoding/                |              |
+|    kept_balls           | 0            |
+|    progress             | 3.39         |
+|    progress_max         | 3.62         |
+| rollout/                |              |
+|    ep_len_mean          | 555          |
+|    ep_rew_mean          | 17.4         |
+| time/                   |              |
+|    fps                  | 1516         |
+|    iterations           | 90           |
+|    time_elapsed         | 1944         |
+|    total_timesteps      | 16949120     |
+| train/                  |              |
+|    approx_kl            | 0.0125850085 |
+|    clip_fraction        | 0.165        |
+|    clip_range           | 0.2          |
+|    entropy_loss         | -20.7        |
+|    explained_variance   | 0.978        |
+|    learning_rate        | 0.0003       |
+|    loss                 | 0.0101       |
+|    n_updates            | 2580         |
+|    policy_gradient_loss | -0.00345     |
+|    std                  | 0.69         |
+|    value_loss           | 0.0353       |
+------------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.39        |
+|    progress_max         | 3.62        |
+| rollout/                |             |
+|    ep_len_mean          | 566         |
+|    ep_rew_mean          | 18.1        |
+| time/                   |             |
+|    fps                  | 1517        |
+|    iterations           | 91          |
+|    time_elapsed         | 1965        |
+|    total_timesteps      | 16981888    |
+| train/                  |             |
+|    approx_kl            | 0.014513601 |
+|    clip_fraction        | 0.164       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.6       |
+|    explained_variance   | 0.972       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0107      |
+|    n_updates            | 2585        |
+|    policy_gradient_loss | -0.00606    |
+|    std                  | 0.689       |
+|    value_loss           | 0.0455      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.41        |
+|    progress_max         | 3.57        |
+| rollout/                |             |
+|    ep_len_mean          | 577         |
+|    ep_rew_mean          | 19.2        |
+| time/                   |             |
+|    fps                  | 1517        |
+|    iterations           | 92          |
+|    time_elapsed         | 1986        |
+|    total_timesteps      | 17014656    |
+| train/                  |             |
+|    approx_kl            | 0.014122753 |
+|    clip_fraction        | 0.163       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.6       |
+|    explained_variance   | 0.984       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00659     |
+|    n_updates            | 2590        |
+|    policy_gradient_loss | -0.00308    |
+|    std                  | 0.688       |
+|    value_loss           | 0.0281      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.41        |
+|    progress_max         | 3.57        |
+| rollout/                |             |
+|    ep_len_mean          | 577         |
+|    ep_rew_mean          | 19          |
+| time/                   |             |
+|    fps                  | 1517        |
+|    iterations           | 93          |
+|    time_elapsed         | 2007        |
+|    total_timesteps      | 17047424    |
+| train/                  |             |
+|    approx_kl            | 0.014660718 |
+|    clip_fraction        | 0.181       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.6       |
+|    explained_variance   | 0.98        |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00888     |
+|    n_updates            | 2595        |
+|    policy_gradient_loss | -0.00457    |
+|    std                  | 0.688       |
+|    value_loss           | 0.0329      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.4         |
+|    progress_max         | 3.5         |
+| rollout/                |             |
+|    ep_len_mean          | 598         |
+|    ep_rew_mean          | 20.3        |
+| time/                   |             |
+|    fps                  | 1518        |
+|    iterations           | 94          |
+|    time_elapsed         | 2028        |
+|    total_timesteps      | 17080192    |
+| train/                  |             |
+|    approx_kl            | 0.013810951 |
+|    clip_fraction        | 0.169       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.6       |
+|    explained_variance   | 0.983       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.000717    |
+|    n_updates            | 2600        |
+|    policy_gradient_loss | -0.0037     |
+|    std                  | 0.687       |
+|    value_loss           | 0.026       |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.4         |
+|    progress_max         | 3.5         |
+| rollout/                |             |
+|    ep_len_mean          | 589         |
+|    ep_rew_mean          | 19.6        |
+| time/                   |             |
+|    fps                  | 1518        |
+|    iterations           | 95          |
+|    time_elapsed         | 2050        |
+|    total_timesteps      | 17112960    |
+| train/                  |             |
+|    approx_kl            | 0.013132978 |
+|    clip_fraction        | 0.15        |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.6       |
+|    explained_variance   | 0.988       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00233     |
+|    n_updates            | 2605        |
+|    policy_gradient_loss | -0.00344    |
+|    std                  | 0.687       |
+|    value_loss           | 0.0191      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.39        |
+|    progress_max         | 3.53        |
+| rollout/                |             |
+|    ep_len_mean          | 577         |
+|    ep_rew_mean          | 18.9        |
+| time/                   |             |
+|    fps                  | 1518        |
+|    iterations           | 96          |
+|    time_elapsed         | 2071        |
+|    total_timesteps      | 17145728    |
+| train/                  |             |
+|    approx_kl            | 0.013843555 |
+|    clip_fraction        | 0.185       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.6       |
+|    explained_variance   | 0.977       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00726     |
+|    n_updates            | 2610        |
+|    policy_gradient_loss | -0.00335    |
+|    std                  | 0.687       |
+|    value_loss           | 0.0334      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.39        |
+|    progress_max         | 3.53        |
+| rollout/                |             |
+|    ep_len_mean          | 556         |
+|    ep_rew_mean          | 17.4        |
+| time/                   |             |
+|    fps                  | 1518        |
+|    iterations           | 97          |
+|    time_elapsed         | 2093        |
+|    total_timesteps      | 17178496    |
+| train/                  |             |
+|    approx_kl            | 0.016542127 |
+|    clip_fraction        | 0.184       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.6       |
+|    explained_variance   | 0.976       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00826     |
+|    n_updates            | 2615        |
+|    policy_gradient_loss | -0.00408    |
+|    std                  | 0.687       |
+|    value_loss           | 0.0396      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.39        |
+|    progress_max         | 3.51        |
+| rollout/                |             |
+|    ep_len_mean          | 585         |
+|    ep_rew_mean          | 19.1        |
+| time/                   |             |
+|    fps                  | 1518        |
+|    iterations           | 98          |
+|    time_elapsed         | 2114        |
+|    total_timesteps      | 17211264    |
+| train/                  |             |
+|    approx_kl            | 0.015346967 |
+|    clip_fraction        | 0.168       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.6       |
+|    explained_variance   | 0.971       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0109      |
+|    n_updates            | 2620        |
+|    policy_gradient_loss | -0.00582    |
+|    std                  | 0.686       |
+|    value_loss           | 0.0436      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.38        |
+|    progress_max         | 3.6         |
+| rollout/                |             |
+|    ep_len_mean          | 598         |
+|    ep_rew_mean          | 19.5        |
+| time/                   |             |
+|    fps                  | 1518        |
+|    iterations           | 99          |
+|    time_elapsed         | 2135        |
+|    total_timesteps      | 17244032    |
+| train/                  |             |
+|    approx_kl            | 0.014305491 |
+|    clip_fraction        | 0.183       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.5       |
+|    explained_variance   | 0.983       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00465     |
+|    n_updates            | 2625        |
+|    policy_gradient_loss | -0.0052     |
+|    std                  | 0.685       |
+|    value_loss           | 0.0268      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.38        |
+|    progress_max         | 3.6         |
+| rollout/                |             |
+|    ep_len_mean          | 603         |
+|    ep_rew_mean          | 19.8        |
+| time/                   |             |
+|    fps                  | 1519        |
+|    iterations           | 100         |
+|    time_elapsed         | 2156        |
+|    total_timesteps      | 17276800    |
+| train/                  |             |
+|    approx_kl            | 0.017586125 |
+|    clip_fraction        | 0.189       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.5       |
+|    explained_variance   | 0.956       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0162      |
+|    n_updates            | 2630        |
+|    policy_gradient_loss | -0.00438    |
+|    std                  | 0.685       |
+|    value_loss           | 0.0605      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.41        |
+|    progress_max         | 3.51        |
+| rollout/                |             |
+|    ep_len_mean          | 604         |
+|    ep_rew_mean          | 20.4        |
+| time/                   |             |
+|    fps                  | 1519        |
+|    iterations           | 101         |
+|    time_elapsed         | 2178        |
+|    total_timesteps      | 17309568    |
+| train/                  |             |
+|    approx_kl            | 0.012478558 |
+|    clip_fraction        | 0.147       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.5       |
+|    explained_variance   | 0.986       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00201     |
+|    n_updates            | 2635        |
+|    policy_gradient_loss | -0.00429    |
+|    std                  | 0.685       |
+|    value_loss           | 0.0203      |
+-----------------------------------------
+----------------------------------------
+| baoding/                |            |
+|    kept_balls           | 0          |
+|    progress             | 3.4        |
+|    progress_max         | 3.49       |
+| rollout/                |            |
+|    ep_len_mean          | 582        |
+|    ep_rew_mean          | 19         |
+| time/                   |            |
+|    fps                  | 1519       |
+|    iterations           | 102        |
+|    time_elapsed         | 2200       |
+|    total_timesteps      | 17342336   |
+| train/                  |            |
+|    approx_kl            | 0.01292301 |
+|    clip_fraction        | 0.163      |
+|    clip_range           | 0.2        |
+|    entropy_loss         | -20.5      |
+|    explained_variance   | 0.981      |
+|    learning_rate        | 0.0003     |
+|    loss                 | 0.00577    |
+|    n_updates            | 2640       |
+|    policy_gradient_loss | -0.00403   |
+|    std                  | 0.684      |
+|    value_loss           | 0.0269     |
+----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.36        |
+|    progress_max         | 3.48        |
+| rollout/                |             |
+|    ep_len_mean          | 589         |
+|    ep_rew_mean          | 18.8        |
+| time/                   |             |
+|    fps                  | 1519        |
+|    iterations           | 103         |
+|    time_elapsed         | 2221        |
+|    total_timesteps      | 17375104    |
+| train/                  |             |
+|    approx_kl            | 0.015818998 |
+|    clip_fraction        | 0.186       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.5       |
+|    explained_variance   | 0.973       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00984     |
+|    n_updates            | 2645        |
+|    policy_gradient_loss | -0.00581    |
+|    std                  | 0.684       |
+|    value_loss           | 0.0385      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.35        |
+|    progress_max         | 3.49        |
+| rollout/                |             |
+|    ep_len_mean          | 591         |
+|    ep_rew_mean          | 18.9        |
+| time/                   |             |
+|    fps                  | 1519        |
+|    iterations           | 104         |
+|    time_elapsed         | 2243        |
+|    total_timesteps      | 17407872    |
+| train/                  |             |
+|    approx_kl            | 0.022759836 |
+|    clip_fraction        | 0.161       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.5       |
+|    explained_variance   | 0.956       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0215      |
+|    n_updates            | 2650        |
+|    policy_gradient_loss | -0.00445    |
+|    std                  | 0.683       |
+|    value_loss           | 0.0617      |
+-----------------------------------------
+----------------------------------------
+| baoding/                |            |
+|    kept_balls           | 0          |
+|    progress             | 3.37       |
+|    progress_max         | 3.48       |
+| rollout/                |            |
+|    ep_len_mean          | 568        |
+|    ep_rew_mean          | 17.9       |
+| time/                   |            |
+|    fps                  | 1519       |
+|    iterations           | 105        |
+|    time_elapsed         | 2264       |
+|    total_timesteps      | 17440640   |
+| train/                  |            |
+|    approx_kl            | 0.01425671 |
+|    clip_fraction        | 0.166      |
+|    clip_range           | 0.2        |
+|    entropy_loss         | -20.5      |
+|    explained_variance   | 0.981      |
+|    learning_rate        | 0.0003     |
+|    loss                 | 0.00545    |
+|    n_updates            | 2655       |
+|    policy_gradient_loss | -0.00416   |
+|    std                  | 0.683      |
+|    value_loss           | 0.0299     |
+----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.38        |
+|    progress_max         | 3.5         |
+| rollout/                |             |
+|    ep_len_mean          | 571         |
+|    ep_rew_mean          | 18.3        |
+| time/                   |             |
+|    fps                  | 1519        |
+|    iterations           | 106         |
+|    time_elapsed         | 2285        |
+|    total_timesteps      | 17473408    |
+| train/                  |             |
+|    approx_kl            | 0.015263148 |
+|    clip_fraction        | 0.193       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.5       |
+|    explained_variance   | 0.965       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.024       |
+|    n_updates            | 2660        |
+|    policy_gradient_loss | -0.00396    |
+|    std                  | 0.683       |
+|    value_loss           | 0.0575      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.4         |
+|    progress_max         | 3.5         |
+| rollout/                |             |
+|    ep_len_mean          | 584         |
+|    ep_rew_mean          | 19.4        |
+| time/                   |             |
+|    fps                  | 1519        |
+|    iterations           | 107         |
+|    time_elapsed         | 2306        |
+|    total_timesteps      | 17506176    |
+| train/                  |             |
+|    approx_kl            | 0.015598005 |
+|    clip_fraction        | 0.187       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.5       |
+|    explained_variance   | 0.978       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00569     |
+|    n_updates            | 2665        |
+|    policy_gradient_loss | -0.00431    |
+|    std                  | 0.683       |
+|    value_loss           | 0.0324      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.4         |
+|    progress_max         | 3.58        |
+| rollout/                |             |
+|    ep_len_mean          | 591         |
+|    ep_rew_mean          | 19.8        |
+| time/                   |             |
+|    fps                  | 1519        |
+|    iterations           | 108         |
+|    time_elapsed         | 2328        |
+|    total_timesteps      | 17538944    |
+| train/                  |             |
+|    approx_kl            | 0.013292792 |
+|    clip_fraction        | 0.164       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.5       |
+|    explained_variance   | 0.98        |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.000178    |
+|    n_updates            | 2670        |
+|    policy_gradient_loss | -0.00651    |
+|    std                  | 0.683       |
+|    value_loss           | 0.0299      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.37        |
+|    progress_max         | 3.5         |
+| rollout/                |             |
+|    ep_len_mean          | 587         |
+|    ep_rew_mean          | 19.3        |
+| time/                   |             |
+|    fps                  | 1520        |
+|    iterations           | 109         |
+|    time_elapsed         | 2349        |
+|    total_timesteps      | 17571712    |
+| train/                  |             |
+|    approx_kl            | 0.016193861 |
+|    clip_fraction        | 0.179       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.4       |
+|    explained_variance   | 0.976       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.000242    |
+|    n_updates            | 2675        |
+|    policy_gradient_loss | -0.00643    |
+|    std                  | 0.682       |
+|    value_loss           | 0.0331      |
+-----------------------------------------
+----------------------------------------
+| baoding/                |            |
+|    kept_balls           | 0          |
+|    progress             | 3.37       |
+|    progress_max         | 3.5        |
+| rollout/                |            |
+|    ep_len_mean          | 593        |
+|    ep_rew_mean          | 19.6       |
+| time/                   |            |
+|    fps                  | 1520       |
+|    iterations           | 110        |
+|    time_elapsed         | 2371       |
+|    total_timesteps      | 17604480   |
+| train/                  |            |
+|    approx_kl            | 0.02143217 |
+|    clip_fraction        | 0.222      |
+|    clip_range           | 0.2        |
+|    entropy_loss         | -20.4      |
+|    explained_variance   | 0.966      |
+|    learning_rate        | 0.0003     |
+|    loss                 | 0.0284     |
+|    n_updates            | 2680       |
+|    policy_gradient_loss | -0.00124   |
+|    std                  | 0.681      |
+|    value_loss           | 0.0519     |
+----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.36        |
+|    progress_max         | 3.49        |
+| rollout/                |             |
+|    ep_len_mean          | 594         |
+|    ep_rew_mean          | 19.5        |
+| time/                   |             |
+|    fps                  | 1520        |
+|    iterations           | 111         |
+|    time_elapsed         | 2392        |
+|    total_timesteps      | 17637248    |
+| train/                  |             |
+|    approx_kl            | 0.017319057 |
+|    clip_fraction        | 0.214       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.4       |
+|    explained_variance   | 0.976       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0102      |
+|    n_updates            | 2685        |
+|    policy_gradient_loss | -0.0015     |
+|    std                  | 0.681       |
+|    value_loss           | 0.0342      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.38        |
+|    progress_max         | 3.49        |
+| rollout/                |             |
+|    ep_len_mean          | 577         |
+|    ep_rew_mean          | 18.8        |
+| time/                   |             |
+|    fps                  | 1520        |
+|    iterations           | 112         |
+|    time_elapsed         | 2414        |
+|    total_timesteps      | 17670016    |
+| train/                  |             |
+|    approx_kl            | 0.016302595 |
+|    clip_fraction        | 0.15        |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.4       |
+|    explained_variance   | 0.971       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00732     |
+|    n_updates            | 2690        |
+|    policy_gradient_loss | -0.0039     |
+|    std                  | 0.681       |
+|    value_loss           | 0.046       |
+-----------------------------------------
+----------------------------------------
+| baoding/                |            |
+|    kept_balls           | 0          |
+|    progress             | 3.4        |
+|    progress_max         | 3.48       |
+| rollout/                |            |
+|    ep_len_mean          | 588        |
+|    ep_rew_mean          | 19.7       |
+| time/                   |            |
+|    fps                  | 1520       |
+|    iterations           | 113        |
+|    time_elapsed         | 2435       |
+|    total_timesteps      | 17702784   |
+| train/                  |            |
+|    approx_kl            | 0.01032265 |
+|    clip_fraction        | 0.146      |
+|    clip_range           | 0.2        |
+|    entropy_loss         | -20.4      |
+|    explained_variance   | 0.979      |
+|    learning_rate        | 0.0003     |
+|    loss                 | 0.00762    |
+|    n_updates            | 2695       |
+|    policy_gradient_loss | -0.0018    |
+|    std                  | 0.68       |
+|    value_loss           | 0.0312     |
+----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.38        |
+|    progress_max         | 3.47        |
+| rollout/                |             |
+|    ep_len_mean          | 589         |
+|    ep_rew_mean          | 19.9        |
+| time/                   |             |
+|    fps                  | 1520        |
+|    iterations           | 114         |
+|    time_elapsed         | 2457        |
+|    total_timesteps      | 17735552    |
+| train/                  |             |
+|    approx_kl            | 0.016343996 |
+|    clip_fraction        | 0.173       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.4       |
+|    explained_variance   | 0.984       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00695     |
+|    n_updates            | 2700        |
+|    policy_gradient_loss | -0.00281    |
+|    std                  | 0.68        |
+|    value_loss           | 0.0256      |
+-----------------------------------------
+---------------------------------------
+| baoding/                |           |
+|    kept_balls           | 0         |
+|    progress             | 3.38      |
+|    progress_max         | 3.47      |
+| rollout/                |           |
+|    ep_len_mean          | 592       |
+|    ep_rew_mean          | 19.9      |
+| time/                   |           |
+|    fps                  | 1520      |
+|    iterations           | 115       |
+|    time_elapsed         | 2478      |
+|    total_timesteps      | 17768320  |
+| train/                  |           |
+|    approx_kl            | 0.0133369 |
+|    clip_fraction        | 0.147     |
+|    clip_range           | 0.2       |
+|    entropy_loss         | -20.3     |
+|    explained_variance   | 0.984     |
+|    learning_rate        | 0.0003    |
+|    loss                 | 0.00639   |
+|    n_updates            | 2705      |
+|    policy_gradient_loss | -0.0031   |
+|    std                  | 0.68      |
+|    value_loss           | 0.0231    |
+---------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.38        |
+|    progress_max         | 3.59        |
+| rollout/                |             |
+|    ep_len_mean          | 565         |
+|    ep_rew_mean          | 18.1        |
+| time/                   |             |
+|    fps                  | 1520        |
+|    iterations           | 116         |
+|    time_elapsed         | 2499        |
+|    total_timesteps      | 17801088    |
+| train/                  |             |
+|    approx_kl            | 0.016750406 |
+|    clip_fraction        | 0.187       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.3       |
+|    explained_variance   | 0.98        |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00684     |
+|    n_updates            | 2710        |
+|    policy_gradient_loss | -0.0044     |
+|    std                  | 0.68        |
+|    value_loss           | 0.0295      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.38        |
+|    progress_max         | 3.58        |
+| rollout/                |             |
+|    ep_len_mean          | 558         |
+|    ep_rew_mean          | 17.6        |
+| time/                   |             |
+|    fps                  | 1520        |
+|    iterations           | 117         |
+|    time_elapsed         | 2521        |
+|    total_timesteps      | 17833856    |
+| train/                  |             |
+|    approx_kl            | 0.020949498 |
+|    clip_fraction        | 0.219       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.3       |
+|    explained_variance   | 0.967       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0116      |
+|    n_updates            | 2715        |
+|    policy_gradient_loss | -0.00437    |
+|    std                  | 0.679       |
+|    value_loss           | 0.0552      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.39        |
+|    progress_max         | 3.59        |
+| rollout/                |             |
+|    ep_len_mean          | 553         |
+|    ep_rew_mean          | 17.4        |
+| time/                   |             |
+|    fps                  | 1520        |
+|    iterations           | 118         |
+|    time_elapsed         | 2542        |
+|    total_timesteps      | 17866624    |
+| train/                  |             |
+|    approx_kl            | 0.015783342 |
+|    clip_fraction        | 0.206       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.3       |
+|    explained_variance   | 0.962       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0177      |
+|    n_updates            | 2720        |
+|    policy_gradient_loss | -0.00552    |
+|    std                  | 0.68        |
+|    value_loss           | 0.0555      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.38        |
+|    progress_max         | 3.59        |
+| rollout/                |             |
+|    ep_len_mean          | 534         |
+|    ep_rew_mean          | 16.2        |
+| time/                   |             |
+|    fps                  | 1520        |
+|    iterations           | 119         |
+|    time_elapsed         | 2564        |
+|    total_timesteps      | 17899392    |
+| train/                  |             |
+|    approx_kl            | 0.014800269 |
+|    clip_fraction        | 0.167       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.3       |
+|    explained_variance   | 0.976       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00819     |
+|    n_updates            | 2725        |
+|    policy_gradient_loss | -0.00649    |
+|    std                  | 0.68        |
+|    value_loss           | 0.0407      |
+-----------------------------------------
+----------------------------------------
+| baoding/                |            |
+|    kept_balls           | 0          |
+|    progress             | 3.38       |
+|    progress_max         | 3.58       |
+| rollout/                |            |
+|    ep_len_mean          | 537        |
+|    ep_rew_mean          | 16.3       |
+| time/                   |            |
+|    fps                  | 1520       |
+|    iterations           | 120        |
+|    time_elapsed         | 2585       |
+|    total_timesteps      | 17932160   |
+| train/                  |            |
+|    approx_kl            | 0.01535783 |
+|    clip_fraction        | 0.177      |
+|    clip_range           | 0.2        |
+|    entropy_loss         | -20.3      |
+|    explained_variance   | 0.958      |
+|    learning_rate        | 0.0003     |
+|    loss                 | 0.0215     |
+|    n_updates            | 2730       |
+|    policy_gradient_loss | -0.00612   |
+|    std                  | 0.68       |
+|    value_loss           | 0.0705     |
+----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.38        |
+|    progress_max         | 3.61        |
+| rollout/                |             |
+|    ep_len_mean          | 569         |
+|    ep_rew_mean          | 18.3        |
+| time/                   |             |
+|    fps                  | 1520        |
+|    iterations           | 121         |
+|    time_elapsed         | 2607        |
+|    total_timesteps      | 17964928    |
+| train/                  |             |
+|    approx_kl            | 0.014824712 |
+|    clip_fraction        | 0.2         |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.3       |
+|    explained_variance   | 0.965       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00995     |
+|    n_updates            | 2735        |
+|    policy_gradient_loss | -0.00416    |
+|    std                  | 0.68        |
+|    value_loss           | 0.0533      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.38        |
+|    progress_max         | 3.61        |
+| rollout/                |             |
+|    ep_len_mean          | 575         |
+|    ep_rew_mean          | 18.8        |
+| time/                   |             |
+|    fps                  | 1520        |
+|    iterations           | 122         |
+|    time_elapsed         | 2628        |
+|    total_timesteps      | 17997696    |
+| train/                  |             |
+|    approx_kl            | 0.016377326 |
+|    clip_fraction        | 0.209       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.3       |
+|    explained_variance   | 0.971       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0132      |
+|    n_updates            | 2740        |
+|    policy_gradient_loss | -0.00547    |
+|    std                  | 0.68        |
+|    value_loss           | 0.0474      |
+-----------------------------------------
+------------------------------------------
+| baoding/                |              |
+|    kept_balls           | 0            |
+|    progress             | 3.38         |
+|    progress_max         | 3.61         |
+| rollout/                |              |
+|    ep_len_mean          | 556          |
+|    ep_rew_mean          | 17.6         |
+| time/                   |              |
+|    fps                  | 1520         |
+|    iterations           | 123          |
+|    time_elapsed         | 2651         |
+|    total_timesteps      | 18030464     |
+| train/                  |              |
+|    approx_kl            | 0.0119205015 |
+|    clip_fraction        | 0.184        |
+|    clip_range           | 0.2          |
+|    entropy_loss         | -20.3        |
+|    explained_variance   | 0.98         |
+|    learning_rate        | 0.0003       |
+|    loss                 | 0.0075       |
+|    n_updates            | 2745         |
+|    policy_gradient_loss | -0.00283     |
+|    std                  | 0.679        |
+|    value_loss           | 0.0322       |
+------------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.38        |
+|    progress_max         | 3.61        |
+| rollout/                |             |
+|    ep_len_mean          | 555         |
+|    ep_rew_mean          | 17.6        |
+| time/                   |             |
+|    fps                  | 1517        |
+|    iterations           | 124         |
+|    time_elapsed         | 2677        |
+|    total_timesteps      | 18063232    |
+| train/                  |             |
+|    approx_kl            | 0.020958215 |
+|    clip_fraction        | 0.224       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.3       |
+|    explained_variance   | 0.966       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0186      |
+|    n_updates            | 2750        |
+|    policy_gradient_loss | -0.00421    |
+|    std                  | 0.68        |
+|    value_loss           | 0.053       |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.37        |
+|    progress_max         | 3.61        |
+| rollout/                |             |
+|    ep_len_mean          | 557         |
+|    ep_rew_mean          | 17.5        |
+| time/                   |             |
+|    fps                  | 1517        |
+|    iterations           | 125         |
+|    time_elapsed         | 2698        |
+|    total_timesteps      | 18096000    |
+| train/                  |             |
+|    approx_kl            | 0.016957317 |
+|    clip_fraction        | 0.18        |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.3       |
+|    explained_variance   | 0.975       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00686     |
+|    n_updates            | 2755        |
+|    policy_gradient_loss | -0.00715    |
+|    std                  | 0.68        |
+|    value_loss           | 0.0404      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.36        |
+|    progress_max         | 3.61        |
+| rollout/                |             |
+|    ep_len_mean          | 548         |
+|    ep_rew_mean          | 16.9        |
+| time/                   |             |
+|    fps                  | 1517        |
+|    iterations           | 126         |
+|    time_elapsed         | 2720        |
+|    total_timesteps      | 18128768    |
+| train/                  |             |
+|    approx_kl            | 0.016158113 |
+|    clip_fraction        | 0.171       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.3       |
+|    explained_variance   | 0.964       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0196      |
+|    n_updates            | 2760        |
+|    policy_gradient_loss | -0.00634    |
+|    std                  | 0.68        |
+|    value_loss           | 0.0572      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.37        |
+|    progress_max         | 3.61        |
+| rollout/                |             |
+|    ep_len_mean          | 562         |
+|    ep_rew_mean          | 17.9        |
+| time/                   |             |
+|    fps                  | 1517        |
+|    iterations           | 127         |
+|    time_elapsed         | 2742        |
+|    total_timesteps      | 18161536    |
+| train/                  |             |
+|    approx_kl            | 0.013124492 |
+|    clip_fraction        | 0.175       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.3       |
+|    explained_variance   | 0.973       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0089      |
+|    n_updates            | 2765        |
+|    policy_gradient_loss | -0.00501    |
+|    std                  | 0.68        |
+|    value_loss           | 0.0408      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.38        |
+|    progress_max         | 3.6         |
+| rollout/                |             |
+|    ep_len_mean          | 566         |
+|    ep_rew_mean          | 18.2        |
+| time/                   |             |
+|    fps                  | 1517        |
+|    iterations           | 128         |
+|    time_elapsed         | 2764        |
+|    total_timesteps      | 18194304    |
+| train/                  |             |
+|    approx_kl            | 0.014792199 |
+|    clip_fraction        | 0.189       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.3       |
+|    explained_variance   | 0.969       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0151      |
+|    n_updates            | 2770        |
+|    policy_gradient_loss | -0.00626    |
+|    std                  | 0.68        |
+|    value_loss           | 0.0506      |
+-----------------------------------------
+----------------------------------------
+| baoding/                |            |
+|    kept_balls           | 0          |
+|    progress             | 3.36       |
+|    progress_max         | 3.52       |
+| rollout/                |            |
+|    ep_len_mean          | 592        |
+|    ep_rew_mean          | 19.7       |
+| time/                   |            |
+|    fps                  | 1516       |
+|    iterations           | 129        |
+|    time_elapsed         | 2787       |
+|    total_timesteps      | 18227072   |
+| train/                  |            |
+|    approx_kl            | 0.01329959 |
+|    clip_fraction        | 0.198      |
+|    clip_range           | 0.2        |
+|    entropy_loss         | -20.3      |
+|    explained_variance   | 0.98       |
+|    learning_rate        | 0.0003     |
+|    loss                 | 0.00588    |
+|    n_updates            | 2775       |
+|    policy_gradient_loss | -0.00221   |
+|    std                  | 0.679      |
+|    value_loss           | 0.0304     |
+----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.36        |
+|    progress_max         | 3.59        |
+| rollout/                |             |
+|    ep_len_mean          | 591         |
+|    ep_rew_mean          | 19.9        |
+| time/                   |             |
+|    fps                  | 1516        |
+|    iterations           | 130         |
+|    time_elapsed         | 2808        |
+|    total_timesteps      | 18259840    |
+| train/                  |             |
+|    approx_kl            | 0.013898591 |
+|    clip_fraction        | 0.167       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.3       |
+|    explained_variance   | 0.982       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00198     |
+|    n_updates            | 2780        |
+|    policy_gradient_loss | -0.00501    |
+|    std                  | 0.678       |
+|    value_loss           | 0.0258      |
+-----------------------------------------
+------------------------------------------
+| baoding/                |              |
+|    kept_balls           | 0            |
+|    progress             | 3.35         |
+|    progress_max         | 3.59         |
+| rollout/                |              |
+|    ep_len_mean          | 580          |
+|    ep_rew_mean          | 19.1         |
+| time/                   |              |
+|    fps                  | 1516         |
+|    iterations           | 131          |
+|    time_elapsed         | 2830         |
+|    total_timesteps      | 18292608     |
+| train/                  |              |
+|    approx_kl            | 0.0109698605 |
+|    clip_fraction        | 0.149        |
+|    clip_range           | 0.2          |
+|    entropy_loss         | -20.3        |
+|    explained_variance   | 0.98         |
+|    learning_rate        | 0.0003       |
+|    loss                 | 0.00958      |
+|    n_updates            | 2785         |
+|    policy_gradient_loss | -0.00169     |
+|    std                  | 0.678        |
+|    value_loss           | 0.0295       |
+------------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.34        |
+|    progress_max         | 3.58        |
+| rollout/                |             |
+|    ep_len_mean          | 591         |
+|    ep_rew_mean          | 19.4        |
+| time/                   |             |
+|    fps                  | 1516        |
+|    iterations           | 132         |
+|    time_elapsed         | 2852        |
+|    total_timesteps      | 18325376    |
+| train/                  |             |
+|    approx_kl            | 0.018365797 |
+|    clip_fraction        | 0.198       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.3       |
+|    explained_variance   | 0.971       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00702     |
+|    n_updates            | 2790        |
+|    policy_gradient_loss | -0.00582    |
+|    std                  | 0.678       |
+|    value_loss           | 0.0425      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.35        |
+|    progress_max         | 3.58        |
+| rollout/                |             |
+|    ep_len_mean          | 592         |
+|    ep_rew_mean          | 19.6        |
+| time/                   |             |
+|    fps                  | 1516        |
+|    iterations           | 133         |
+|    time_elapsed         | 2874        |
+|    total_timesteps      | 18358144    |
+| train/                  |             |
+|    approx_kl            | 0.017350078 |
+|    clip_fraction        | 0.193       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.2       |
+|    explained_variance   | 0.961       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0145      |
+|    n_updates            | 2795        |
+|    policy_gradient_loss | -0.00422    |
+|    std                  | 0.677       |
+|    value_loss           | 0.0554      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.37        |
+|    progress_max         | 3.56        |
+| rollout/                |             |
+|    ep_len_mean          | 598         |
+|    ep_rew_mean          | 20.2        |
+| time/                   |             |
+|    fps                  | 1515        |
+|    iterations           | 134         |
+|    time_elapsed         | 2896        |
+|    total_timesteps      | 18390912    |
+| train/                  |             |
+|    approx_kl            | 0.015225036 |
+|    clip_fraction        | 0.184       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.2       |
+|    explained_variance   | 0.971       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00888     |
+|    n_updates            | 2800        |
+|    policy_gradient_loss | -0.00607    |
+|    std                  | 0.677       |
+|    value_loss           | 0.04        |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.37        |
+|    progress_max         | 3.53        |
+| rollout/                |             |
+|    ep_len_mean          | 599         |
+|    ep_rew_mean          | 20.3        |
+| time/                   |             |
+|    fps                  | 1515        |
+|    iterations           | 135         |
+|    time_elapsed         | 2918        |
+|    total_timesteps      | 18423680    |
+| train/                  |             |
+|    approx_kl            | 0.013866304 |
+|    clip_fraction        | 0.16        |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.2       |
+|    explained_variance   | 0.979       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00263     |
+|    n_updates            | 2805        |
+|    policy_gradient_loss | -0.00499    |
+|    std                  | 0.677       |
+|    value_loss           | 0.0289      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.37        |
+|    progress_max         | 3.57        |
+| rollout/                |             |
+|    ep_len_mean          | 597         |
+|    ep_rew_mean          | 20.3        |
+| time/                   |             |
+|    fps                  | 1515        |
+|    iterations           | 136         |
+|    time_elapsed         | 2940        |
+|    total_timesteps      | 18456448    |
+| train/                  |             |
+|    approx_kl            | 0.014146314 |
+|    clip_fraction        | 0.184       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.2       |
+|    explained_variance   | 0.983       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00219     |
+|    n_updates            | 2810        |
+|    policy_gradient_loss | -0.00433    |
+|    std                  | 0.676       |
+|    value_loss           | 0.0232      |
+-----------------------------------------
+----------------------------------------
+| baoding/                |            |
+|    kept_balls           | 0          |
+|    progress             | 3.36       |
+|    progress_max         | 3.57       |
+| rollout/                |            |
+|    ep_len_mean          | 581        |
+|    ep_rew_mean          | 19.3       |
+| time/                   |            |
+|    fps                  | 1515       |
+|    iterations           | 137        |
+|    time_elapsed         | 2961       |
+|    total_timesteps      | 18489216   |
+| train/                  |            |
+|    approx_kl            | 0.01482734 |
+|    clip_fraction        | 0.182      |
+|    clip_range           | 0.2        |
+|    entropy_loss         | -20.2      |
+|    explained_variance   | 0.983      |
+|    learning_rate        | 0.0003     |
+|    loss                 | 0.00169    |
+|    n_updates            | 2815       |
+|    policy_gradient_loss | -0.00533   |
+|    std                  | 0.675      |
+|    value_loss           | 0.0254     |
+----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.37        |
+|    progress_max         | 3.57        |
+| rollout/                |             |
+|    ep_len_mean          | 566         |
+|    ep_rew_mean          | 18.4        |
+| time/                   |             |
+|    fps                  | 1515        |
+|    iterations           | 138         |
+|    time_elapsed         | 2983        |
+|    total_timesteps      | 18521984    |
+| train/                  |             |
+|    approx_kl            | 0.013997711 |
+|    clip_fraction        | 0.151       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.2       |
+|    explained_variance   | 0.978       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00915     |
+|    n_updates            | 2820        |
+|    policy_gradient_loss | -0.00439    |
+|    std                  | 0.675       |
+|    value_loss           | 0.0323      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.36        |
+|    progress_max         | 3.49        |
+| rollout/                |             |
+|    ep_len_mean          | 554         |
+|    ep_rew_mean          | 17.5        |
+| time/                   |             |
+|    fps                  | 1515        |
+|    iterations           | 139         |
+|    time_elapsed         | 3005        |
+|    total_timesteps      | 18554752    |
+| train/                  |             |
+|    approx_kl            | 0.014355715 |
+|    clip_fraction        | 0.15        |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.2       |
+|    explained_variance   | 0.983       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00854     |
+|    n_updates            | 2825        |
+|    policy_gradient_loss | -0.00286    |
+|    std                  | 0.675       |
+|    value_loss           | 0.0296      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.39        |
+|    progress_max         | 3.61        |
+| rollout/                |             |
+|    ep_len_mean          | 545         |
+|    ep_rew_mean          | 17.1        |
+| time/                   |             |
+|    fps                  | 1515        |
+|    iterations           | 140         |
+|    time_elapsed         | 3027        |
+|    total_timesteps      | 18587520    |
+| train/                  |             |
+|    approx_kl            | 0.013743991 |
+|    clip_fraction        | 0.206       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.2       |
+|    explained_variance   | 0.977       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0113      |
+|    n_updates            | 2830        |
+|    policy_gradient_loss | -0.00349    |
+|    std                  | 0.675       |
+|    value_loss           | 0.0415      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.39        |
+|    progress_max         | 3.61        |
+| rollout/                |             |
+|    ep_len_mean          | 549         |
+|    ep_rew_mean          | 17.4        |
+| time/                   |             |
+|    fps                  | 1515        |
+|    iterations           | 141         |
+|    time_elapsed         | 3048        |
+|    total_timesteps      | 18620288    |
+| train/                  |             |
+|    approx_kl            | 0.019179495 |
+|    clip_fraction        | 0.218       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.2       |
+|    explained_variance   | 0.978       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0107      |
+|    n_updates            | 2835        |
+|    policy_gradient_loss | -0.0039     |
+|    std                  | 0.675       |
+|    value_loss           | 0.037       |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.36        |
+|    progress_max         | 3.61        |
+| rollout/                |             |
+|    ep_len_mean          | 540         |
+|    ep_rew_mean          | 16.5        |
+| time/                   |             |
+|    fps                  | 1515        |
+|    iterations           | 142         |
+|    time_elapsed         | 3071        |
+|    total_timesteps      | 18653056    |
+| train/                  |             |
+|    approx_kl            | 0.015877923 |
+|    clip_fraction        | 0.215       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.2       |
+|    explained_variance   | 0.975       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0121      |
+|    n_updates            | 2840        |
+|    policy_gradient_loss | -0.00464    |
+|    std                  | 0.675       |
+|    value_loss           | 0.0407      |
+-----------------------------------------
+----------------------------------------
+| baoding/                |            |
+|    kept_balls           | 0          |
+|    progress             | 3.36       |
+|    progress_max         | 3.62       |
+| rollout/                |            |
+|    ep_len_mean          | 537        |
+|    ep_rew_mean          | 16.2       |
+| time/                   |            |
+|    fps                  | 1514       |
+|    iterations           | 143        |
+|    time_elapsed         | 3092       |
+|    total_timesteps      | 18685824   |
+| train/                  |            |
+|    approx_kl            | 0.01761647 |
+|    clip_fraction        | 0.199      |
+|    clip_range           | 0.2        |
+|    entropy_loss         | -20.2      |
+|    explained_variance   | 0.972      |
+|    learning_rate        | 0.0003     |
+|    loss                 | 0.012      |
+|    n_updates            | 2845       |
+|    policy_gradient_loss | -0.00645   |
+|    std                  | 0.676      |
+|    value_loss           | 0.0476     |
+----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.37        |
+|    progress_max         | 3.62        |
+| rollout/                |             |
+|    ep_len_mean          | 552         |
+|    ep_rew_mean          | 17.6        |
+| time/                   |             |
+|    fps                  | 1514        |
+|    iterations           | 144         |
+|    time_elapsed         | 3114        |
+|    total_timesteps      | 18718592    |
+| train/                  |             |
+|    approx_kl            | 0.019382736 |
+|    clip_fraction        | 0.194       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.2       |
+|    explained_variance   | 0.968       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.016       |
+|    n_updates            | 2850        |
+|    policy_gradient_loss | -0.00371    |
+|    std                  | 0.675       |
+|    value_loss           | 0.0545      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.36        |
+|    progress_max         | 3.57        |
+| rollout/                |             |
+|    ep_len_mean          | 549         |
+|    ep_rew_mean          | 17.4        |
+| time/                   |             |
+|    fps                  | 1514        |
+|    iterations           | 145         |
+|    time_elapsed         | 3136        |
+|    total_timesteps      | 18751360    |
+| train/                  |             |
+|    approx_kl            | 0.016829984 |
+|    clip_fraction        | 0.173       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.2       |
+|    explained_variance   | 0.975       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00935     |
+|    n_updates            | 2855        |
+|    policy_gradient_loss | -0.00518    |
+|    std                  | 0.676       |
+|    value_loss           | 0.0425      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.38        |
+|    progress_max         | 3.55        |
+| rollout/                |             |
+|    ep_len_mean          | 539         |
+|    ep_rew_mean          | 16.8        |
+| time/                   |             |
+|    fps                  | 1514        |
+|    iterations           | 146         |
+|    time_elapsed         | 3158        |
+|    total_timesteps      | 18784128    |
+| train/                  |             |
+|    approx_kl            | 0.014954487 |
+|    clip_fraction        | 0.19        |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.2       |
+|    explained_variance   | 0.974       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00777     |
+|    n_updates            | 2860        |
+|    policy_gradient_loss | -0.00705    |
+|    std                  | 0.676       |
+|    value_loss           | 0.0413      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.39        |
+|    progress_max         | 3.59        |
+| rollout/                |             |
+|    ep_len_mean          | 545         |
+|    ep_rew_mean          | 17.2        |
+| time/                   |             |
+|    fps                  | 1514        |
+|    iterations           | 147         |
+|    time_elapsed         | 3180        |
+|    total_timesteps      | 18816896    |
+| train/                  |             |
+|    approx_kl            | 0.016915064 |
+|    clip_fraction        | 0.192       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.2       |
+|    explained_variance   | 0.973       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0119      |
+|    n_updates            | 2865        |
+|    policy_gradient_loss | -0.00548    |
+|    std                  | 0.675       |
+|    value_loss           | 0.0474      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.39        |
+|    progress_max         | 3.59        |
+| rollout/                |             |
+|    ep_len_mean          | 565         |
+|    ep_rew_mean          | 18.6        |
+| time/                   |             |
+|    fps                  | 1514        |
+|    iterations           | 148         |
+|    time_elapsed         | 3203        |
+|    total_timesteps      | 18849664    |
+| train/                  |             |
+|    approx_kl            | 0.013554823 |
+|    clip_fraction        | 0.168       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.1       |
+|    explained_variance   | 0.972       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0148      |
+|    n_updates            | 2870        |
+|    policy_gradient_loss | -0.00528    |
+|    std                  | 0.674       |
+|    value_loss           | 0.0463      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.38        |
+|    progress_max         | 3.59        |
+| rollout/                |             |
+|    ep_len_mean          | 546         |
+|    ep_rew_mean          | 17.2        |
+| time/                   |             |
+|    fps                  | 1513        |
+|    iterations           | 149         |
+|    time_elapsed         | 3224        |
+|    total_timesteps      | 18882432    |
+| train/                  |             |
+|    approx_kl            | 0.015555711 |
+|    clip_fraction        | 0.182       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.1       |
+|    explained_variance   | 0.979       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00802     |
+|    n_updates            | 2875        |
+|    policy_gradient_loss | -0.00364    |
+|    std                  | 0.673       |
+|    value_loss           | 0.0326      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.38        |
+|    progress_max         | 3.61        |
+| rollout/                |             |
+|    ep_len_mean          | 543         |
+|    ep_rew_mean          | 16.9        |
+| time/                   |             |
+|    fps                  | 1513        |
+|    iterations           | 150         |
+|    time_elapsed         | 3247        |
+|    total_timesteps      | 18915200    |
+| train/                  |             |
+|    approx_kl            | 0.019593155 |
+|    clip_fraction        | 0.192       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.1       |
+|    explained_variance   | 0.975       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00909     |
+|    n_updates            | 2880        |
+|    policy_gradient_loss | -0.00418    |
+|    std                  | 0.673       |
+|    value_loss           | 0.04        |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.41        |
+|    progress_max         | 3.61        |
+| rollout/                |             |
+|    ep_len_mean          | 571         |
+|    ep_rew_mean          | 18.9        |
+| time/                   |             |
+|    fps                  | 1513        |
+|    iterations           | 151         |
+|    time_elapsed         | 3269        |
+|    total_timesteps      | 18947968    |
+| train/                  |             |
+|    approx_kl            | 0.020874914 |
+|    clip_fraction        | 0.228       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.1       |
+|    explained_variance   | 0.974       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.012       |
+|    n_updates            | 2885        |
+|    policy_gradient_loss | -0.00481    |
+|    std                  | 0.672       |
+|    value_loss           | 0.043       |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.4         |
+|    progress_max         | 3.59        |
+| rollout/                |             |
+|    ep_len_mean          | 586         |
+|    ep_rew_mean          | 19.8        |
+| time/                   |             |
+|    fps                  | 1513        |
+|    iterations           | 152         |
+|    time_elapsed         | 3291        |
+|    total_timesteps      | 18980736    |
+| train/                  |             |
+|    approx_kl            | 0.012301466 |
+|    clip_fraction        | 0.17        |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.1       |
+|    explained_variance   | 0.983       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00182     |
+|    n_updates            | 2890        |
+|    policy_gradient_loss | -0.00621    |
+|    std                  | 0.672       |
+|    value_loss           | 0.0268      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.4         |
+|    progress_max         | 3.59        |
+| rollout/                |             |
+|    ep_len_mean          | 586         |
+|    ep_rew_mean          | 19.5        |
+| time/                   |             |
+|    fps                  | 1513        |
+|    iterations           | 153         |
+|    time_elapsed         | 3313        |
+|    total_timesteps      | 19013504    |
+| train/                  |             |
+|    approx_kl            | 0.015504858 |
+|    clip_fraction        | 0.196       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20.1       |
+|    explained_variance   | 0.981       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00786     |
+|    n_updates            | 2895        |
+|    policy_gradient_loss | -0.00287    |
+|    std                  | 0.672       |
+|    value_loss           | 0.0308      |
+-----------------------------------------
+----------------------------------------
+| baoding/                |            |
+|    kept_balls           | 0          |
+|    progress             | 3.4        |
+|    progress_max         | 3.56       |
+| rollout/                |            |
+|    ep_len_mean          | 584        |
+|    ep_rew_mean          | 19.5       |
+| time/                   |            |
+|    fps                  | 1512       |
+|    iterations           | 154        |
+|    time_elapsed         | 3335       |
+|    total_timesteps      | 19046272   |
+| train/                  |            |
+|    approx_kl            | 0.01484425 |
+|    clip_fraction        | 0.199      |
+|    clip_range           | 0.2        |
+|    entropy_loss         | -20.1      |
+|    explained_variance   | 0.98       |
+|    learning_rate        | 0.0003     |
+|    loss                 | 0.011      |
+|    n_updates            | 2900       |
+|    policy_gradient_loss | -0.00434   |
+|    std                  | 0.672      |
+|    value_loss           | 0.0315     |
+----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.39        |
+|    progress_max         | 3.56        |
+| rollout/                |             |
+|    ep_len_mean          | 587         |
+|    ep_rew_mean          | 19.7        |
+| time/                   |             |
+|    fps                  | 1512        |
+|    iterations           | 155         |
+|    time_elapsed         | 3357        |
+|    total_timesteps      | 19079040    |
+| train/                  |             |
+|    approx_kl            | 0.013705885 |
+|    clip_fraction        | 0.18        |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20         |
+|    explained_variance   | 0.983       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00491     |
+|    n_updates            | 2905        |
+|    policy_gradient_loss | -0.00517    |
+|    std                  | 0.671       |
+|    value_loss           | 0.0276      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.39        |
+|    progress_max         | 3.53        |
+| rollout/                |             |
+|    ep_len_mean          | 597         |
+|    ep_rew_mean          | 20.3        |
+| time/                   |             |
+|    fps                  | 1512        |
+|    iterations           | 156         |
+|    time_elapsed         | 3380        |
+|    total_timesteps      | 19111808    |
+| train/                  |             |
+|    approx_kl            | 0.016084842 |
+|    clip_fraction        | 0.19        |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20         |
+|    explained_variance   | 0.978       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00649     |
+|    n_updates            | 2910        |
+|    policy_gradient_loss | -0.00501    |
+|    std                  | 0.671       |
+|    value_loss           | 0.0357      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0.01        |
+|    progress             | 3.37        |
+|    progress_max         | 3.52        |
+| rollout/                |             |
+|    ep_len_mean          | 612         |
+|    ep_rew_mean          | 21.3        |
+| time/                   |             |
+|    fps                  | 1511        |
+|    iterations           | 157         |
+|    time_elapsed         | 3403        |
+|    total_timesteps      | 19144576    |
+| train/                  |             |
+|    approx_kl            | 0.014342576 |
+|    clip_fraction        | 0.161       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20         |
+|    explained_variance   | 0.986       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0115      |
+|    n_updates            | 2915        |
+|    policy_gradient_loss | -0.00102    |
+|    std                  | 0.671       |
+|    value_loss           | 0.0213      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0.01        |
+|    progress             | 3.37        |
+|    progress_max         | 3.65        |
+| rollout/                |             |
+|    ep_len_mean          | 613         |
+|    ep_rew_mean          | 21          |
+| time/                   |             |
+|    fps                  | 1510        |
+|    iterations           | 158         |
+|    time_elapsed         | 3426        |
+|    total_timesteps      | 19177344    |
+| train/                  |             |
+|    approx_kl            | 0.013843839 |
+|    clip_fraction        | 0.157       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20         |
+|    explained_variance   | 0.983       |
+|    learning_rate        | 0.0003      |
+|    loss                 | -0.000851   |
+|    n_updates            | 2920        |
+|    policy_gradient_loss | -0.00529    |
+|    std                  | 0.671       |
+|    value_loss           | 0.0266      |
+-----------------------------------------
+---------------------------------------
+| baoding/                |           |
+|    kept_balls           | 0         |
+|    progress             | 3.4       |
+|    progress_max         | 3.65      |
+| rollout/                |           |
+|    ep_len_mean          | 604       |
+|    ep_rew_mean          | 20.7      |
+| time/                   |           |
+|    fps                  | 1510      |
+|    iterations           | 159       |
+|    time_elapsed         | 3450      |
+|    total_timesteps      | 19210112  |
+| train/                  |           |
+|    approx_kl            | 0.0170835 |
+|    clip_fraction        | 0.144     |
+|    clip_range           | 0.2       |
+|    entropy_loss         | -20       |
+|    explained_variance   | 0.972     |
+|    learning_rate        | 0.0003    |
+|    loss                 | 0.00845   |
+|    n_updates            | 2925      |
+|    policy_gradient_loss | -0.00556  |
+|    std                  | 0.671     |
+|    value_loss           | 0.0421    |
+---------------------------------------
+---------------------------------------
+| baoding/                |           |
+|    kept_balls           | 0         |
+|    progress             | 3.39      |
+|    progress_max         | 3.6       |
+| rollout/                |           |
+|    ep_len_mean          | 588       |
+|    ep_rew_mean          | 19.4      |
+| time/                   |           |
+|    fps                  | 1509      |
+|    iterations           | 160       |
+|    time_elapsed         | 3474      |
+|    total_timesteps      | 19242880  |
+| train/                  |           |
+|    approx_kl            | 0.0210292 |
+|    clip_fraction        | 0.231     |
+|    clip_range           | 0.2       |
+|    entropy_loss         | -20       |
+|    explained_variance   | 0.975     |
+|    learning_rate        | 0.0003    |
+|    loss                 | 0.00949   |
+|    n_updates            | 2930      |
+|    policy_gradient_loss | -0.00268  |
+|    std                  | 0.671     |
+|    value_loss           | 0.0351    |
+---------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.4         |
+|    progress_max         | 3.63        |
+| rollout/                |             |
+|    ep_len_mean          | 594         |
+|    ep_rew_mean          | 19.9        |
+| time/                   |             |
+|    fps                  | 1508        |
+|    iterations           | 161         |
+|    time_elapsed         | 3497        |
+|    total_timesteps      | 19275648    |
+| train/                  |             |
+|    approx_kl            | 0.019733198 |
+|    clip_fraction        | 0.192       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20         |
+|    explained_variance   | 0.955       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.0208      |
+|    n_updates            | 2935        |
+|    policy_gradient_loss | -0.00473    |
+|    std                  | 0.671       |
+|    value_loss           | 0.0634      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.4         |
+|    progress_max         | 3.63        |
+| rollout/                |             |
+|    ep_len_mean          | 595         |
+|    ep_rew_mean          | 20.3        |
+| time/                   |             |
+|    fps                  | 1507        |
+|    iterations           | 162         |
+|    time_elapsed         | 3520        |
+|    total_timesteps      | 19308416    |
+| train/                  |             |
+|    approx_kl            | 0.014007475 |
+|    clip_fraction        | 0.177       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20         |
+|    explained_variance   | 0.98        |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00588     |
+|    n_updates            | 2940        |
+|    policy_gradient_loss | -0.00315    |
+|    std                  | 0.671       |
+|    value_loss           | 0.0272      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.41        |
+|    progress_max         | 3.6         |
+| rollout/                |             |
+|    ep_len_mean          | 604         |
+|    ep_rew_mean          | 21          |
+| time/                   |             |
+|    fps                  | 1507        |
+|    iterations           | 163         |
+|    time_elapsed         | 3543        |
+|    total_timesteps      | 19341184    |
+| train/                  |             |
+|    approx_kl            | 0.017115988 |
+|    clip_fraction        | 0.191       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20         |
+|    explained_variance   | 0.971       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 0.00695     |
+|    n_updates            | 2945        |
+|    policy_gradient_loss | -0.0068     |
+|    std                  | 0.671       |
+|    value_loss           | 0.0415      |
+-----------------------------------------
+-----------------------------------------
+| baoding/                |             |
+|    kept_balls           | 0           |
+|    progress             | 3.42        |
+|    progress_max         | 3.6         |
+| rollout/                |             |
+|    ep_len_mean          | 606         |
+|    ep_rew_mean          | 21.1        |
+| time/                   |             |
+|    fps                  | 1506        |
+|    iterations           | 164         |
+|    time_elapsed         | 3567        |
+|    total_timesteps      | 19373952    |
+| train/                  |             |
+|    approx_kl            | 0.013825936 |
+|    clip_fraction        | 0.166       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -20         |
+|    explained_variance   | 0.98        |
+|    learning_rate        | 0.0003      |
+|    loss                 | -0.000215   |
+|    n_updates            | 2950        |
+|    policy_gradient_loss | -0.00553    |
+|    std                  | 0.671       |
+|    value_loss           | 0.0271      |
+-----------------------------------------
