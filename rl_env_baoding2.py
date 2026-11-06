@@ -83,13 +83,14 @@ class BaodingEnv2(BaodingEnv):
     shape_band = SHAPE_BAND
     max_r = MAX_R
     drop_per_second = DROP_PER_SECOND
+    cycle, cycle_bonus = np.pi, SWAP_BONUS     # progress per "swap" and its bonus (Stage 6: 2pi/3)
 
     def __init__(self, direction=1.0, randomize=True, episode_seconds=20.0, level=0):
         super().__init__(direction=direction, randomize=randomize, episode_seconds=episode_seconds)
         self.r0 = float(self.model.geom_size[self.geom_ids[0], 0])
         self.level = level
         self.action_space = spaces.Box(-1.0, 1.0, shape=(len(MOVING),), dtype=np.float32)
-        obs_dim = 2 * N_HAND_Q + len(MOVING) + 6 + 6 + 4 + len(DIGITS) + 2 + 1
+        obs_dim = 2 * N_HAND_Q + len(MOVING) + 8 * len(self.balls) + len(DIGITS) + 2 + 1
         self.observation_space = spaces.Box(-np.inf, np.inf, shape=(obs_dim,), dtype=np.float32)
 
     # ---- curriculum
@@ -121,14 +122,17 @@ class BaodingEnv2(BaodingEnv):
 
     def reset(self, seed=None, options=None):
         if self.pool is not None:
-            set_ball_radius(self.model, self.radius)
+            self._set_radius(self.radius)
         obs, info = super().reset(seed=seed, options=options)
         self.tips0 = self._tips()
         self.work_credit = 0.0
         self.best = 0.0
         self.swaps = 0
-        self.next_swap = np.pi
+        self.next_swap = self.cycle
         return self._obs(), info
+
+    def _set_radius(self, radius):
+        set_ball_radius(self.model, radius)
 
     # ---- measurements
     def _tips(self):
@@ -145,7 +149,7 @@ class BaodingEnv2(BaodingEnv):
         mj.mj_objectVelocity(m, d, mj.mjtObj.mjOBJ_XBODY, m.body("rh_palm").id, vp, 0)
         work, n_dorsal = {}, 0
         skip = self._no_credit()
-        for j, (b, bid) in enumerate(zip(BALLS, self.ball_ids)):
+        for j, (b, bid) in enumerate(zip(self.balls, self.ball_ids)):
             q = R.T @ (d.xpos[bid] - palm) - self.tracker.center
             rq = np.hypot(q[0], q[2])
             if rq < 1e-4:
@@ -186,6 +190,17 @@ class BaodingEnv2(BaodingEnv):
         """Indices of balls whose forward work earns nothing."""
         return ()
 
+    def _progress(self):
+        """Update the arcs and pair-line turn; (progress, each ball's (in-plane, normal) offsets)."""
+        before = self.tracker.total.copy()
+        steps = self.direction * (self.tracker.update(self.model, self.data) - before)
+        offsets = self.tracker.offsets(self.model, self.data)
+        self.arc += steps * np.array([r for r, _ in offsets]) / self.radius
+        a = self._pair_angle()
+        self.pair += self.direction * ((a - self.pair_prev + np.pi) % (2 * np.pi) - np.pi)
+        self.pair_prev = a
+        return float(min(self.arc.min(), self.pair)), offsets
+
     def _obs(self):
         o = super()._obs()
         # drop the wrist targets from the ctrl block; add the ball radius (curriculum level)
@@ -208,14 +223,7 @@ class BaodingEnv2(BaodingEnv):
         turn_digit = DIGITS[self.turn]
         self._clock()
 
-        before = self.tracker.total.copy()
-        steps = self.direction * (self.tracker.update(self.model, self.data) - before)
-        offsets = self.tracker.offsets(self.model, self.data)
-        self.arc += steps * np.array([r for r, _ in offsets]) / self.radius
-        a = self._pair_angle()
-        self.pair += self.direction * ((a - self.pair_prev + np.pi) % (2 * np.pi) - np.pi)
-        self.pair_prev = a
-        progress = float(min(self.arc.min(), self.pair))
+        progress, offsets = self._progress()
         d_progress, self.progress = progress - self.progress, progress
 
         work, n_dorsal = self._pad_work()
@@ -223,7 +231,7 @@ class BaodingEnv2(BaodingEnv):
         w = self._credit(work, turn_digit)
         tips = self._tips()
         stray_cm = float(np.sum(np.maximum(0.0, np.linalg.norm(tips - self.tips0, axis=1) - self.shape_band))) * 100
-        ball_z = [float(q[2]) for q in balls_in_palm(self.model, self.data)]
+        ball_z = [float(q[2]) for q in self._balls_in_palm()]
         out_cm = sum(max(0.0, z - BALL_Z_MAX) for z in ball_z) * 100
         facing = self._pad_facing()
         away = sum(max(0.0, 0.5 - c) for c in facing.values())
@@ -236,9 +244,9 @@ class BaodingEnv2(BaodingEnv):
         else:
             reward += W_ORBIT * d_progress
             while self.progress >= self.next_swap:
-                reward += SWAP_BONUS
+                reward += self.cycle_bonus
                 self.swaps += 1
-                self.next_swap += np.pi
+                self.next_swap += self.cycle
         truncated = self.t >= self.episode_steps
         info = {"progress": self.progress, "arcs": self.arc.copy(), "pair": self.pair,
                 "angles": self.tracker.total.copy(), "dropped": dropped, "swaps": self.swaps,
@@ -299,7 +307,7 @@ class BaodingEnv3(BaodingEnv2):
         return mass, friction, d.qpos.copy(), d.qvel.copy(), d.ctrl.copy(), d.act.copy()
 
     def _no_credit(self):
-        return [j for j in range(2) if self.arc[j] > self.progress + LEAD]
+        return [j for j in range(len(self.balls)) if self.arc[j] > self.progress + LEAD]
 
     def reset(self, seed=None, options=None):
         obs, info = super().reset(seed=seed, options=options)

@@ -1,4 +1,4 @@
-"""Stage 5: PPO on `rl_env_baoding.BaodingEnv` (runs 01-06) or, with `--env 2`, on
+"""Stage 5 (and Stage 6, `--env 10`: three balls): PPO on `rl_env_baoding.BaodingEnv` (runs 01-06) or, with `--env 2`, on
 `rl_env_baoding2.BaodingEnv2` (07+: work-based reward, fixed wrist, ball-size curriculum -- see the
 docstrings for the rewards).
 
@@ -17,6 +17,7 @@ from stable_baselines3.common.vec_env import SubprocVecEnv, VecMonitor, VecNorma
 
 from rl_env_baoding import BaodingEnv
 from rl_env_baoding2 import RADII, RADII_TO_50, BaodingEnv2, BaodingEnv3, BaodingEnv4, BaodingEnv5, BaodingEnv6, BaodingEnv7, BaodingEnv8, BaodingEnv9
+from rl_env_baoding3 import RADII3, BaodingEnv3Ball, BaodingEnv3BallLF, BaodingEnv3BallRelay, BaodingEnv3BallGuide, BaodingEnv3BallJam
 
 HERE = Path(__file__).parent
 
@@ -64,7 +65,8 @@ class Curriculum(BaseCallback):
 
 def make_env(seed, direction, env_version=1, level=0):
     def _init():
-        env = ({2: BaodingEnv2, 3: BaodingEnv3, 4: BaodingEnv4, 5: BaodingEnv5, 6: BaodingEnv6, 7: BaodingEnv7, 8: BaodingEnv8, 9: BaodingEnv9}[env_version](direction=direction, level=level) if env_version >= 2
+        env = ({2: BaodingEnv2, 3: BaodingEnv3, 4: BaodingEnv4, 5: BaodingEnv5, 6: BaodingEnv6, 7: BaodingEnv7, 8: BaodingEnv8, 9: BaodingEnv9,
+                10: BaodingEnv3Ball, 11: BaodingEnv3BallLF, 12: BaodingEnv3BallRelay, 13: BaodingEnv3BallGuide, 14: BaodingEnv3BallJam}[env_version](direction=direction, level=level) if env_version >= 2
                else BaodingEnv(direction=direction))
         env.reset(seed=seed)
         return env
@@ -85,7 +87,7 @@ def main():
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--resume", default=None, help="checkpoint .zip; its vecnormalize .pkl is found next to it")
     ap.add_argument("--checkpoint-freq", type=int, default=2_000_000)
-    ap.add_argument("--env", type=int, default=1, choices=(1, 2, 3, 4, 5, 6, 7, 8, 9))
+    ap.add_argument("--env", type=int, default=1, choices=(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14), help="10-14: Stage 6, three balls")
     ap.add_argument("--level", type=int, default=0, help="--env 2/3: starting curriculum level")
     args = ap.parse_args()
     torch.set_num_threads(1)   # more threads spin on the 16-obs rollout batches and starve the envs
@@ -107,7 +109,8 @@ def main():
                     n_epochs=args.n_epochs, gamma=args.gamma, policy_kwargs=dict(net_arch=[256, 256]), device="cpu",
                     tensorboard_log=str(run_dir / "logs"), seed=args.seed, verbose=1)
     callbacks = [EpisodeStats()] + ([Curriculum(args.level)] if 2 <= args.env <= 5 else
-                                   [Curriculum(args.level, radii=RADII_TO_50)] if args.env >= 7 else [])   # env 6: fixed 50mm balls
+                                   [Curriculum(args.level, radii=RADII_TO_50)] if 7 <= args.env <= 9 else
+                                   [Curriculum(args.level, radii=RADII3)] if args.env >= 10 else [])   # env 6: fixed 50mm balls
     model.learn(total_timesteps=args.timesteps, reset_num_timesteps=not args.resume,
                 callback=CallbackList(callbacks + [CheckpointCallback(
                     save_freq=max(args.checkpoint_freq // args.n_envs, 1), save_path=str(run_dir / "checkpoints"),

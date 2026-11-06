@@ -258,6 +258,74 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    (baoding_11 was trained 0-22M then resumed to 30M, its first part warm-started from baoding_10
    @10M; `--resume` adds `--timesteps` to the count.)
 
+6. **Three-ball baoding -- a planner demonstration DONE (2.3 circles, pads only); RL not yet.**
+   Three touching 45mm balls (`assets/scene_three_balls.xml`), the wrist still, all fingers in a
+   relay, the balls on the palm.
+
+   <p align="center">
+     <img src="media/stage6_pads_two_circles.gif" width="580">
+   </p>
+   <p align="center"><sub>Stage 6: the sampling planner with a fingertip cost, one run from the
+   start: the trio turns 825 deg (2.3 circles) in 71 s, no ball lost, fingers only, every finger
+   pressing with its pads (fingertip contact 2% of the time, the little finger only). Real-time
+   playback.</sub></p>
+
+   **RL alone, the Stage 5 recipe (runs three_01-06, `rl_env_baoding3.py`, `--env 10-14`)** --
+   stalls at a JAM: once per third of a turn one ball sinks into the palm heel between the thumb's
+   base and the little finger's metacarpal. three_06 (to ~72M; a reverse curriculum of jam and
+   passage starts, `collect_stage6_jam_states.py`) learned to HOLD in the jam (drops from jam starts
+   13/16 -> 1/16) but not to pass it: best 2.6 rad in 90 s.
+
+   **The rebuild, step by step** (the MyoChallenge baoding winner's recipe, Chiappa & Mathis 2024:
+   each ball tracks a target moving round a circle; static holds first, then faster):
+   1. *Is every placement holdable?* (`eval_stage6_circle_hold.py`): a CEM over the 18 finger
+      targets per phase of the circle -- yes, every phase at every centre tried, drift <= 3mm.
+   2. *Do the hold postures, blended, carry the balls?* (`eval_stage6_posture_sweep.py`): no -- a
+      ball is lost in 1-22 s.
+   3. *A planner on the MuJoCo model itself* (`stage6_teacher.py`, predictive sampling as in MuJoCo
+      MPC): from the true state, a CEM over 5 finger waypoints for the next move, executed, re-planned.
+      - small steps (15 deg, nearest-target): every run of 14 (38/45mm balls, 4 centres, both
+        directions) stalls at <= 86 deg;
+      - whole "clicks" with labeled targets (each ball to its own next place: the human tutorial's
+        *"it's like going uphill and then they fall in place"*), polished balls (ball-ball friction
+        0.15, `scene_three_balls_slick.xml`): ~300 deg, then a dead end; a closed-loop MPC
+        (`stage6_mpc.py`) ~220 deg; a small wrist tilt did not help;
+      - **+ backtracking** (`--backtracks`: when every plan loses a ball, back out one or two moves
+        and search again): **605 deg**, and a continuation from its last settled moment 717 deg -- the
+        first two circles. The user on it: *"ring finger and middle finger sometime use tip of the
+        finger ... not very elegant"*: a fingertip on a ball 54% of the time for the little finger,
+        22% the ring, 6% the middle;
+      - **+ a fingertip cost** (`--tip-weight 3`: per finger, not the thumb, pressing a ball with its
+        tip -- the rounded end cap, `hand_env.classify_contacts`): **825 deg in 71 s, one run, pads
+        only** (the GIF above). 1 of 3 seeds; the others lost a ball at ~330 and ~565 deg.
+
+   | demo | turn | time | fingertip contact (ff/mf/rf/lf) | file |
+   |---|---|---|---|---|
+   | backtracking, stitched | 717 deg | 98 s | 0% / 6% / 22% / 54% | `data/stage6_demo_two_circles.npz` |
+   | **+ fingertip cost** | **825 deg** | **71 s** | **0% / 0% / 0% / 2%** | `data/stage6_demo_pads.npz` |
+
+   The planner is not a controller: it searches ~120 simulated futures per move and rewinds on dead
+   ends -- ~3.5 h of compute for 71 s of baoding, on a perfect copy of the world.
+
+   4. *RL distilled from the demo* (`rl_env_track3.py`, `train_stage6_track.py`): PPO, each ball
+      tracking a target, a fingertip penalty, starts at random demo moments, warm-started by behaviour
+      cloning (alone it drops a ball in 1-9 s). Targets moving round the circle at a constant speed
+      stalled the curriculum at 3 deg/s for 13M steps: the trio passes a jam in a hop, which a smooth
+      target asks it to creep through. Targets following the demo's own timing (`--mode demo`,
+      DeepMimic-style, played back faster as the curriculum): at 46M steps ~9% of 10 s episodes
+      pass, a ball is lost in 3-33 s in 60 s runs. Paused; next, the same on the pad demo.
+
+   ```
+   python3 eval_stage6_circle_hold.py --scene assets/scene_three_balls_slick.xml --save data/stage6_circle_hold_slick.npz
+   python3 stage6_teacher.py --scene assets/scene_three_balls_slick.xml --table data/stage6_circle_hold_slick.npz \
+       --center 0.1,6.5 --labeled --step 60 --degrees 800 --waypoints 5 --seg 0.3 --hold 0.6 --pop 120 --iters 10 \
+       --max-boost 4 --retries 1 --backtracks 12 --procs 5 --seed 0 --tip-weight 3 --out data/stage6_demo_pads.npz
+   python3 train_stage6_track.py --run-name track_01 --bc --n-envs 8 --timesteps 40000000
+   python3 train_stage6_track.py --run-name track_01 --mode demo --n-envs 15 --level 0 \
+       --resume runs/track_01/checkpoints/ppo_24000000_steps.zip
+   python3 eval_stage6_track.py runs/track_01/checkpoints/ppo_45999945_steps.zip --mode demo --seconds 60 --n 6
+   ```
+
 ## Repository layout
 
 ```
@@ -267,7 +335,9 @@ shadow_hand/
 │   ├── assets/                            # meshes (vendored)
 │   ├── LICENSE.shadow_hand, CHANGELOG.shadow_hand.md, NOTICE.md
 │   ├── scene_one_ball.xml                 # Stage 2: hand + one 45mm ball
-│   └── scene_two_balls.xml                # Stage 3: hand + two 45mm balls
+│   ├── scene_two_balls.xml                # Stage 3: hand + two 45mm balls
+│   ├── scene_three_balls.xml              # Stage 6: hand + three 45mm balls
+│   └── scene_three_balls_slick.xml        # Stage 6: the same, polished (ball-ball friction 0.15)
 ├── hand_env.py                            # names, palmar_axis, contact-face classifier, grasp/hold tests
 ├── eval_stage1_verify.py                  # Stage 1: tracking / palmar axis / coupling / gravity checks
 ├── demo_stage1_kinematic_sweep.py         # Stage 1: actuator sweep GIF
@@ -285,12 +355,25 @@ shadow_hand/
 ├── demo_stage5_baoding_rl2.py             # Stage 5: rollout GIF + per-digit work for runs 07+
 ├── eval_stage5_baoding.py                 # Stage 5: swaps / drops over randomized starts
 ├── data/stage5_bowl_e_50mm.json           # Stage 5: bowl e for 50mm balls (BaodingEnv6)
-├── logs/                                  # Stage 5: training output + args of every run
+├── three_balls.py                         # Stage 6: three-ball scene helpers
+├── eval_stage6_hold.py, eval_stage6_push.py        # Stage 6: bowl hold / ideal-push checks, three balls
+├── rl_env_baoding3.py, eval_stage6_baoding.py      # Stage 6: Stage 5 RL recipe on three balls (three_01-06)
+├── collect_stage6_jam_states.py           # Stage 6: jam / passage start states (three_06)
+├── eval_stage6_circle_hold.py             # Stage 6 step 1: holdability of every phase (Probe)
+├── eval_stage6_posture_sweep.py           # Stage 6 step 2: blended hold postures
+├── stage6_teacher.py                      # Stage 6 step 3: segment planner (labeled clicks, backtracking, tip cost)
+├── stage6_mpc.py                          # Stage 6 step 3: closed-loop predictive-sampling MPC
+├── rl_env_track3.py                       # Stage 6 step 4: tracking env (circle / demo timing)
+├── train_stage6_track.py, eval_stage6_track.py     # Stage 6 step 4: PPO (+ BC) and evaluation
+├── data/stage6_*.npz                      # Stage 6: hold postures, jam states, the planner demos
+├── logs/                                  # Stage 5-6: training output of every run
 ├── media/
 │   ├── stage1_kinematic_sweep.gif
 │   ├── stage2_grasp_*.png                 # grasp renders, a-e in search order (d = final)
 │   ├── stage3_*.png                       # bowl renders (stage3_bowl_e = final)
 │   ├── stage4_*.gif                       # scripted baoding attempts + ideal-push test
-│   └── stage5_baoding_*.gif               # RL baoding, every run (15_60M = final)
+│   ├── stage5_baoding_*.gif               # RL baoding, every run (15_60M = final)
+│   ├── stage6_three_ball_hold.png         # three balls in the bowl
+│   └── stage6_pads_two_circles.gif        # Stage 6: the planner demo, 825 deg, pads only
 └── README.md
 ```

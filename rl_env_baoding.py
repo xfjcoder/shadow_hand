@@ -121,10 +121,11 @@ POOL = 16
 
 class BaodingEnv(gym.Env):
     metadata = {"render_modes": []}
+    scene, balls = TWO_BALL_SCENE, BALLS     # Stage 6 subclasses use three balls
 
     def __init__(self, direction=1.0, randomize=True, episode_seconds=EPISODE_SECONDS):
         super().__init__()
-        self.model = mj.MjModel.from_xml_path(TWO_BALL_SCENE)
+        self.model = mj.MjModel.from_xml_path(self.scene)
         self.data = mj.MjData(self.model)
         self.direction, self.randomize = float(direction), randomize
         self.episode_steps = int(episode_seconds / CONTROL_DT)
@@ -136,8 +137,8 @@ class BaodingEnv(gym.Env):
         self.pad_axes = {d: [(self.model.body(f"rh_{d}{s}").id, palmar_axis(self.model, f"rh_{d}{s}"))
                              for s in ("middle", "distal")] for d in DIGITS}
         self.rate = np.array([WRIST_RATE if a.startswith("rh_A_WR") else RATE for a in ACTUATOR_NAMES])
-        self.ball_ids = [self.model.body(b).id for b in BALLS]
-        self.geom_ids = [self.model.geom(b).id for b in BALLS]
+        self.ball_ids = [self.model.body(b).id for b in self.balls]
+        self.geom_ids = [self.model.geom(b).id for b in self.balls]
         self.mass0 = self.model.body_mass[self.ball_ids].copy()
         self.friction0 = self.model.geom_friction[self.geom_ids, 0].copy()
         self.action_space = spaces.Box(-1.0, 1.0, shape=(self.model.nu,), dtype=np.float32)
@@ -154,6 +155,12 @@ class BaodingEnv(gym.Env):
     def _pair_angle(self):
         p1, p2 = balls_in_palm(self.model, self.data)
         return float(np.arctan2(p2[2] - p1[2], p2[0] - p1[0]))
+
+    def _balls_in_palm(self):
+        return balls_in_palm(self.model, self.data)
+
+    def _make_tracker(self):
+        return BallAngles(self.model, self.data)
 
     def _palm_R(self):
         return self.data.body("rh_palm").xmat.reshape(3, 3)
@@ -222,8 +229,8 @@ class BaodingEnv(gym.Env):
 
     def _obs(self):
         R = self._palm_R()
-        rel = [q - self.tracker.center for q in balls_in_palm(self.model, self.data)]
-        vel = [R.T @ self.data.qvel[self.model.jnt_dofadr[self.model.body(b).jntadr[0]]:][:3] for b in BALLS]
+        rel = [q - self.tracker.center for q in self._balls_in_palm()]
+        vel = [R.T @ self.data.qvel[self.model.jnt_dofadr[self.model.body(b).jntadr[0]]:][:3] for b in self.balls]
         ang = [np.arctan2(r[2], r[0]) for r in rel]
         return np.concatenate([
             self.data.qpos[:N_HAND_Q], 0.1 * self.data.qvel[:N_HAND_Q], self.data.ctrl,
@@ -248,14 +255,15 @@ class BaodingEnv(gym.Env):
         super().reset(seed=seed)
         if self.pool is None:
             self.pool = [self._settle(self.np_random) for _ in range(POOL if self.randomize else 1)]
-        mass, friction, qpos, qvel, ctrl, act = self.pool[self.np_random.integers(len(self.pool))]
+        self.start_entry = self.pool[self.np_random.integers(len(self.pool))]
+        mass, friction, qpos, qvel, ctrl, act = self.start_entry[:6]
         self.model.body_mass[self.ball_ids], self.model.geom_friction[self.geom_ids, 0] = mass, friction
         mj.mj_resetData(self.model, self.data)
         self.data.qpos[:], self.data.qvel[:], self.data.ctrl[:], self.data.act[:] = qpos, qvel, ctrl, act
         mj.mj_forward(self.model, self.data)
-        self.tracker = BallAngles(self.model, self.data)
+        self.tracker = self._make_tracker()
         self.t = 0
-        self.arc = np.zeros(2)
+        self.arc = np.zeros(len(self.balls))
         self.pair = 0.0
         self.pair_prev = self._pair_angle()
         self.progress = 0.0
