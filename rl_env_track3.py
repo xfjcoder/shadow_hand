@@ -272,6 +272,18 @@ class DemoTrackEnv(TrackEnv):
         t = self.t * CONTROL_DT
         return self.obs_for(self.target_pos(t), self.target_pos(t + AHEAD), self._demo_at(t)[1], self.rate)
 
+    def demo_pairs(self):
+        """(obs, action) per demo step at 1x: the targets are the demo's own ball positions now and AHEAD s on."""
+        z, k = self.demo, int(round(AHEAD / CONTROL_DT))
+        n = len(z["qpos"])
+        obs, act = [], []
+        for i in range(n - 1):
+            self.d.qpos[:], self.d.qvel[:], self.d.ctrl[:] = z["qpos"][i], z["qvel"][i], z["ctrl"][i]
+            mj.mj_forward(self.m, self.d)
+            obs.append(self.obs_for(z["balls"][i], z["balls"][min(i + k, n - 1)], self.demo_phase[i], self.demo_rate))
+            act.append(np.clip((z["ctrl"][i + 1] - z["ctrl"][i]) / RATE, -1, 1))
+        return np.array(obs), np.array(act, dtype=np.float32)
+
     def level_ok(self, lost, truncated, mean_err):
         want = self._demo_at(self.t * CONTROL_DT)[1] - self._demo_at(0.0)[1]
         return bool(not lost and truncated and mean_err < DEMO_OK_ERR and self.turned >= DEMO_OK_TURN * want)

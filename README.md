@@ -258,7 +258,8 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    (baoding_11 was trained 0-22M then resumed to 30M, its first part warm-started from baoding_10
    @10M; `--resume` adds `--timesteps` to the count.)
 
-6. **Three-ball baoding -- a planner demonstration DONE (2.3 circles, pads only); RL not yet.**
+6. **Three-ball baoding -- a planner demonstration DONE (2.3 circles, pads only); RL reaches 2.8
+   circles in its best run, 5 of 16 runs keep all balls for 30 s.**
    Three touching 45mm balls (`assets/scene_three_balls.xml`), the wrist still, all fingers in a
    relay, the balls on the palm.
 
@@ -313,7 +314,33 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
       stalled the curriculum at 3 deg/s for 13M steps: the trio passes a jam in a hop, which a smooth
       target asks it to creep through. Targets following the demo's own timing (`--mode demo`,
       DeepMimic-style, played back faster as the curriculum): at 46M steps ~9% of 10 s episodes
-      pass, a ball is lost in 3-33 s in 60 s runs. Paused; next, the same on the pad demo.
+      pass, a ball is lost in 3-33 s in 60 s runs. Paused.
+   5. *The same on the pad demo* (`--demo data/stage6_demo_pads.npz`): **track_03** (behaviour
+      cloning, then PPO, 40M steps) and track_04 (track_01 resumed, to 86M). For the first ~10M
+      steps both only held the balls (60 s from the demo start: kept 56 s, turned -20 deg); then
+      the pass rate climbed from ~10% to 40-50% and the curriculum moved on, track_03 to 5x the
+      demo's speed, track_04 to 2.5x.
+
+   <p align="center">
+     <img src="media/stage6_rl_1021deg.gif" width="580">
+   </p>
+   <p align="center"><sub>Stage 6 RL (track_03 @40M, targets at 5x the pad demo's speed): its best
+   30 s run, from demo step 286: the trio turns 1021 deg (2.8 circles), no ball lost, fingers only,
+   fingertip contact 1% of the time. Real-time playback.</sub></p>
+
+   | policy | speed | episode | kept all balls | turn mean / max | fingertip rate |
+   |---|---|---|---|---|---|
+   | behaviour cloning alone | 1x | 10 s | 2/16 | 22 / 77 deg | 0.11 |
+   | **track_03 @40M** | **5x** | **30 s** | **5/16** | **426 / 1021 deg** | **0.04** |
+   | track_03 @40M | 5x | 10 s | 11/16 | 262 / 557 deg | 0.06 |
+   | track_03 @40M | 1x | 10 s | 9/16 | 67 / 164 deg | 0.04 |
+   | track_04 @86M | 2.5x | 10 s | 10/16 | 168 / 484 deg | 0.08 |
+   | track_04 @86M | 1x | 10 s | 6/16 | 76 / 225 deg | 0.19 |
+
+   Episodes start at random demo moments (16 per row, `eval_stage6_track.py`). The 5 kept 30 s runs
+   turned 531-1021 deg (4 past two circles); the other 11 lost a ball, mostly in the first 30 s.
+   The policy is good only at the speed it trained at: at 1x, 75 s from the demo's start, 312 deg
+   and then a ball lost. Not yet reliable; training continues.
 
    ```
    python3 eval_stage6_circle_hold.py --scene assets/scene_three_balls_slick.xml --save data/stage6_circle_hold_slick.npz
@@ -324,6 +351,10 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    python3 train_stage6_track.py --run-name track_01 --mode demo --n-envs 15 --level 0 \
        --resume runs/track_01/checkpoints/ppo_24000000_steps.zip
    python3 eval_stage6_track.py runs/track_01/checkpoints/ppo_45999945_steps.zip --mode demo --seconds 60 --n 6
+   python3 train_stage6_track.py --run-name track_03 --mode demo --demo data/stage6_demo_pads.npz --bc \
+       --n-envs 8 --timesteps 40000000
+   python3 eval_stage6_track.py runs/track_03/checkpoints/ppo_40000000_steps.zip --mode demo \
+       --demo data/stage6_demo_pads.npz --rate-level 7 --seconds 30 --n 16
    ```
 
 ## Repository layout
@@ -374,6 +405,7 @@ shadow_hand/
 │   ├── stage4_*.gif                       # scripted baoding attempts + ideal-push test
 │   ├── stage5_baoding_*.gif               # RL baoding, every run (15_60M = final)
 │   ├── stage6_three_ball_hold.png         # three balls in the bowl
-│   └── stage6_pads_two_circles.gif        # Stage 6: the planner demo, 825 deg, pads only
+│   ├── stage6_pads_two_circles.gif        # Stage 6: the planner demo, 825 deg, pads only
+│   └── stage6_rl_1021deg.gif              # Stage 6: RL (track_03), 1021 deg in 30 s, pads only
 └── README.md
 ```

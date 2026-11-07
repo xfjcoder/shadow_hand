@@ -21,7 +21,7 @@ from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import BaseCallback, CheckpointCallback
 from stable_baselines3.common.vec_env import SubprocVecEnv, VecMonitor, VecNormalize
 
-from rl_env_track3 import RATES_DEG, SPEEDS, DemoTrackEnv, TrackEnv
+from rl_env_track3 import DEMO, RATES_DEG, SPEEDS, DemoTrackEnv, TrackEnv
 
 HERE = Path(__file__).parent
 torch.set_num_threads(1)
@@ -58,17 +58,17 @@ class Curriculum(BaseCallback):
         self.logger.record("track/level_ok_recent", float(np.mean(self.recent)) if self.recent else 0.0)
 
 
-def make_env(seed, level, cls=TrackEnv):
+def make_env(seed, level, cls=TrackEnv, demo=DEMO):
     def _init():
-        env = cls(level=level)
+        env = cls(level=level, demo=demo)
         env.reset(seed=seed)
         return env
     return _init
 
 
-def behaviour_clone(model, venv, epochs, lr):
+def behaviour_clone(model, venv, epochs, lr, cls=TrackEnv, demo=DEMO):
     """Fit the policy's mean action to the demo's (obs, action) pairs; obs normalisation from the demo."""
-    obs, act = TrackEnv().demo_pairs()
+    obs, act = cls(demo=demo).demo_pairs()
     venv.obs_rms.mean, venv.obs_rms.var, venv.obs_rms.count = obs.mean(0), obs.var(0) + 1e-6, 1e4
     x = torch.as_tensor(venv.normalize_obs(obs), dtype=torch.float32)
     y = torch.as_tensor(act, dtype=torch.float32)
@@ -105,6 +105,7 @@ def main():
     ap.add_argument("--window", type=int, default=300)
     ap.add_argument("--mode", default="circle", choices=("circle", "demo"),
                     help="demo: each ball tracks its own demo position, played back SPEEDS x faster")
+    ap.add_argument("--demo", default=str(DEMO), help="planner demo npz (data/stage6_demo_pads.npz: the pad demo)")
     ap.add_argument("--bc", action="store_true", help="behaviour-clone the planner demo first")
     ap.add_argument("--bc-epochs", type=int, default=200)
     ap.add_argument("--log-std", type=float, default=-1.0)
@@ -114,7 +115,7 @@ def main():
 
     run = HERE / "runs" / args.run_name
     cls = DemoTrackEnv if args.mode == "demo" else TrackEnv
-    env = VecMonitor(SubprocVecEnv([make_env(args.seed + i, args.level, cls) for i in range(args.n_envs)]),
+    env = VecMonitor(SubprocVecEnv([make_env(args.seed + i, args.level, cls, args.demo) for i in range(args.n_envs)]),
                      info_keywords=())
     if args.resume:
         steps = Path(args.resume).stem.split("_")[-2]
@@ -127,7 +128,7 @@ def main():
                     tensorboard_log=str(run / "tb"),
                     policy_kwargs=dict(net_arch=dict(pi=[512, 512], vf=[512, 512]), log_std_init=args.log_std))
         if args.bc:
-            behaviour_clone(model, env, args.bc_epochs, 1e-3)
+            behaviour_clone(model, env, args.bc_epochs, 1e-3, cls, args.demo)
             model.save(run / "bc_policy")
             env.save(str(run / "bc_vecnormalize.pkl"))
     cbs = [Curriculum(args.level, args.threshold, args.window,

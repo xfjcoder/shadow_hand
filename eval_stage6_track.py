@@ -13,7 +13,7 @@ from PIL import Image, ImageDraw
 from stable_baselines3 import PPO
 from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
 
-from rl_env_track3 import RATES_DEG, SPEEDS, DemoTrackEnv, TrackEnv
+from rl_env_track3 import DEMO, RATES_DEG, SPEEDS, DemoTrackEnv, TrackEnv
 
 
 def vecnorm_path(ckpt):
@@ -31,13 +31,14 @@ def main():
     ap.add_argument("--n", type=int, default=8)
     ap.add_argument("--seed", type=int, default=100)
     ap.add_argument("--start", type=int, default=None, help="demo step to start from (default random)")
+    ap.add_argument("--demo", default=str(DEMO))
     ap.add_argument("--mode", default="circle", choices=("circle", "demo"))
     ap.add_argument("--gif", default=None, help="GIF of the first episode")
     args = ap.parse_args()
 
     cls = DemoTrackEnv if args.mode == "demo" else TrackEnv
-    env = cls(level=args.rate_level, episode_seconds=args.seconds)
-    vn = VecNormalize.load(str(vecnorm_path(args.ckpt)), DummyVecEnv([lambda: cls(level=args.rate_level)]))
+    env = cls(level=args.rate_level, episode_seconds=args.seconds, demo=args.demo)
+    vn = VecNormalize.load(str(vecnorm_path(args.ckpt)), DummyVecEnv([lambda: cls(level=args.rate_level, demo=args.demo)]))
     label = f"{SPEEDS[args.rate_level]:g}x demo speed" if args.mode == "demo" else f"{RATES_DEG[args.rate_level]:.0f} deg/s"
     vn.training, vn.norm_reward = False, False
     model = PPO.load(args.ckpt, device="cpu")
