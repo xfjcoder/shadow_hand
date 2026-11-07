@@ -58,9 +58,9 @@ class Curriculum(BaseCallback):
         self.logger.record("track/level_ok_recent", float(np.mean(self.recent)) if self.recent else 0.0)
 
 
-def make_env(seed, level, cls=TrackEnv, demo=DEMO):
+def make_env(seed, level, cls=TrackEnv, demo=DEMO, seconds=None):
     def _init():
-        env = cls(level=level, demo=demo)
+        env = cls(level=level, demo=demo, episode_seconds=seconds)
         env.reset(seed=seed)
         return env
     return _init
@@ -110,12 +110,14 @@ def main():
     ap.add_argument("--bc-epochs", type=int, default=200)
     ap.add_argument("--log-std", type=float, default=-1.0)
     ap.add_argument("--resume", default=None, help="checkpoint .zip; its vecnormalize .pkl is found next to it")
+    ap.add_argument("--episode-seconds", type=float, default=None,
+                    help="episode length (default: the env's own, 10 s in demo mode)")
     ap.add_argument("--checkpoint-freq", type=int, default=2_000_000)
     args = ap.parse_args()
 
     run = HERE / "runs" / args.run_name
     cls = DemoTrackEnv if args.mode == "demo" else TrackEnv
-    env = VecMonitor(SubprocVecEnv([make_env(args.seed + i, args.level, cls, args.demo) for i in range(args.n_envs)]),
+    env = VecMonitor(SubprocVecEnv([make_env(args.seed + i, args.level, cls, args.demo, args.episode_seconds) for i in range(args.n_envs)]),
                      info_keywords=())
     if args.resume:
         steps = Path(args.resume).stem.split("_")[-2]

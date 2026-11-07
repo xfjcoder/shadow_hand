@@ -258,8 +258,9 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    (baoding_11 was trained 0-22M then resumed to 30M, its first part warm-started from baoding_10
    @10M; `--resume` adds `--timesteps` to the count.)
 
-6. **Three-ball baoding -- a planner demonstration DONE (2.3 circles, pads only); RL reaches 2.8
-   circles in its best run, 5 of 16 runs keep all balls for 30 s.**
+6. **Three-ball baoding -- a planner demonstration DONE (2.3 circles, pads only); RL turns the trio
+   3.35 circles before a drop in its best run, 8 of 16 runs keep all balls for 30 s, none yet for 60 s.
+   In progress.**
    Three touching 45mm balls (`assets/scene_three_balls.xml`), the wrist still, all fingers in a
    relay, the balls on the palm.
 
@@ -341,6 +342,27 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    turned 531-1021 deg (4 past two circles); the other 11 lost a ball, mostly in the first 30 s.
    The policy is good only at the speed it trained at: at 1x, 75 s from the demo's start, 312 deg
    and then a ball lost. Not yet reliable; training continues.
+   6. *More training at a fixed speed* (`--threshold 0.95` keeps the curriculum at one level), both
+      resumed from track_03 @40M: track_05 at 5x and **track_06 at 2.5x**, 12M steps each.
+
+   <p align="center">
+     <img src="media/stage6_rl_1206deg.gif" width="580">
+   </p>
+   <p align="center"><sub>Stage 6 RL (track_06 @52M, targets at 2.5x the pad demo's speed), a 60 s
+   test from demo step 135: the trio turns 1206 deg (3.35 circles) in 38 s, pads only, then one ball
+   gets away (the end of the GIF). Real-time playback.</sub></p>
+
+   | policy | speed | 30 s: kept | 30 s turn mean / max | 60 s: kept | 60 s max turn | err |
+   |---|---|---|---|---|---|---|
+   | track_03 @40M | 5x | 5/16 | 426 / 1021 deg | -- | -- | 2.81cm |
+   | track_05 @52M | 5x | 8/16 | 494 / 1027 deg | 0/8 | 1061 deg | 2.57cm |
+   | **track_06 @52M** | **2.5x** | **8/16** | **621 / 905 deg** | 0/8 | **1206 deg** | **1.25cm** |
+
+   Balls lost per training episode fell from ~40% to 14% (track_05) and 6% (track_06), but every
+   60 s test still loses a ball, mostly at 20-46 s: training episodes are 10 s, so the policy never
+   learns to recover from the drift that builds up over a longer run.
+   7. *Longer training episodes* (in progress): **track_07** = track_06 @52M resumed with 30 s
+      episodes (`--episode-seconds 30`), next to track_06 still on 10 s episodes, to compare.
 
    ```
    python3 eval_stage6_circle_hold.py --scene assets/scene_three_balls_slick.xml --save data/stage6_circle_hold_slick.npz
@@ -355,6 +377,11 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
        --n-envs 8 --timesteps 40000000
    python3 eval_stage6_track.py runs/track_03/checkpoints/ppo_40000000_steps.zip --mode demo \
        --demo data/stage6_demo_pads.npz --rate-level 7 --seconds 30 --n 16
+   python3 train_stage6_track.py --run-name track_06 --mode demo --demo data/stage6_demo_pads.npz --n-envs 8 \
+       --timesteps 40000000 --threshold 0.95 --level 4 --resume runs/track_03/checkpoints/ppo_40000000_steps.zip
+   python3 train_stage6_track.py --run-name track_07 --mode demo --demo data/stage6_demo_pads.npz --n-envs 8 \
+       --timesteps 40000000 --threshold 0.95 --level 4 --episode-seconds 30 \
+       --resume runs/track_06/checkpoints/ppo_52000000_steps.zip
    ```
 
 ## Repository layout
@@ -406,6 +433,7 @@ shadow_hand/
 │   ├── stage5_baoding_*.gif               # RL baoding, every run (15_60M = final)
 │   ├── stage6_three_ball_hold.png         # three balls in the bowl
 │   ├── stage6_pads_two_circles.gif        # Stage 6: the planner demo, 825 deg, pads only
-│   └── stage6_rl_1021deg.gif              # Stage 6: RL (track_03), 1021 deg in 30 s, pads only
+│   ├── stage6_rl_1021deg.gif              # Stage 6: RL (track_03), 1021 deg in 30 s, pads only
+│   └── stage6_rl_1206deg.gif              # Stage 6: RL (track_06), 1206 deg in 38 s, then a drop
 └── README.md
 ```
