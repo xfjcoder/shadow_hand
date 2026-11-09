@@ -20,6 +20,7 @@ Reward per control step:  mean over balls of exp(-error / TRACK_SCALE)   (error:
 Curriculum (from 12M): see OK_ERR/OK_TURN and EP_DEGREES; the targets circle the demo trio's mean centroid.
 The wrist is held at the bowl posture (the demo did not need it); the fingers have their full range.
 """
+from collections import deque
 from pathlib import Path
 
 import gymnasium as gym
@@ -108,8 +109,17 @@ class TrackEnv(gym.Env):
     def phase_at(self, t):
         return self.phase0 + self.sign * self.rate * t
 
+    # LOST_HOLD > 1: the spread limit must be exceeded that many control steps in a row (the pad demo itself
+    # bulges 0.5mm past it for 2 steps at demo step 1755, mid-click); off the palm, or spread > LOST_SPREAD_HARD,
+    # is still lost at once. Default 1 = the original rule.
+    LOST_HOLD = 1
+    LOST_SPREAD_HARD = 0.06
+
     def lost(self, b):
-        return bool(np.any(np.abs(b[:, 1] - REST_Y) > LOST_Y) or np.any(np.linalg.norm(b - b.mean(0), axis=1) > LOST_SPREAD))
+        spread = float(np.max(np.linalg.norm(b - b.mean(0), axis=1)))
+        self.n_spread = getattr(self, "n_spread", 0) + 1 if spread > LOST_SPREAD else 0
+        return bool(np.any(np.abs(b[:, 1] - REST_Y) > LOST_Y) or spread > self.LOST_SPREAD_HARD
+                    or self.n_spread >= self.LOST_HOLD)
 
     def contacts(self):
         """(fingers pressing a ball with the tip, dorsal contacts)."""
@@ -159,6 +169,7 @@ class TrackEnv(gym.Env):
         self.i0 = i
         self.t, self.steps = 0, int(round(self.seconds() / CONTROL_DT))
         self.err_sum, self.n_tip, self.th_prev, self.turned = 0.0, 0, self._angles(), 0.0
+        self.n_spread = 0
         return self._obs(), {}
 
     def _angles(self):
@@ -224,8 +235,9 @@ START_FLOOR_DEG = 10.0
 
 class DemoTrackEnv(TrackEnv):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, hard_frac=0.0, **kwargs):
         super().__init__(*args, **kwargs)
+        self.hard_frac = float(hard_frac)
         # starts weighted by how far the demo turns over the next episode (at 1x): 42% of its 10 s windows
         # turn < 20 deg (the planner's stalls before backtracking), so uniform starts were mostly holding
         n, k = len(self.demo_phase), int(round(DEMO_EP_SECONDS / CONTROL_DT))
@@ -288,8 +300,51 @@ class DemoTrackEnv(TrackEnv):
         want = self._demo_at(self.t * CONTROL_DT)[1] - self._demo_at(0.0)[1]
         return bool(not lost and truncated and mean_err < DEMO_OK_ERR and self.turned >= DEMO_OK_TURN * want)
 
+    # Failure-focused starts (`hard_frac` of resets, training only): each env remembers where its balls were
+    # lost -- the demo moment (restart from the demo's own state HARD_BACK s of env time earlier) and the
+    # policy's own state HARD_BACK s before the drop (restart there: practise recovering from that slip).
+    HARD_BACK = (1.0, 3.0)
+    HARD_KEEP = 100
+    SNAP_EVERY = 25                # control steps between snapshots (0.5 s)
+
     def reset(self, seed=None, options=None):
+        if not hasattr(self, "hard_moments"):
+            self.hard_moments, self.hard_states, self.snaps = deque(maxlen=self.HARD_KEEP), deque(maxlen=self.HARD_KEEP), deque(maxlen=8)
+            self.n_hard = 0
+        self.snaps.clear()
+        self.hard_start = False
         if self.randomize and not (options and "start" in options):
             gym.Env.reset(self, seed=seed)
-            options = dict(options or {}, start=int(self.np_random.choice(len(self.start_p), p=self.start_p)))
+            n = len(self.demo_phase) - 1
+            if self.hard_moments and self.np_random.random() < self.hard_frac:
+                self.hard_start = True
+                if self.hard_states and self.np_random.random() < 0.5:
+                    obs, info = super().reset(seed=seed, options={"start": 0})
+                    qpos, qvel, ctrl, i0 = self.hard_states[int(self.np_random.integers(len(self.hard_states)))]
+                    self.d.qpos[:], self.d.qvel[:], self.d.ctrl[:] = qpos, qvel, ctrl
+                    mj.mj_forward(self.m, self.d)
+                    self.i0 = i0
+                    self.th_prev = self._angles()
+                    return self._obs(), info
+                m = self.hard_moments[int(self.np_random.integers(len(self.hard_moments)))]
+                back = self.np_random.uniform(*self.HARD_BACK) * self.speed / CONTROL_DT
+                options = dict(options or {}, start=int(round(m - back)) % n)
+            else:
+                options = dict(options or {}, start=int(self.np_random.choice(len(self.start_p), p=self.start_p)))
         return super().reset(seed=seed, options=options)
+
+    def step(self, action):
+        if self.hard_frac and self.t % self.SNAP_EVERY == 0:
+            self.snaps.append((self.d.qpos.copy(), self.d.qvel.copy(), self.d.ctrl.copy(),
+                               self.i0 + self.speed * self.t))
+        obs, reward, term, trunc, info = super().step(action)
+        if term and self.hard_frac:
+            n = len(self.demo_phase) - 1
+            self.hard_moments.append((self.i0 + self.speed * self.t) % n)
+            k = int(round(np.mean(self.HARD_BACK) / (self.SNAP_EVERY * CONTROL_DT)))
+            if len(self.snaps) > k:
+                self.hard_states.append(self.snaps[-1 - k])
+        if term or trunc:
+            self.n_hard += self.hard_start
+            info["hard_start"] = float(self.hard_start)
+        return obs, reward, term, trunc, info

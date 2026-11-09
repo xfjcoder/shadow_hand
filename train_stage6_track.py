@@ -32,11 +32,13 @@ class Curriculum(BaseCallback):
     def __init__(self, level, threshold, window, levels=RATES_DEG, unit="deg/s"):
         super().__init__()
         self.levels, self.unit = levels, unit
-        self.level, self.threshold, self.window, self.recent, self.eps = level, threshold, window, [], []
+        self.level, self.threshold, self.window, self.recent, self.eps, self.hard = level, threshold, window, [], [], []
 
     def _on_step(self):
         for info in self.locals["infos"]:
-            if "level_ok" in info:
+            if "level_ok" in info and info.get("hard_start"):
+                self.hard.append(info["lost"])
+            elif "level_ok" in info:
                 self.eps.append(info)
                 if info["level"] == self.level:
                     self.recent.append(info["level_ok"])
@@ -54,13 +56,18 @@ class Curriculum(BaseCallback):
             for k in INFO_KEYS[:3] + INFO_KEYS[4:]:
                 self.logger.record(f"track/{k}", float(np.mean([e[k] for e in eps])))
             self.logger.record("track/turned_deg_max", float(np.degrees(max(e["turned"] for e in eps))))
+        if self.hard:
+            self.logger.record("track/hard_lost", float(np.mean(self.hard)))
+            self.logger.record("track/hard_share", len(self.hard) / (len(self.hard) + len(eps)))
+        self.hard = []
         self.logger.record("track/level_value", self.levels[self.level])
         self.logger.record("track/level_ok_recent", float(np.mean(self.recent)) if self.recent else 0.0)
 
 
-def make_env(seed, level, cls=TrackEnv, demo=DEMO, seconds=None):
+def make_env(seed, level, cls=TrackEnv, demo=DEMO, seconds=None, hard_frac=0.0):
     def _init():
-        env = cls(level=level, demo=demo, episode_seconds=seconds)
+        kw = {"hard_frac": hard_frac} if hard_frac else {}
+        env = cls(level=level, demo=demo, episode_seconds=seconds, **kw)
         env.reset(seed=seed)
         return env
     return _init
@@ -112,12 +119,14 @@ def main():
     ap.add_argument("--resume", default=None, help="checkpoint .zip; its vecnormalize .pkl is found next to it")
     ap.add_argument("--episode-seconds", type=float, default=None,
                     help="episode length (default: the env's own, 10 s in demo mode)")
+    ap.add_argument("--hard-frac", type=float, default=0.0,
+                    help="demo mode: share of resets started just before a remembered ball loss")
     ap.add_argument("--checkpoint-freq", type=int, default=2_000_000)
     args = ap.parse_args()
 
     run = HERE / "runs" / args.run_name
     cls = DemoTrackEnv if args.mode == "demo" else TrackEnv
-    env = VecMonitor(SubprocVecEnv([make_env(args.seed + i, args.level, cls, args.demo, args.episode_seconds) for i in range(args.n_envs)]),
+    env = VecMonitor(SubprocVecEnv([make_env(args.seed + i, args.level, cls, args.demo, args.episode_seconds, args.hard_frac) for i in range(args.n_envs)]),
                      info_keywords=())
     if args.resume:
         steps = Path(args.resume).stem.split("_")[-2]

@@ -33,11 +33,14 @@ def main():
     ap.add_argument("--start", type=int, default=None, help="demo step to start from (default random)")
     ap.add_argument("--demo", default=str(DEMO))
     ap.add_argument("--mode", default="circle", choices=("circle", "demo"))
+    ap.add_argument("--lost-hold", type=int, default=1,
+                    help="control steps the spread limit must be exceeded in a row to count a ball lost (1 = original)")
     ap.add_argument("--gif", default=None, help="GIF of the first episode")
     args = ap.parse_args()
 
     cls = DemoTrackEnv if args.mode == "demo" else TrackEnv
     env = cls(level=args.rate_level, episode_seconds=args.seconds, demo=args.demo)
+    env.LOST_HOLD = args.lost_hold
     vn = VecNormalize.load(str(vecnorm_path(args.ckpt)), DummyVecEnv([lambda: cls(level=args.rate_level, demo=args.demo)]))
     label = f"{SPEEDS[args.rate_level]:g}x demo speed" if args.mode == "demo" else f"{RATES_DEG[args.rate_level]:.0f} deg/s"
     vn.training, vn.norm_reward = False, False
