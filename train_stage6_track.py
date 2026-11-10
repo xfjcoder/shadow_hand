@@ -29,9 +29,9 @@ INFO_KEYS = ("lost", "mean_err", "turned", "level", "tip_rate", "level_ok")
 
 
 class Curriculum(BaseCallback):
-    def __init__(self, level, threshold, window, levels=RATES_DEG, unit="deg/s"):
+    def __init__(self, level, threshold, window, levels=RATES_DEG, unit="deg/s", step=1):
         super().__init__()
-        self.levels, self.unit = levels, unit
+        self.levels, self.unit, self.step = levels, unit, step
         self.level, self.threshold, self.window, self.recent, self.eps, self.hard = level, threshold, window, [], [], []
 
     def _on_step(self):
@@ -43,8 +43,8 @@ class Curriculum(BaseCallback):
                 if info["level"] == self.level:
                     self.recent.append(info["level_ok"])
         self.recent = self.recent[-self.window:]
-        if len(self.recent) == self.window and np.mean(self.recent) >= self.threshold and self.level < len(self.levels) - 1:
-            self.level += 1
+        if len(self.recent) == self.window and np.mean(self.recent) >= self.threshold and 0 <= self.level + self.step < len(self.levels):
+            self.level += self.step
             self.training_env.env_method("set_level", self.level)
             self.recent = []
             print(f"curriculum: level {self.level}, targets at {self.levels[self.level]:g} {self.unit} at {self.num_timesteps} steps", flush=True)
@@ -121,6 +121,7 @@ def main():
                     help="episode length (default: the env's own, 10 s in demo mode)")
     ap.add_argument("--hard-frac", type=float, default=0.0,
                     help="demo mode: share of resets started just before a remembered ball loss")
+    ap.add_argument("--down", action="store_true", help="curriculum steps DOWN the levels (slow a fast policy to 1x)")
     ap.add_argument("--checkpoint-freq", type=int, default=2_000_000)
     args = ap.parse_args()
 
@@ -143,7 +144,7 @@ def main():
             model.save(run / "bc_policy")
             env.save(str(run / "bc_vecnormalize.pkl"))
     cbs = [Curriculum(args.level, args.threshold, args.window,
-                      *((SPEEDS, "x demo speed") if args.mode == "demo" else (RATES_DEG, "deg/s"))),
+                      *((SPEEDS, "x demo speed") if args.mode == "demo" else (RATES_DEG, "deg/s")), step=-1 if args.down else 1),
            CheckpointCallback(max(args.checkpoint_freq // args.n_envs, 1), str(run / "checkpoints"), name_prefix="ppo",
                               save_vecnormalize=True)]
     model.learn(args.timesteps, callback=cbs, reset_num_timesteps=not args.resume)

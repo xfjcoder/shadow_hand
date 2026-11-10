@@ -258,24 +258,24 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    (baoding_11 was trained 0-22M then resumed to 30M, its first part warm-started from baoding_10
    @10M; `--resume` adds `--timesteps` to the count.)
 
-6. **Three-ball baoding -- RL DONE: 20 of 24 60 s tests keep all three balls (4-5 circles each), pads
-   only.** (The planner demonstration it learned from: 2.3 circles.)
+6. **Three-ball baoding -- RL DONE at the demo's own speed: 21 of 24 60 s tests keep all three balls,
+   ~2 circles a minute, pads only.** (The planner demonstration it learned from: 2.3 circles.)
    Three touching 45mm balls (`assets/scene_three_balls.xml`), the wrist still, all fingers in a
    relay, the balls on the palm.
 
    <p align="center">
-     <img src="media/stage6_rl_20of24.gif" width="580">
+     <img src="media/stage6_rl_1x.gif" width="580">
    </p>
-   <p align="center"><sub>Stage 6 RL (track_08 @104M, targets at 2.5x the pad demo's speed), a 60 s
-   test from demo step 2823 (where the 76M checkpoint lost a ball at 44 s): the trio turns 1733 deg
-   (4.8 circles), no ball lost, fingers only, fingertip contact 1%. Real-time playback. How it got
-   here: steps 4-8 below.</sub></p>
+   <p align="center"><sub>Stage 6 RL (track_10 @164M, targets at 1x, the pad demo's own speed), a 60 s
+   test from demo step 135: the trio turns 738 deg (2.05 circles), 0.34cm off the demo, no ball lost,
+   fingers only, no fingertip contact. Real-time playback. How it got here: steps 4-9 below.</sub></p>
 
    <p align="center">
-     <img src="media/stage6_rl_five_circles.gif" width="480">
+     <img src="media/stage6_rl_20of24.gif" width="480">
    </p>
-   <p align="center"><sub>The first 60 s keep (track_07 @64M, 4 of 8 tests then): 1818 deg (5.05
-   circles) from demo step 135.</sub></p>
+   <p align="center"><sub>The fast version (track_08 @104M, 2.5x the demo's speed, 20/24 kept for
+   60 s): 1733 deg (4.8 circles) from demo step 2823.</sub></p>
+
 
    <p align="center">
      <img src="media/stage6_pads_two_circles.gif" width="580">
@@ -402,8 +402,26 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    saved frame does not resume the planner's run exactly, ~2mm per step, and the planner made one ball
    hop there, a knife-edge move; 19 of 347 frames fail this way, mostly 1660-1750). A re-plan from demo
    step 1500 (`data/stage6_demo_pads_hopfix.npz`, 733 deg in 55.6 s) removes that hop; training on it
-   (track_09) is in progress. A loss rule that ignores the demo's own 2-step, 0.5mm spread excursion at
+   (track_09) did not pay off -- see step 9. A loss rule that ignores the demo's own 2-step, 0.5mm spread excursion at
    step 1755 (`--lost-hold 10`) gave the same scores, so the drops are real ones.
+   9. *Each policy knows its one demo, at its one speed.* track_09 (track_08 @104M, 40M steps on the
+      re-planned demo): 13/24 on it, and 0/24 back on the original (track_08 on the re-planned demo:
+      4/24, drops right after its loop seam). So the original demo stays, and the speed comes down
+      instead: **track_10** = track_08 @104M, `--down` (the curriculum steps 2x -> 1.5x -> 1.25x -> 1x,
+      a level per 70% passes; it reached 1x in 4M steps), 60 s episodes, `--hard-frac 0.5`, 60M steps.
+
+   | policy | 60 s at 1x: seed 200 / 300 / 400 | total | at 2.5x |
+   |---|---|---|---|
+   | track_08 @104M | 0/8, 0/8, 0/8 | 0/24 | 20/24 |
+   | track_10 @132M | 6/8, 4/8, 7/8 | 17/24 | 0/24 |
+   | **track_10 @164M** | **7/8, 6/8, 8/8** | **21/24** | -- |
+
+   The kept runs at 164M turn 586-763 deg a minute (the demo itself: ~700), 0.27-0.61cm off it,
+   fingertip contact 0-3%. One of the 21 only holds (start 1940: 392 deg, 2.8cm behind), so 20/24
+   strictly. Lost: start 1686 (the planner's knife-edge hop, step 8) and starts 2656/2686 (a stall, then
+   a drop at ~7 s). Start 1704, failed by every earlier policy, now keeps all three (743 deg). The fast
+   skill is gone (0/24 at 2.5x): one policy, one speed. Next: several planner demos, so it learns
+   baoding rather than one recording.
 
    ```
    python3 eval_stage6_circle_hold.py --scene assets/scene_three_balls_slick.xml --save data/stage6_circle_hold_slick.npz
@@ -431,6 +449,11 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    python3 eval_stage6_track.py runs/track_08/checkpoints/ppo_104000000_steps.zip --mode demo \
        --demo data/stage6_demo_pads.npz --rate-level 4 --seconds 60 --n 8 --seed 200   # also 300, 400
    python3 eval_stage6_demo_replay.py data/stage6_demo_pads.npz --seconds 2 --every 10
+   python3 train_stage6_track.py --run-name track_10 --mode demo --demo data/stage6_demo_pads.npz --n-envs 15 \
+       --timesteps 60000000 --threshold 0.7 --level 3 --down --episode-seconds 60 --hard-frac 0.5 \
+       --resume runs/track_08/checkpoints/ppo_104000000_steps.zip
+   python3 eval_stage6_track.py runs/track_10/checkpoints/ppo_163999850_steps.zip --mode demo \
+       --demo data/stage6_demo_pads.npz --rate-level 0 --seconds 60 --n 8 --seed 200   # also 300, 400
    ```
 
 ## Repository layout
@@ -486,6 +509,7 @@ shadow_hand/
 │   ├── stage6_rl_1021deg.gif              # Stage 6: RL (track_03), 1021 deg in 30 s, pads only
 │   ├── stage6_rl_1206deg.gif              # Stage 6: RL (track_06), 1206 deg in 38 s, then a drop
 │   ├── stage6_rl_five_circles.gif         # Stage 6: RL (track_07), 1818 deg in 60 s, no ball lost
-│   └── stage6_rl_20of24.gif               # Stage 6: RL (track_08), 20/24 kept 60 s; 1733 deg shown
+│   ├── stage6_rl_20of24.gif               # Stage 6: RL (track_08), 20/24 kept 60 s at 2.5x; 1733 deg shown
+│   └── stage6_rl_1x.gif                   # Stage 6: RL (track_10), 21/24 kept 60 s at 1x; 738 deg shown
 └── README.md
 ```
