@@ -456,12 +456,74 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
        --demo data/stage6_demo_pads.npz --rate-level 0 --seconds 60 --n 8 --seed 200   # also 300, 400
    ```
 
+   **What kind of learning this is.** Motion imitation by RL (DeepMimic-style tracking), not classic
+   imitation learning: the demo supplies *states* -- each ball's target at every moment (the reward and
+   part of the observation), the start states, and the loop for long runs -- while its *actions* are used
+   only once, for the behaviour-cloning warm start. PPO finds its own finger motions: cloning alone kept
+   the balls 1 time in 12 for 10 s, and from demo step 1704 the policy survives where replaying the
+   demo's own controls loses a ball. The price is imitation's usual one: the goal is "be where the demo's
+   balls are", so the policy is tied to one recording, one speed and one direction.
+
+   **Next option on this path (not started): several planner demos (option 3).** Planner runs with new
+   seeds, both directions (`stage6_teacher.py --sign -1`), the same pad settings; keep the ones that go
+   the distance (~1 in 3 seeds did) and pass `eval_stage6_demo_replay.py`; train one policy on all of
+   them (`DemoTrackEnv` picking a demo per episode, the demo's direction in the observation), warm-started
+   from track_10. Expected: both directions; more ways back after a slip (several valid paths through
+   each pass); weak spots of one demo covered by another; the real test, a held-out demo, above the 0/24
+   that single-demo policies score on a demo they never saw -- with per-demo scores perhaps a little
+   below 21/24 at first. Cost ~2-3 days (8-10 planner runs of ~4 h, then training). It is still demo
+   tracking: free baoding with no reference path is a further step (the reward-only Stage 5 recipe
+   stalled at the jam, runs three_01-06).
+
+7. **Two hands, four balls -- B DONE: each hand turns its own pair; A (one loop across both palms) in
+   progress.** Two-hand four-ball patterns found on YouTube: (A) [spheres108, "4 Baoding Balls"](https://www.youtube.com/watch?v=iyMXsvBwHKQ)
+   -- palms up side by side, four balls kept apart in ONE loop across both palms, crossing where they
+   meet; (B) [Curtis Zimmerman, "How to roll 2 balls in both hands"](https://www.youtube.com/watch?v=OrymhfihtS4)
+   -- two-ball baoding in each hand at once; (C) [spheres108, "Passing 4 baoding balls"](https://www.youtube.com/watch?v=UXAFp3tYJBE)
+   -- four balls in one hand, passed as a group (needs four in one hand: not attempted). Plan: B, then A.
+
+   <p align="center">
+     <img src="media/stage7_two_hands_B.gif" width="580">
+   </p>
+   <p align="center"><sub>Stage 7B: a right and a (mirrored) left Shadow Hand, palms up side by side, two
+   50mm balls each, both driven by the Stage 5 policy (baoding_15 @60M) in one simulation: 11 swaps
+   per hand in 20 s, no drop; the left pair turns the mirrored way. Real-time playback.</sub></p>
+
+   - *The scene* (`two_hands.py`): the Stage 5 scene plus the menagerie left hand (`assets/left_hand.xml`,
+     vendored unmodified) attached with MjSpec under the prefix `L_` (the two hand files name their meshes
+     after the same .obj files, so they cannot just be included together), 13cm along the right palm's -x,
+     little fingers facing. The menagerie left hand is the right one mirrored in palm x with joint axes
+     flipped where needed: the same joint angles give the mirrored pose (checked: 0.000mm over random
+     poses).
+   - *One policy, both hands, no retraining* (`stage7_two_hands.py`): each hand has a proxy -- a
+     single-hand Stage 5 env that never steps physics; every control step the hand's joints and its
+     two balls are copied into it (the left hand's through the palm-x mirror) and its own bookkeeping
+     (relay clock, ball tracker, drop limits) runs on the copy, so the policy sees exactly its training
+     observation (checked: a round trip reproduces the observation exactly, both hands). Its action goes
+     back to that hand's actuators.
+   - *A trap*: the policy first failed in the two-hand scene (dropped in 2-10 s) because the scene
+     compiled the balls at 50mm, while the Stage 5 env compiles them at 45mm/80g and resizes them at run
+     time without `mj_setConst` -- MuJoCo's compile-time solver constants (`invweight0`) differed, and a
+     replay of the same actions diverged from the first step. Compiled like Stage 5: within ~2mm over 5 s
+     open-loop, and the closed loop below.
+
+   | 8 episodes x 20 s | both hands kept | left kept / swaps | right kept / swaps |
+   |---|---|---|---|
+   | two-hand scene | **7/8** | 8/8, 11.8 | 7/8, 11.2 |
+   | (Stage 5 alone, 32 episodes) | -- | -- | 28/32, 10.3 |
+
+   ```
+   python3 two_hands.py                       # build, mirror check
+   python3 stage7_two_hands.py runs/baoding_15/checkpoints/ppo_60000000_steps.zip --n 8 --seconds 20
+   python3 stage7_two_hands.py runs/baoding_15/checkpoints/ppo_60000000_steps.zip --n 1 --gif media_full/stage7_two_hands_B.gif
+   ```
+
 ## Repository layout
 
 ```
 shadow_hand/
 ├── assets/
-│   ├── right_hand.xml, scene_right.xml, keyframes.xml   # vendored, see NOTICE.md
+│   ├── right_hand.xml, left_hand.xml, scene_right.xml, keyframes.xml   # vendored, see NOTICE.md
 │   ├── assets/                            # meshes (vendored)
 │   ├── LICENSE.shadow_hand, CHANGELOG.shadow_hand.md, NOTICE.md
 │   ├── scene_one_ball.xml                 # Stage 2: hand + one 45mm ball
@@ -496,6 +558,8 @@ shadow_hand/
 ├── rl_env_track3.py                       # Stage 6 step 4: tracking env (circle / demo timing)
 ├── train_stage6_track.py, eval_stage6_track.py     # Stage 6 step 4: PPO (+ BC) and evaluation
 ├── eval_stage6_demo_replay.py             # Stage 6: open-loop replay scan of a planner demo
+├── two_hands.py                           # Stage 7: two-hand scene (MjSpec), mirror check
+├── stage7_two_hands.py                    # Stage 7B: Stage 5 policy on both hands via per-hand proxies
 ├── data/stage6_*.npz                      # Stage 6: hold postures, jam states, the planner demos
 ├── logs/                                  # Stage 5-6: training output of every run
 ├── media/
@@ -510,6 +574,7 @@ shadow_hand/
 │   ├── stage6_rl_1206deg.gif              # Stage 6: RL (track_06), 1206 deg in 38 s, then a drop
 │   ├── stage6_rl_five_circles.gif         # Stage 6: RL (track_07), 1818 deg in 60 s, no ball lost
 │   ├── stage6_rl_20of24.gif               # Stage 6: RL (track_08), 20/24 kept 60 s at 2.5x; 1733 deg shown
-│   └── stage6_rl_1x.gif                   # Stage 6: RL (track_10), 21/24 kept 60 s at 1x; 738 deg shown
+│   ├── stage6_rl_1x.gif                   # Stage 6: RL (track_10), 21/24 kept 60 s at 1x; 738 deg shown
+│   └── stage7_two_hands_B.gif             # Stage 7B: two hands, a pair each, 11 swaps per hand in 20 s
 └── README.md
 ```
