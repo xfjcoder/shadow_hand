@@ -1,0 +1,4 @@
+settled square: centre x 25.4 y 4.1 cm, corner radius 3.41 cm (packed: 3.18)
+seg   1/48 target  +15.0  turned   +0.0 deg  off target mean 0.93 max 0.97 cm  next boost x2  (25s)
+seg   2/48 target  +15.0  turned   +0.0 deg  off target mean 0.93 max 0.97 cm  next boost x4  (188s)
+seg   3/48 target  +15.0  turned   +0.1 deg  off target mean 0.93 max 0.98 cm  next boost x4  (506s)

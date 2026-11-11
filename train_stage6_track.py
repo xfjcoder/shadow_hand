@@ -10,6 +10,7 @@ at the curriculum's speed-up (`SPEEDS`); a level passes on no ball lost and mean
 
 Usage:
     python3 train_stage6_track.py --run-name track_01 --bc --timesteps 60000000
+    python3 train_stage6_track.py --run-name two_01 --mode two --bc --hard-frac 0.3
     python3 train_stage6_track.py --run-name track_01 --mode demo --resume runs/track_01/checkpoints/ppo_26000000_steps.zip --level 0
 """
 import argparse
@@ -21,6 +22,7 @@ from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import BaseCallback, CheckpointCallback
 from stable_baselines3.common.vec_env import SubprocVecEnv, VecMonitor, VecNormalize
 
+import rl_env_stage7
 from rl_env_track3 import DEMO, RATES_DEG, SPEEDS, DemoTrackEnv, TrackEnv
 
 HERE = Path(__file__).parent
@@ -110,9 +112,11 @@ def main():
     ap.add_argument("--level", type=int, default=0)
     ap.add_argument("--threshold", type=float, default=0.6)
     ap.add_argument("--window", type=int, default=300)
-    ap.add_argument("--mode", default="circle", choices=("circle", "demo"),
-                    help="demo: each ball tracks its own demo position, played back SPEEDS x faster")
-    ap.add_argument("--demo", default=str(DEMO), help="planner demo npz (data/stage6_demo_pads.npz: the pad demo)")
+    ap.add_argument("--mode", default="circle", choices=("circle", "demo", "two"),
+                    help="demo: each ball tracks its own demo position, played back SPEEDS x faster; "
+                         "two: the same on the Stage 7A two-hand four-ball scene (rl_env_stage7)")
+    ap.add_argument("--demo", default=None, help="planner demo npz (default: the mode's own; "
+                                                 "data/stage6_demo_pads.npz: the pad demo)")
     ap.add_argument("--bc", action="store_true", help="behaviour-clone the planner demo first")
     ap.add_argument("--bc-epochs", type=int, default=200)
     ap.add_argument("--log-std", type=float, default=-1.0)
@@ -126,7 +130,9 @@ def main():
     args = ap.parse_args()
 
     run = HERE / "runs" / args.run_name
-    cls = DemoTrackEnv if args.mode == "demo" else TrackEnv
+    cls = {"circle": TrackEnv, "demo": DemoTrackEnv, "two": rl_env_stage7.TwoHandTrackEnv}[args.mode]
+    args.demo = args.demo or str(rl_env_stage7.DEMO if args.mode == "two" else DEMO)
+    speeds = rl_env_stage7.SPEEDS if args.mode == "two" else SPEEDS
     env = VecMonitor(SubprocVecEnv([make_env(args.seed + i, args.level, cls, args.demo, args.episode_seconds, args.hard_frac) for i in range(args.n_envs)]),
                      info_keywords=())
     if args.resume:
@@ -144,7 +150,7 @@ def main():
             model.save(run / "bc_policy")
             env.save(str(run / "bc_vecnormalize.pkl"))
     cbs = [Curriculum(args.level, args.threshold, args.window,
-                      *((SPEEDS, "x demo speed") if args.mode == "demo" else (RATES_DEG, "deg/s")), step=-1 if args.down else 1),
+                      *((speeds, "x demo speed") if args.mode != "circle" else (RATES_DEG, "deg/s")), step=-1 if args.down else 1),
            CheckpointCallback(max(args.checkpoint_freq // args.n_envs, 1), str(run / "checkpoints"), name_prefix="ppo",
                               save_vecnormalize=True)]
     model.learn(args.timesteps, callback=cbs, reset_num_timesteps=not args.resume)

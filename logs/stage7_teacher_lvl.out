@@ -1,0 +1,8 @@
+settled square: centre x 32.1 y 4.2 cm, corner radius 3.53 cm (packed: 3.18)
+seg   1/48 target  +15.0  turned   +0.1 deg  off target mean 1.14 max 1.74 cm  next boost x2  (24s)
+seg   2/48 target  +15.1  turned   +0.0 deg  off target mean 1.69 max 2.99 cm  next boost x4  (172s)
+  every plan loses a ball: re-searching at boost x4
+  every plan loses a ball: re-searching at boost x4
+  every plan loses a ball: re-searching at boost x4
+seg   3/48 target  +15.0  turned   +0.0 deg  off target mean 2.00 max 3.65 cm  next boost x4  LOST  (661s)
+saved 75 frames to media_full/stage7_teacher_lvl.gif

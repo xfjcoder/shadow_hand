@@ -475,8 +475,8 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    tracking: free baoding with no reference path is a further step (the reward-only Stage 5 recipe
    stalled at the jam, runs three_01-06).
 
-7. **Two hands, four balls -- B DONE: each hand turns its own pair; A (one loop across both palms) in
-   progress.** Two-hand four-ball patterns found on YouTube: (A) [spheres108, "4 Baoding Balls"](https://www.youtube.com/watch?v=iyMXsvBwHKQ)
+7. **Two hands, four balls -- B DONE: each hand turns its own pair; A (one loop across both palms): a
+   smooth planner demo done, RL tracking in progress.** Two-hand four-ball patterns found on YouTube: (A) [spheres108, "4 Baoding Balls"](https://www.youtube.com/watch?v=iyMXsvBwHKQ)
    -- palms up side by side, four balls kept apart in ONE loop across both palms, crossing where they
    meet; (B) [Curtis Zimmerman, "How to roll 2 balls in both hands"](https://www.youtube.com/watch?v=OrymhfihtS4)
    -- two-ball baoding in each hand at once; (C) [spheres108, "Passing 4 baoding balls"](https://www.youtube.com/watch?v=UXAFp3tYJBE)
@@ -516,6 +516,72 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    python3 two_hands.py                       # build, mirror check
    python3 stage7_two_hands.py runs/baoding_15/checkpoints/ppo_60000000_steps.zip --n 8 --seconds 20
    python3 stage7_two_hands.py runs/baoding_15/checkpoints/ppo_60000000_steps.zip --n 1 --gif media_full/stage7_two_hands_B.gif
+   ```
+
+   **7A: four balls in one loop across both palms (in progress).** Of two forms -- (1) the four balls
+   packed as a 2x2 square across the seam, the square turning so that each ball crosses from one hand to
+   the other every half turn, or (2) the balls spaced round a loop as in the video -- (1) first, (2) the
+   fallback.
+
+   <p align="center">
+     <img src="media/stage7A_smooth_demo.gif" width="480">
+   </p>
+   <p align="center"><sub>Stage 7A: the planner demo -- one full counter-clockwise turn (364 deg) of the
+   packed square in 106 s, every ball crossing the seam twice, no ball lost. Top and oblique views, 2x
+   playback.</sub></p>
+
+   - *The layout* (`stage7_layout.py`): palms up, little-finger edges touching (gap 8.3cm; the forearm
+     geoms are left out with `two_hands.build(forearms=False)` -- the forearms are wider than the palms and
+     welded to the world, so they only overlap visually). Four 45mm balls placed on a ring at the seam roll
+     into a packed 2x2 square there on their own.
+   - *The teacher* (`stage7_teacher.py`): the Stage 6 segment planner (CEM sampling MPC, backtracking)
+     on both hands, 40 actuators, each ball aimed at its own corner of the square turned on 15 deg a
+     segment. Fingers alone stall at 45 deg, the "diamond": the palms slope ~2cm toward the fingers, the
+     trailing ball sits by the palm heels where no finger reaches, and levelling the palms rolls the balls
+     further back. What works: curled fingers (J3 0.7, J0 1.0) and the wrists free by +-10-15 deg --
+     tilting the palms rolls the balls, the key move.
+   - *A smoother demo.* The first full turn (`data/stage7_demo_ccw360.npz`, 112 s) had the fingers and
+     thumbs flailing and a hold-then-hop rhythm. A soft cost on posture only made the planner hold still
+     (a 15 deg turn gains less than moving costs); a hard band does it: every finger/thumb actuator kept
+     within 25% of its range of the posture (`--band 0.25`). Every band run stalled at 238-256 deg (even a
+     60% band) until the wrists got +-15 deg -- that stretch needs wrist travel, not fingers. The demo is
+     three resumed runs stitched into one continuous recording (`--resume` keeps the log): 0-183 deg band
+     25%/wrists 10 deg, 183-274 deg band 35%/15 deg, 274-364 deg band 25%/15 deg.
+
+   | demo (`demo_stats.py`) | length | finger posture deviation (mean / max) | turn per 1 s (median / p90) | 1 s windows turning < 1 deg | finger ctrl change per step |
+   |---|---|---|---|---|---|
+   | first (`stage7_demo_ccw360`) | 112 s | 11.5 / 14.1 | 0.3 / 11.4 deg | 57% | 0.105 rad |
+   | **smooth** (`stage7_demo_smooth360`) | 106 s | **6.7 / 9.3** | **2.3 / 8.2 deg** | **30%** | 0.094 rad |
+
+   (Posture deviation: the sum over the 36 finger/thumb actuators of |u - posture| / range.) The fingers
+   stay about twice as close to the posture and the turning is steadier; the per-step jitter (the CEM's
+   sampling noise) is about the same, only in a smaller range.
+
+   - *RL tracking* (`rl_env_stage7.py`, `train_stage6_track.py --mode two`): the Stage 6 recipe on the
+     two-hand scene -- each ball tracks its own position in the demo (reward exp(-cm/1.5), lost ball -20),
+     the observation shows the targets now and 0.5 s ahead, starts are random demo moments, a speed
+     curriculum (1x-10x), 30% failure-focused starts, a behaviour-cloning warm start. Exploration noise
+     starts lower than in Stage 6 (log std -1.5): with 40 actuators, the demo's own controls plus noise
+     of std 0.37 drop a ball in ~3 s. Cloning alone drops a ball in 1-2 s.
+     Run two_01 (10 s episodes) reached 2x by 11M, 2.5x by 18M; tested at 1x over 30 s (24 starts,
+     `eval_stage7_track.py`) its best checkpoint, 14M, keeps all four balls **18/24**, but turns only
+     ~30 deg in the 30 s (the demo: ~100 deg) -- it holds more than it spins so far. 30 s episodes at 2x
+     (two_02) failed: the targets run away from the policy and the reward vanishes. Now: two_03, 30 s
+     episodes from 1x with the curriculum on.
+
+   <p align="center">
+     <img src="media/stage7A_rl_14M.gif" width="600">
+   </p>
+   <p align="center"><sub>Stage 7A RL (two_01 @14M) at 1x demo speed: all four balls kept for 30 s,
+   +68 deg turned (the best of 8). 1.5x playback.</sub></p>
+
+   ```
+   python3 stage7_layout.py --out media_full/stage7_layout.png
+   python3 stage7_teacher.py --help                       # the demo's settings: see its docstring
+   python3 demo_stats.py data/stage7_demo_ccw360.npz data/stage7_demo_smooth360.npz
+   python3 render_stage7.py data/stage7_demo_smooth360.npz media_full/stage7_teacher_smooth360.gif --every 4 --speed 2
+   python3 train_stage6_track.py --run-name two_01 --mode two --bc --hard-frac 0.3 --log-std -1.5 --timesteps 100000000
+   python3 eval_stage7_track.py runs/two_01/checkpoints/ppo_13999965_steps.zip --level 0 --seconds 30 --n 8 --seed 200  # also --n 16 --seed 300
    ```
 
 ## Repository layout
@@ -560,8 +626,13 @@ shadow_hand/
 ├── eval_stage6_demo_replay.py             # Stage 6: open-loop replay scan of a planner demo
 ├── two_hands.py                           # Stage 7: two-hand scene (MjSpec), mirror check
 ├── stage7_two_hands.py                    # Stage 7B: Stage 5 policy on both hands via per-hand proxies
+├── stage7_layout.py                       # Stage 7A: touching-palms layout, four balls at the seam
+├── stage7_teacher.py                      # Stage 7A: two-hand segment planner (wrist tilt, finger band, resume)
+├── render_stage7.py, demo_stats.py        # Stage 7A: render a demo/episode npz; demo smoothness stats
+├── rl_env_stage7.py, eval_stage7_track.py # Stage 7A: two-hand tracking env; evaluation
 ├── data/stage6_*.npz                      # Stage 6: hold postures, jam states, the planner demos
-├── logs/                                  # Stage 5-6: training output of every run
+├── data/stage7_demo_*.npz                 # Stage 7A: the planner demos (ccw360 = first, smooth360 = used)
+├── logs/                                  # Stage 5-7: training / planner output of every run
 ├── media/
 │   ├── stage1_kinematic_sweep.gif
 │   ├── stage2_grasp_*.png                 # grasp renders, a-e in search order (d = final)
@@ -575,6 +646,8 @@ shadow_hand/
 │   ├── stage6_rl_five_circles.gif         # Stage 6: RL (track_07), 1818 deg in 60 s, no ball lost
 │   ├── stage6_rl_20of24.gif               # Stage 6: RL (track_08), 20/24 kept 60 s at 2.5x; 1733 deg shown
 │   ├── stage6_rl_1x.gif                   # Stage 6: RL (track_10), 21/24 kept 60 s at 1x; 738 deg shown
-│   └── stage7_two_hands_B.gif             # Stage 7B: two hands, a pair each, 11 swaps per hand in 20 s
+│   ├── stage7_two_hands_B.gif             # Stage 7B: two hands, a pair each, 11 swaps per hand in 20 s
+│   ├── stage7A_smooth_demo.gif            # Stage 7A: the smooth planner demo, 364 deg across both palms
+│   └── stage7A_rl_14M.gif                 # Stage 7A: RL (two_01 @14M), 30 s kept at 1x, +68 deg
 └── README.md
 ```
