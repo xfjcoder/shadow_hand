@@ -4,6 +4,7 @@
 Usage:
     python3 train_stage7_cup.py --run-name cup_01 --timesteps 30000000
     python3 train_stage7_cup.py --env wave --run-name wave_01 --ref-deg 180 --timesteps 20000000
+    python3 train_stage7_cup.py --env wave --n-balls 2 --run-name wave2_01 --ref-deg 180 --timesteps 30000000
 """
 import argparse
 from pathlib import Path
@@ -14,16 +15,19 @@ from stable_baselines3.common.callbacks import CheckpointCallback
 from stable_baselines3.common.vec_env import SubprocVecEnv, VecMonitor, VecNormalize
 
 from rl_env_stage7_cup import CupEnv
-from rl_env_stage7_wave import WaveEnv
+from rl_env_stage7_wave import MultiWaveEnv, WaveEnv
 from train_stage7_loop import Log
 
 HERE = Path(__file__).parent
 torch.set_num_threads(1)
 
 
-def make_env(seed, seconds, ref_deg, kind="cup"):
+def make_env(seed, seconds, ref_deg, kind="cup", n_balls=1):
     def _init():
-        env = (WaveEnv if kind == "wave" else CupEnv)(episode_seconds=seconds, ref_deg=ref_deg)
+        if kind == "wave" and n_balls > 1:
+            env = MultiWaveEnv(n=n_balls, episode_seconds=seconds, ref_deg=ref_deg)
+        else:
+            env = (WaveEnv if kind == "wave" else CupEnv)(episode_seconds=seconds, ref_deg=ref_deg)
         env.reset(seed=seed)
         return env
     return _init
@@ -33,6 +37,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--run-name", required=True)
     ap.add_argument("--env", default="cup", choices=("cup", "wave"))
+    ap.add_argument("--n-balls", type=int, default=1, help="--env wave: balls round the loop (2-4: MultiWaveEnv)")
     ap.add_argument("--timesteps", type=int, default=30_000_000)
     ap.add_argument("--n-envs", type=int, default=15)
     ap.add_argument("--lr", type=float, default=1e-4)
@@ -44,7 +49,7 @@ def main():
     ap.add_argument("--resume", default=None)
     args = ap.parse_args()
     run = HERE / "runs" / args.run_name
-    env = VecMonitor(SubprocVecEnv([make_env(args.seed + i, args.episode_seconds, args.ref_deg, args.env) for i in range(args.n_envs)]))
+    env = VecMonitor(SubprocVecEnv([make_env(args.seed + i, args.episode_seconds, args.ref_deg, args.env, args.n_balls) for i in range(args.n_envs)]))
     if args.resume:
         steps = Path(args.resume).stem.split("_")[-2]
         env = VecNormalize.load(str(Path(args.resume).parent / f"ppo_vecnormalize_{steps}_steps.pkl"), env)

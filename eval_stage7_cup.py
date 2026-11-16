@@ -1,7 +1,8 @@
 """Evaluate a Stage 7A long-cup checkpoint (`rl_env_stage7_cup.CupEnv`): episodes from the settled cup
 (`--settled`, no randomization) or from random moments of the rhythm's run; prints every ball's rim turn,
 optionally records the episode whose slowest ball turned furthest (render with render_stage7.py).
-`--zero` runs the rhythm alone (zero residual) for the baseline. `--env wave`: the finger-wave loop, one ball.
+`--zero` runs the rhythm alone (zero residual) for the baseline. `--env wave`: the finger-wave loop, one ball
+(`--n-balls 2..4`: several).
 
 Usage:
     python3 eval_stage7_cup.py runs/cup_01/checkpoints/ppo_16000000_steps.zip --settled --seconds 30 --record data/cup.npz
@@ -14,7 +15,7 @@ import numpy as np
 from stable_baselines3 import PPO
 
 from rl_env_stage7_cup import BALL_R, RIM_R, CupEnv
-from rl_env_stage7_wave import WaveEnv
+from rl_env_stage7_wave import MultiWaveEnv, WaveEnv
 
 
 def main():
@@ -28,12 +29,14 @@ def main():
     ap.add_argument("--stochastic", action="store_true")
     ap.add_argument("--record", default=None)
     ap.add_argument("--env", default="cup", choices=("cup", "wave"))
+    ap.add_argument("--n-balls", type=int, default=1, help="--env wave: balls round the loop")
     args = ap.parse_args()
     p = Path(args.ckpt)
     vn = pickle.load(open(p.parent / f"ppo_vecnormalize_{p.stem.split('_')[-2]}_steps.pkl", "rb"))
     model = PPO.load(args.ckpt, device="cpu")
     wave = args.env == "wave"
-    env = (WaveEnv if wave else CupEnv)(episode_seconds=args.seconds, randomize=not args.settled)
+    kw = dict(episode_seconds=args.seconds, randomize=not args.settled)
+    env = (MultiWaveEnv(n=args.n_balls, **kw) if args.n_balls > 1 else WaveEnv(**kw)) if wave else CupEnv(**kw)
     center = env.c if wave else env.center
     n = 1 if args.settled else args.n
     kept, best = 0, None
@@ -54,7 +57,11 @@ def main():
                 break
         kept += not info["lost"]
         deg = np.atleast_1d(np.degrees(env.turn))
-        if wave:
+        if wave and len(deg) > 1:
+            print(f"episode {ep}: {'kept' if not info['lost'] else 'LOST'} {info['seconds']:5.1f} s  turns "
+                  f"{np.round(deg).astype(int)} deg  (mean {deg.mean() / 360:+.2f} laps, slowest {deg.min() / 360:+.2f} laps, "
+                  f"{deg.min() / info['seconds']:.0f} deg/s)", flush=True)
+        elif wave:
             print(f"episode {ep}: {'kept' if not info['lost'] else 'LOST'} {info['seconds']:5.1f} s  turn {deg[0]:+.0f} deg "
                   f"({deg[0] / 360:+.2f} laps, {deg[0] / info['seconds']:.0f} deg/s)", flush=True)
         else:

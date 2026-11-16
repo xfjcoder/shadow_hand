@@ -476,8 +476,8 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    stalled at the jam, runs three_01-06).
 
 7. **Two hands, four balls -- B DONE: each hand turns its own pair; A (one loop across both palms): in
-   progress -- a finger-wave loop across both cupped hands laps ONE ball every ~2 s (RL); two and four
-   balls next.** Two-hand four-ball patterns found on YouTube: (A) [spheres108, "4 Baoding Balls"](https://www.youtube.com/watch?v=iyMXsvBwHKQ)
+   progress -- a finger-wave loop across both cupped hands laps one ball every ~2 s and TWO balls
+   together ~12.5 laps in 30 s each (RL); four balls next.** Two-hand four-ball patterns found on YouTube: (A) [spheres108, "4 Baoding Balls"](https://www.youtube.com/watch?v=iyMXsvBwHKQ)
    -- palms up side by side, four balls kept apart in ONE loop across both palms, crossing where they
    meet; (B) [Curtis Zimmerman, "How to roll 2 balls in both hands"](https://www.youtube.com/watch?v=OrymhfihtS4)
    -- two-ball baoding in each hand at once; (C) [spheres108, "Passing 4 baoding balls"](https://www.youtube.com/watch?v=UXAFp3tYJBE)
@@ -690,13 +690,37 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
 
    From rest, wave_02 @24M laps the ball **14.9 times in 30 s** (179 deg/s, a lap every 2 s): along the
    finger row on the wave, up over the left thumb's base where the script stuck, back along the palms,
-   down onto the row again. It is at the reward's full-pay speed. Next: two balls, then four.
+   down onto the row again. It is at the reward's full-pay speed.
 
    <p align="center">
      <img src="media/stage7_wave_rl24M.gif" width="600">
    </p>
    <p align="center"><sub>Stage 7A finger-wave loop, RL wave_02 @24M: one ball round the loop across both
    hands, a lap every ~2 s (the first 10 s of 30, ball kept throughout).</sub></p>
+
+   - *Two balls* (`rl_env_stage7_wave.MultiWaveEnv`, `--n-balls 2`): the two balls start half a lap apart
+     (a random point on the loop, 3mm jitter), so one is on the finger row while the other comes back
+     along the palms. The one-ball script's tilt switched on where the ball was; the two balls need
+     opposite tilts at once, so the base tilt is fixed halfway (flex 0, roll 0.05) and the policy steers
+     it (+-0.15). Wave and walls as before. Reward: half the mean and half the slower ball's turn (full
+     pay at 180 deg/s), a small penalty inside 1cm of each other, -50 for a drop. A fresh network
+     (wave2_01). The base alone never drops a ball but barely turns them (-37..+109 deg per 10 s).
+
+   | two balls, wave2_01 | kept (30 s, 10 random starts) | slower ball, laps per 30 s |
+   |---|---|---|
+   | @8M (10 s runs) | det 5/10, with exploration noise 10/10 | 0.0-0.7 / 0.1-1.4 per 10 s |
+   | @12M | with exploration noise 4/10 | ~8.5 (when kept) |
+   | **@18M, deterministic** | **10/10, and 10/10 on 10 fresh starts** | **11.3-12.9** |
+
+   wave2_01 @18M keeps both balls going round together, each about **12.5 laps in 30 s** (~145 deg/s,
+   within a few % of each other): about 15% slower per ball than one ball alone. Stopped at 20.7M. Next:
+   four balls, a quarter lap apart.
+
+   <p align="center">
+     <img src="media/stage7_wave2_rl18M.gif" width="600">
+   </p>
+   <p align="center"><sub>Stage 7A finger-wave loop, RL wave2_01 @18M: two balls half a lap apart round
+   the loop across both hands (the first 10 s of 30, both kept, 13.5 laps for the slower ball).</sub></p>
 
    ```
    python3 stage7_cup.py --out media_full/stage7_cup.png                  # the cup: settle + hold tests
@@ -708,6 +732,9 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    python3 eval_stage7_cup.py runs/wave_02/checkpoints/ppo_23999940_steps.zip --env wave --n 20 --seconds 10
    python3 eval_stage7_cup.py runs/wave_02/checkpoints/ppo_23999940_steps.zip --env wave --settled --seconds 30 --record data/stage7_wave_rl24M.npz
    python3 render_stage7.py data/stage7_wave_rl24M.npz media_full/stage7_wave_rl24M.gif --every 2
+   python3 train_stage7_cup.py --env wave --n-balls 2 --run-name wave2_01 --ref-deg 180 --log-std -1.5 --timesteps 30000000
+   python3 eval_stage7_cup.py runs/wave2_01/checkpoints/ppo_17999955_steps.zip --env wave --n-balls 2 --n 10 --seconds 30 --seed 500 --record data/stage7_wave2_rl18M.npz
+   python3 render_stage7.py data/stage7_wave2_rl18M.npz media_full/stage7_wave2_rl18M.gif --every 3
    ```
 
 ## Repository layout
@@ -762,7 +789,7 @@ shadow_hand/
 ├── stage7_cup.py                          # Stage 7A: the long cup (hold tests, swirl + flick grids)
 ├── rl_env_stage7_cup.py, train_stage7_cup.py, eval_stage7_cup.py     # Stage 7A: cup RL; --env wave: finger-wave RL
 ├── stage7_wave.py, stage7_wave_loop.py    # Stage 7A: the finger-wave conveyor; the scripted loop (--fsm)
-├── rl_env_stage7_wave.py                  # Stage 7A: finger-wave loop RL env (one ball)
+├── rl_env_stage7_wave.py                  # Stage 7A: finger-wave loop RL env (one ball; MultiWaveEnv: 2-4)
 ├── data/stage6_*.npz                      # Stage 6: hold postures, jam states, the planner demos
 ├── data/stage7_demo_*.npz                 # Stage 7A: the planner demos (ccw360 = first, smooth360 = used)
 ├── logs/                                  # Stage 5-7: training / planner output of every run
@@ -785,6 +812,7 @@ shadow_hand/
 │   ├── stage7_track_l3_40M_1x.gif         # Stage 7A form (2): RL track_l3, kept but not circulating
 │   ├── stage7_cup_rl16M.gif               # Stage 7A: the long cup, RL cup_01 parks the balls
 │   ├── stage7_wave_a.gif                  # Stage 7A: the finger wave carries one ball along the row
-│   └── stage7_wave_rl24M.gif              # Stage 7A: RL wave_02 @24M, one ball, a lap every ~2 s
+│   ├── stage7_wave_rl24M.gif              # Stage 7A: RL wave_02 @24M, one ball, a lap every ~2 s
+│   └── stage7_wave2_rl18M.gif             # Stage 7A: RL wave2_01 @18M, two balls round the loop
 └── README.md
 ```

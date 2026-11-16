@@ -145,3 +145,116 @@ class WaveEnv(gym.Env):
             deg = float(np.degrees(self.turn))
             info = dict(lost=lost, turned=deg, turned_min=deg, seconds=self.t * CONTROL_DT)
         return self._obs(), reward, lost, trunc and not lost, info
+
+
+# ---------------------------------------------------------------------------------------------------------------
+# Several balls round the same loop. The one-ball script switches the cup tilt on where THE ball is; with balls
+# on both legs at once (one on the finger row, one on the palm) they need opposite tilts, so the base tilt here
+# is a fixed compromise (BASE_FLEX_N, BASE_ROLL_N: midway between the two legs' tilts) and the policy steers it
+# (its +-RES_WRIST reaches both legs' tilts). The wave and the index-finger walls run as before.
+BASE_FLEX_N, BASE_ROLL_N = 0.0, 0.05
+W_CROWD_N = 0.05                          # per cm two balls come closer than 1cm
+
+
+class MultiWaveEnv(WaveEnv):
+    """`n` balls (2-4) round the finger-wave loop. Reward per step: ALIVE + 0.5 mean + 0.5 min over balls of
+    clip(ball's turn round the loop centre / REF, -1, 1) (each counted only beyond RIM) - W_CROWD_N * crowding
+    - W_RATE |a|^2; any ball lost ends it with -DROP. Starts: the balls spaced evenly round the loop's path (a
+    random offset, a little jitter), so with two balls one is on the finger row while the other comes back."""
+
+    def __init__(self, n=2, episode_seconds=None, randomize=True, ref_deg=REF_DEG):
+        self.n = n
+        super().__init__(episode_seconds=episode_seconds, randomize=randomize, ref_deg=ref_deg)
+        nobs = 2 * len(self.hq) + 9 * n + 2
+        self.observation_space = spaces.Box(-np.inf, np.inf, shape=(nobs,), dtype=np.float32)
+        x_row, x_palm = self.row[:, 0].mean() + 0.02, 0.285       # the loop's path: out along the row, back on the palm
+        y0, y1 = self.row[1, 1], self.row[6, 1]
+        self.path = np.array([[x_row, y0], [x_row, y1], [x_palm, y1], [x_palm, y0]])
+        seg = np.linalg.norm(np.roll(self.path, -1, 0) - self.path, axis=1)
+        self.seg_cum = np.concatenate([[0.0], np.cumsum(seg)])
+
+    def _on_path(self, s):
+        s = (s % 1.0) * self.seg_cum[-1]
+        i = int(np.searchsorted(self.seg_cum, s, side="right") - 1)
+        a = (s - self.seg_cum[i]) / (self.seg_cum[i + 1] - self.seg_cum[i])
+        return (1 - a) * self.path[i] + a * self.path[(i + 1) % 4]
+
+    def balls_n(self):
+        return self.w.balls()[:self.n]
+
+    def base(self):
+        B, w = BASE, self.w
+        u = w.u0.copy()
+        u[self.fx] = BASE_FLEX_N
+        u[self.ro] += BASE_ROLL_N
+        u[[self.kn[0], self.kn[-1]]] += B["wall"]
+        for k in range(1, 7):
+            u[self.kn[k]] += B["amp"] * max(0.0, np.sin(2 * np.pi * (self.t_wave / B["T"] - k * B["lag"]))) ** 2
+        return u
+
+    def _angles(self, b):
+        return np.arctan2(b[:, 1] - self.c[1], b[:, 0] - self.c[0])
+
+    def _obs(self):
+        b = self.balls_n()
+        rel = b[:, :2] - self.c
+        v = np.concatenate([self.d.qvel[q:q + 3] for q in self.w.bv[:self.n]])
+        th = self._angles(b)
+        ph = 2 * np.pi * self.t_wave / BASE["T"]
+        return np.concatenate([
+            self.d.qpos[self.hq], 0.1 * self.d.qvel[self.hv],
+            10 * np.column_stack([rel, b[:, 2] - PALM_Z]).ravel(), v, np.cos(th), np.sin(th),
+            10 * np.linalg.norm(rel, axis=1), [np.cos(ph), np.sin(ph)]
+        ]).astype(np.float32)
+
+    def _lost(self, b):
+        return bool(np.any(b[:, 2] < LOST_Z) or np.any(np.linalg.norm(b[:, :2] - self.c, axis=1) > FAR))
+
+    def reset(self, seed=None, options=None):
+        gym.Env.reset(self, seed=seed)
+        rng, m, d, w = self.np_random, self.m, self.d, self.w
+        mj.mj_setState(m, d, w.st0, stage7_wave.S)
+        s0 = rng.random() if self.randomize else 0.1
+        for k, name in enumerate(BALLS):
+            if k < self.n:
+                xy = self._on_path(s0 + k / self.n) + (rng.normal(0, 0.003, 2) if self.randomize else 0.0)
+                set_ball(m, d, name, [xy[0], xy[1], PALM_Z + BALL_R + 0.01])
+            else:
+                set_ball(m, d, name, PARK[k - self.n])
+        self.t_wave = rng.uniform(0, BASE["T"]) if self.randomize else 0.0
+        for _ in range(10):
+            d.ctrl[:] = np.clip(self.base(), w.lo, w.hi)
+            for _ in range(self.n_sub):
+                mj.mj_step(m, d)
+            self.t_wave += CONTROL_DT
+        self.t, self.steps = 0, int(round(self.seconds / CONTROL_DT))
+        self.th_prev, self.turn = self._angles(self.balls_n()), np.zeros(self.n)
+        return self._obs(), {}
+
+    def step(self, action):
+        a = np.clip(action, -1, 1)
+        self.d.ctrl[:] = np.clip(self.base() + self.res * a, self.w.lo, self.w.hi)
+        for _ in range(self.n_sub):
+            mj.mj_step(self.m, self.d)
+        self.t += 1
+        self.t_wave += CONTROL_DT
+        b = self.balls_n()
+        th = self._angles(b)
+        r = np.linalg.norm(b[:, :2] - self.c, axis=1)
+        dth = (r > RIM) * np.angle(np.exp(1j * (th - self.th_prev)))
+        self.th_prev = th
+        self.turn += dth
+        prog = np.clip(dth / self.ref, -1.0, 1.0)
+        g = np.array([np.linalg.norm(b[p, :2] - b[q, :2]) * 100 - 200 * BALL_R
+                      for p in range(self.n) for q in range(p + 1, self.n)])
+        reward = (ALIVE + 0.5 * prog.mean() + 0.5 * prog.min() - W_CROWD_N * float(np.sum(np.maximum(1.0 - g, 0.0)))
+                  - W_RATE * float(np.sum(a ** 2)))
+        lost = self._lost(b)
+        if lost:
+            reward -= DROP
+        trunc = self.t >= self.steps
+        info = {}
+        if lost or trunc:
+            deg = np.degrees(self.turn)
+            info = dict(lost=lost, turned=float(deg.mean()), turned_min=float(deg.min()), seconds=self.t * CONTROL_DT)
+        return self._obs(), reward, lost, trunc and not lost, info
