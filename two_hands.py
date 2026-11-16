@@ -52,14 +52,25 @@ def palm_in_forearm(flex=0.0, dev=0.0):
     return Rf.T @ Rp, Rf.T @ (pp - pf)
 
 
-def build(gap=GAP, dev=0.0, flex=0.0, forearms=True):
+ROLL_KP, ROLL_KV = 200.0, 20.0   # the added forearm roll actuators (position servos, Nm/rad and Nm s/rad)
+
+
+def build(gap=GAP, dev=0.0, flex=0.0, forearms=True, roll=0.0, roll_at="palm"):
     """The scene. With `dev` (rad, WRJ2: the wrist bent sideways) each forearm is placed so that the
     palm lands where it would with a straight wrist (palms parallel, `gap` apart, little fingers
     facing): the forearms angle apart, as a person's do with the hands side by side -- the forearms are
     wider than the palms, so parallel forearms collide before the palms meet. The wrist must then be
     HELD at (flex, dev) (`wrist_qpos`). The left hand mirrors the right.
     `forearms=False` leaves out the forearm and mounting-plate geoms (both forearms are welded to the
-    world, so they never touch anything physically; only their looks overlap when the palms meet)."""
+    world, so they never touch anything physically; only their looks overlap when the palms meet).
+    `roll` > 0 (rad) adds a forearm roll joint to each hand -- a hinge about the world x axis (along the
+    fingers) through the palm's centre line, +-`roll`, with a position actuator (`rh_A_FRJ`, `L_lh_A_FRJ`):
+    pronation/supination, which tilts each palm toward or away from the other hand. The Shadow wrist has
+    no such joint (WRJ1 pitches the fingers up/down, WRJ2 swings the hand in the palm's plane), so without
+    it nothing but the fingers can roll a ball across the seam.
+    `roll_at="seam"` puts both roll hinges on ONE axis along the seam between the palms: the same angle on
+    both then tilts the two hands as one rigid cup (rolled about their own centre lines, the palms' seam
+    edges part into a step -- one goes down, the other up -- that no ball climbs)."""
     spec = mj.MjSpec.from_file(str(ASSETS / "scene_two_balls.xml"))
     spec.modelname = "two shadow hands, four balls"
     # the balls are compiled as in the Stage 5 scene (45mm, 80g) and resized at run time without
@@ -109,7 +120,23 @@ def build(gap=GAP, dev=0.0, flex=0.0, forearms=True):
         body.add_geom(name=b, type=mj.mjtGeom.mjGEOM_SPHERE, size=[0.0225, 0, 0], mass=0.08,
                       material=mat[b], condim=6, priority=1, friction=[0.8, 0.01, 0.001])
     spec.stat.extent = 0.45
-    return spec, spec.compile()
+    m = spec.compile()
+    if roll:
+        d = mj.MjData(m)
+        mj.mj_forward(m, d)
+        seam = 0.5 * (d.body("rh_palm").xpos + d.body(L + "lh_palm").xpos)
+        for fa_name, palm, jn in (("rh_forearm", "rh_palm", "rh_FRJ"), (L + "lh_forearm", L + "lh_palm", L + "lh_FRJ")):
+            R, pf = d.body(fa_name).xmat.reshape(3, 3), d.body(fa_name).xpos
+            body = spec.body(fa_name)
+            pivot = seam if roll_at == "seam" else d.body(palm).xpos
+            body.add_joint(name=jn, type=mj.mjtJoint.mjJNT_HINGE, axis=list(R.T @ [1.0, 0.0, 0.0]),
+                           pos=list(R.T @ (pivot - pf)), range=[-roll, roll], damping=2.0,
+                           armature=0.05)
+            spec.add_actuator(name=jn.replace("FRJ", "A_FRJ"), target=jn, trntype=mj.mjtTrn.mjTRN_JOINT,
+                              ctrlrange=[-roll, roll], ctrllimited=True, biastype=mj.mjtBias.mjBIAS_AFFINE,
+                              gainprm=[ROLL_KP] + [0] * 9, biasprm=[0, -ROLL_KP, -ROLL_KV] + [0] * 7)
+        m = spec.compile()
+    return spec, m
 
 
 def wrist_qpos(model, data, flex, dev):

@@ -1,0 +1,13 @@
+settled square: centre x 31.9 y 4.1 cm, corner radius 4.34 cm (packed: 2.69)
+seg   1/24 target  +15.0  turned  +12.9 deg  off target mean 0.67 max 0.90 cm  pose 1.6  next boost x1  (14s)
+seg   2/24 target  +27.9  turned  +23.8 deg  off target mean 0.91 max 1.74 cm  pose 2.0  next boost x1  (26s)
+seg   3/24 target  +38.8  turned  +26.6 deg  off target mean 1.39 max 2.46 cm  pose 2.7  next boost x1  (38s)
+seg   4/24 target  +41.6  turned  +33.7 deg  off target mean 1.08 max 2.23 cm  pose 3.2  next boost x1  (53s)
+seg   5/24 target  +48.7  turned  +33.5 deg  off target mean 1.47 max 2.72 cm  pose 3.2  next boost x2  (59s)
+seg   6/24 target  +48.5  turned  +33.4 deg  off target mean 1.47 max 2.68 cm  pose 3.2  next boost x4  (77s)
+seg   7/24 target  +48.4  turned  +83.6 deg  off target mean 2.66 max 7.14 cm  pose 3.9  next boost x1  (113s)
+seg   8/24 target  +98.6  turned  +86.7 deg  off target mean 4.78 max 6.82 cm  pose 4.2  next boost x1  (128s)
+  every plan loses a ball: re-searching at boost x2
+  every plan loses a ball: re-searching at boost x4
+  every plan loses a ball: re-searching at boost x4
+seg   9/24 target +101.7  turned  +93.7 deg  off target mean 3.95 max 5.37 cm  pose 4.4  next boost x1  LOST  (172s)

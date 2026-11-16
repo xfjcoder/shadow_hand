@@ -1,0 +1,162 @@
+settled square: centre x 31.9 y 4.1 cm, corner radius 4.34 cm (packed: 2.69)
+seg   1/24 target  +30.0  turned  +19.1 deg  off target mean 1.34 max 2.31 cm  pose 1.7  next boost x1  (28s)
+seg   2/24 target  +49.1  turned  +35.3 deg  off target mean 1.29 max 1.51 cm  pose 3.2  next boost x1  (61s)
+seg   3/24 target  +65.3  turned  +52.8 deg  off target mean 1.07 max 2.05 cm  pose 3.2  next boost x1  (87s)
+seg   4/24 target  +82.8  turned  +55.7 deg  off target mean 2.15 max 2.92 cm  pose 3.7  next boost x1  (121s)
+seg   5/24 target  +85.7  turned  +57.2 deg  off target mean 2.19 max 2.89 cm  pose 3.7  next boost x2  (159s)
+  every plan loses a ball: re-searching at boost x4
+  every plan loses a ball: re-searching at boost x4
+  every plan loses a ball: re-searching at boost x4
+seg   6/24 target  +87.2  turned  +63.9 deg  off target mean 2.24 max 3.16 cm  pose 3.6  next boost x1  LOST  (236s)
+  dead end (lost): back 2 segments to +35.3 deg (backtrack 1/40)
+seg   7/24 target  +65.3  turned  +52.6 deg  off target mean 1.09 max 2.04 cm  pose 3.4  next boost x1  (266s)
+seg   8/24 target  +82.6  turned  +63.5 deg  off target mean 1.51 max 3.52 cm  pose 3.4  next boost x1  (301s)
+seg   9/24 target  +93.5  turned  +77.6 deg  off target mean 1.61 max 4.34 cm  pose 4.0  next boost x1  (334s)
+seg  10/24 target +107.6  turned  +81.7 deg  off target mean 2.14 max 5.24 cm  pose 4.5  next boost x1  (373s)
+seg  11/24 target +111.7  turned  +79.3 deg  off target mean 2.67 max 5.66 cm  pose 4.4  next boost x2  (414s)
+seg  12/24 target +109.3  turned  +83.5 deg  off target mean 2.21 max 5.23 cm  pose 4.9  next boost x1  (607s)
+seg  13/24 target +113.5  turned  +83.0 deg  off target mean 2.42 max 5.43 cm  pose 4.8  next boost x2  (641s)
+seg  14/24 target +113.0  turned  +83.7 deg  off target mean 2.31 max 5.26 cm  pose 5.0  next boost x4  (830s)
+seg  15/24 target +113.7  turned  +92.4 deg  off target mean 1.59 max 2.92 cm  pose 5.8  next boost x1  (1188s)
+  every plan loses a ball: re-searching at boost x2
+  every plan loses a ball: re-searching at boost x4
+  every plan loses a ball: re-searching at boost x4
+seg  16/24 target +122.4  turned +110.7 deg  off target mean 2.09 max 2.42 cm  pose 5.9  next boost x1  LOST  (1229s)
+  dead end (lost): back 2 segments to +81.7 deg (backtrack 2/40)
+seg  17/24 target +111.7  turned  +85.8 deg  off target mean 2.55 max 5.80 cm  pose 5.0  next boost x1  (1264s)
+seg  18/24 target +115.8  turned  +85.0 deg  off target mean 2.55 max 5.63 cm  pose 5.2  next boost x2  (1296s)
+seg  19/24 target +115.0  turned  +86.0 deg  off target mean 2.38 max 5.49 cm  pose 4.9  next boost x4  (1496s)
+seg  20/24 target +116.0  turned  +85.6 deg  off target mean 2.42 max 5.42 cm  pose 5.2  next boost x4  (1883s)
+  dead end (stalled): back 2 segments to +77.6 deg (backtrack 3/40)
+seg  21/24 target +107.6  turned  +81.9 deg  off target mean 2.13 max 5.15 cm  pose 4.1  next boost x1  (1919s)
+seg  22/24 target +111.9  turned  +82.0 deg  off target mean 2.42 max 5.47 cm  pose 4.2  next boost x2  (1956s)
+seg  23/24 target +112.0  turned  +83.5 deg  off target mean 2.27 max 5.20 cm  pose 4.3  next boost x4  (2156s)
+seg  24/24 target +113.5  turned  +84.0 deg  off target mean 2.32 max 5.11 cm  pose 4.7  next boost x4  (2524s)
+  dead end (stalled): back 2 segments to +63.5 deg (backtrack 4/40)
+seg  25/24 target  +93.5  turned  +72.1 deg  off target mean 1.85 max 4.43 cm  pose 4.0  next boost x1  (2556s)
+seg  26/24 target +102.1  turned  +77.3 deg  off target mean 2.04 max 4.78 cm  pose 4.3  next boost x1  (2587s)
+seg  27/24 target +107.3  turned  +80.9 deg  off target mean 2.19 max 5.05 cm  pose 4.5  next boost x1  (2628s)
+seg  28/24 target +110.9  turned  +83.0 deg  off target mean 2.39 max 5.34 cm  pose 4.6  next boost x1  (2670s)
+seg  29/24 target +113.0  turned  +84.3 deg  off target mean 2.30 max 5.15 cm  pose 4.2  next boost x2  (2717s)
+seg  30/24 target +114.3  turned  +85.0 deg  off target mean 2.35 max 5.16 cm  pose 4.4  next boost x4  (2954s)
+seg  31/24 target +115.0  turned +101.9 deg  off target mean 1.21 max 2.81 cm  pose 4.8  next boost x1  (3358s)
+seg  32/24 target +131.9  turned +110.7 deg  off target mean 1.91 max 2.78 cm  pose 5.4  next boost x1  (3389s)
+seg  33/24 target +140.7  turned +119.9 deg  off target mean 1.88 max 2.92 cm  pose 5.8  next boost x1  (3425s)
+  every plan loses a ball: re-searching at boost x2
+  every plan loses a ball: re-searching at boost x4
+  every plan loses a ball: re-searching at boost x4
+seg  34/24 target +149.9  turned +136.3 deg  off target mean 1.30 max 1.79 cm  pose 6.2  next boost x1  LOST  (3564s)
+  dead end (lost): back 2 segments to +101.9 deg (backtrack 5/40)
+seg  35/24 target +131.9  turned +109.2 deg  off target mean 1.88 max 2.97 cm  pose 4.6  next boost x1  (3597s)
+seg  36/24 target +139.2  turned +117.4 deg  off target mean 1.99 max 3.05 cm  pose 5.2  next boost x1  (3632s)
+seg  37/24 target +147.4  turned +121.5 deg  off target mean 2.12 max 3.36 cm  pose 6.0  next boost x1  (3666s)
+  every plan loses a ball: re-searching at boost x2
+  every plan loses a ball: re-searching at boost x4
+  every plan loses a ball: re-searching at boost x4
+seg  38/24 target +151.5  turned +123.4 deg  off target mean 2.29 max 3.43 cm  pose 6.2  next boost x4  LOST  (3766s)
+  dead end (lost): back 2 segments to +109.2 deg (backtrack 6/40)
+seg  39/24 target +139.2  turned +116.1 deg  off target mean 1.99 max 3.19 cm  pose 5.2  next boost x1  (3804s)
+seg  40/24 target +146.1  turned +120.1 deg  off target mean 2.14 max 3.47 cm  pose 5.7  next boost x1  (3842s)
+seg  41/24 target +150.1  turned +122.6 deg  off target mean 2.28 max 3.70 cm  pose 5.8  next boost x1  (3865s)
+seg  42/24 target +152.6  turned +122.0 deg  off target mean 2.44 max 4.14 cm  pose 6.2  next boost x2  (3874s)
+seg  43/24 target +152.0  turned +130.6 deg  off target mean 1.94 max 4.22 cm  pose 5.9  next boost x1  (3920s)
+seg  44/24 target +160.6  turned +132.0 deg  off target mean 2.46 max 4.86 cm  pose 5.9  next boost x2  (3943s)
+seg  45/24 target +162.0  turned +134.0 deg  off target mean 2.52 max 5.08 cm  pose 6.6  next boost x4  (4010s)
+seg  46/24 target +164.0  turned +139.8 deg  off target mean 2.20 max 4.33 cm  pose 6.6  next boost x1  (4442s)
+seg  47/24 target +169.8  turned +125.7 deg  off target mean 3.25 max 5.55 cm  pose 6.7  next boost x2  (4450s)
+seg  48/24 target +155.7  turned +124.8 deg  off target mean 2.77 max 4.73 cm  pose 7.0  next boost x4  (4651s)
+seg  49/24 target +154.8  turned +126.3 deg  off target mean 2.52 max 4.30 cm  pose 7.7  next boost x4  (5041s)
+  dead end (stalled): back 2 segments to +122.6 deg (backtrack 7/40)
+  every plan loses a ball: re-searching at boost x2
+  every plan loses a ball: re-searching at boost x4
+seg  50/24 target +152.6  turned +122.2 deg  off target mean 2.49 max 3.74 cm  pose 6.1  next boost x4  (5192s)
+seg  51/24 target +152.2  turned +126.2 deg  off target mean 2.13 max 3.09 cm  pose 6.5  next boost x1  (5418s)
+  every plan loses a ball: re-searching at boost x2
+  every plan loses a ball: re-searching at boost x4
+  every plan loses a ball: re-searching at boost x4
+seg  52/24 target +156.2  turned +136.8 deg  off target mean 2.80 max 3.63 cm  pose 6.6  next boost x1  LOST  (5516s)
+  dead end (lost): back 2 segments to +120.1 deg (backtrack 8/40)
+seg  53/24 target +150.1  turned +118.2 deg  off target mean 2.50 max 3.92 cm  pose 5.8  next boost x2  (5527s)
+seg  54/24 target +148.2  turned +125.7 deg  off target mean 1.93 max 3.03 cm  pose 6.1  next boost x1  (5749s)
+seg  55/24 target +155.7  turned +131.0 deg  off target mean 1.92 max 3.30 cm  pose 6.2  next boost x1  (5763s)
+seg  56/24 target +161.0  turned +131.5 deg  off target mean 2.25 max 3.70 cm  pose 6.2  next boost x2  (5776s)
+seg  57/24 target +161.5  turned +132.3 deg  off target mean 2.22 max 3.72 cm  pose 6.2  next boost x4  (5822s)
+seg  58/24 target +162.3  turned +133.2 deg  off target mean 2.21 max 3.76 cm  pose 6.2  next boost x4  (5920s)
+  dead end (stalled): back 3 segments to +116.1 deg (backtrack 9/40)
+seg  59/24 target +146.1  turned +127.5 deg  off target mean 1.82 max 3.79 cm  pose 5.8  next boost x1  (5953s)
+seg  60/24 target +157.5  turned +127.1 deg  off target mean 2.52 max 4.58 cm  pose 5.8  next boost x2  (5989s)
+seg  61/24 target +157.1  turned +133.3 deg  off target mean 2.03 max 4.20 cm  pose 6.4  next boost x1  (6186s)
+  every plan loses a ball: re-searching at boost x2
+  every plan loses a ball: re-searching at boost x4
+  every plan loses a ball: re-searching at boost x4
+seg  62/24 target +163.3  turned +143.8 deg  off target mean 2.84 max 4.76 cm  pose 6.6  next boost x1  (6279s)
+  every plan loses a ball: re-searching at boost x2
+  every plan loses a ball: re-searching at boost x4
+  every plan loses a ball: re-searching at boost x4
+seg  63/24 target +173.8  turned +145.6 deg  off target mean 3.12 max 5.50 cm  pose 6.6  next boost x4  (6286s)
+  every plan loses a ball: re-searching at boost x4
+  every plan loses a ball: re-searching at boost x4
+  every plan loses a ball: re-searching at boost x4
+seg  64/24 target +175.6  turned +145.9 deg  off target mean 3.17 max 5.63 cm  pose 6.6  next boost x4  (6300s)
+  every plan loses a ball: re-searching at boost x4
+  every plan loses a ball: re-searching at boost x4
+  every plan loses a ball: re-searching at boost x4
+seg  65/24 target +175.9  turned +146.0 deg  off target mean 3.18 max 5.66 cm  pose 6.6  next boost x4  (6315s)
+  dead end (stalled): back 4 segments to +109.2 deg (backtrack 10/40)
+seg  66/24 target +139.2  turned +118.9 deg  off target mean 1.92 max 3.03 cm  pose 4.7  next boost x1  (6352s)
+seg  67/24 target +148.9  turned +124.8 deg  off target mean 2.07 max 3.29 cm  pose 4.9  next boost x1  (6384s)
+  every plan loses a ball: re-searching at boost x2
+  every plan loses a ball: re-searching at boost x4
+  every plan loses a ball: re-searching at boost x4
+seg  68/24 target +154.8  turned +155.9 deg  off target mean 3.17 max 4.94 cm  pose 4.6  next boost x1  LOST  (6522s)
+  dead end (lost): back 3 segments to +101.9 deg (backtrack 11/40)
+seg  69/24 target +131.9  turned +106.4 deg  off target mean 2.11 max 4.03 cm  pose 5.1  next boost x1  (6555s)
+seg  70/24 target +136.4  turned +117.8 deg  off target mean 1.84 max 3.31 cm  pose 5.4  next boost x1  (6590s)
+seg  71/24 target +147.8  turned +122.1 deg  off target mean 2.16 max 3.32 cm  pose 5.6  next boost x1  (6627s)
+seg  72/24 target +152.1  turned +128.6 deg  off target mean 2.03 max 3.29 cm  pose 5.6  next boost x1  (6653s)
+  every plan loses a ball: re-searching at boost x2
+  every plan loses a ball: re-searching at boost x4
+  every plan loses a ball: re-searching at boost x4
+seg  73/24 target +158.6  turned +137.1 deg  off target mean 2.56 max 3.75 cm  pose 6.1  next boost x1  (6725s)
+  every plan loses a ball: re-searching at boost x2
+  every plan loses a ball: re-searching at boost x4
+  every plan loses a ball: re-searching at boost x4
+seg  74/24 target +167.1  turned +137.3 deg  off target mean 3.01 max 4.43 cm  pose 6.1  next boost x4  (6732s)
+  every plan loses a ball: re-searching at boost x4
+  every plan loses a ball: re-searching at boost x4
+  every plan loses a ball: re-searching at boost x4
+seg  75/24 target +167.3  turned +137.4 deg  off target mean 3.05 max 4.49 cm  pose 6.1  next boost x4  (6743s)
+  every plan loses a ball: re-searching at boost x4
+  every plan loses a ball: re-searching at boost x4
+  every plan loses a ball: re-searching at boost x4
+seg  76/24 target +167.4  turned +137.5 deg  off target mean 3.08 max 4.54 cm  pose 6.1  next boost x4  (6754s)
+  dead end (stalled): back 5 segments to +101.9 deg (backtrack 12/40)
+seg  77/24 target +131.9  turned +103.5 deg  off target mean 2.28 max 2.97 cm  pose 5.1  next boost x2  (6781s)
+seg  78/24 target +133.5  turned +118.3 deg  off target mean 1.25 max 2.81 cm  pose 5.5  next boost x1  (6991s)
+seg  79/24 target +148.3  turned +128.3 deg  off target mean 1.91 max 2.60 cm  pose 5.7  next boost x1  (7025s)
+seg  80/24 target +158.3  turned +128.8 deg  off target mean 2.38 max 3.03 cm  pose 6.2  next boost x2  (7055s)
+seg  81/24 target +158.8  turned +129.8 deg  off target mean 2.25 max 2.59 cm  pose 6.4  next boost x4  (7240s)
+  every plan loses a ball: re-searching at boost x4
+  every plan loses a ball: re-searching at boost x4
+  every plan loses a ball: re-searching at boost x4
+seg  82/24 target +159.8  turned +131.8 deg  off target mean 2.22 max 2.68 cm  pose 6.3  next boost x4  LOST  (7458s)
+  dead end (lost): back 3 segments to +83.0 deg (backtrack 13/40)
+seg  83/24 target +113.0  turned  +83.8 deg  off target mean 2.34 max 5.11 cm  pose 4.9  next boost x2  (7503s)
+seg  84/24 target +113.8  turned  +84.1 deg  off target mean 2.29 max 5.11 cm  pose 5.8  next boost x4  (7732s)
+seg  85/24 target +114.1  turned  +93.2 deg  off target mean 1.73 max 3.97 cm  pose 6.2  next boost x1  (8152s)
+seg  86/24 target +123.2  turned  +88.2 deg  off target mean 3.21 max 5.42 cm  pose 6.6  next boost x2  (8167s)
+  every plan loses a ball: re-searching at boost x4
+  every plan loses a ball: re-searching at boost x4
+  every plan loses a ball: re-searching at boost x4
+seg  87/24 target +118.2  turned +105.7 deg  off target mean 1.41 max 3.02 cm  pose 6.5  next boost x1  LOST  (8642s)
+  dead end (lost): back 2 segments to +80.9 deg (backtrack 14/40)
+seg  88/24 target +110.9  turned  +83.0 deg  off target mean 2.38 max 5.14 cm  pose 4.5  next boost x1  (8682s)
+seg  89/24 target +113.0  turned  +84.1 deg  off target mean 2.38 max 5.15 cm  pose 4.7  next boost x2  (8724s)
+seg  90/24 target +114.1  turned  +84.3 deg  off target mean 2.33 max 5.03 cm  pose 5.2  next boost x4  (8935s)
+seg  91/24 target +114.3  turned  +83.7 deg  off target mean 2.33 max 4.42 cm  pose 5.9  next boost x4  (9303s)
+  dead end (stalled): back 3 segments to +72.1 deg (backtrack 15/40)
+seg  92/24 target +102.1  turned  +80.0 deg  off target mean 1.89 max 4.82 cm  pose 3.9  next boost x1  (9337s)
+seg  93/24 target +110.0  turned  +82.2 deg  off target mean 2.18 max 5.02 cm  pose 4.6  next boost x1  (9372s)
+seg  94/24 target +112.2  turned  +83.3 deg  off target mean 2.25 max 5.07 cm  pose 4.5  next boost x2  (9414s)
+seg  95/24 target +113.3  turned  +85.6 deg  off target mean 2.17 max 5.06 cm  pose 4.5  next boost x1  (9625s)
+seg  96/24 target +115.6  turned  +86.8 deg  off target mean 2.40 max 5.30 cm  pose 4.9  next boost x2  (9660s)

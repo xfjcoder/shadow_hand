@@ -1,0 +1,22 @@
+== stall 003
+settled square: centre x 31.5 y 4.2 cm, corner radius 3.56 cm (packed: 3.18)
+seg   1/8 target  +15.0  turned   +4.8 deg  off target mean 1.20 max 1.96 cm  pose 8.1  next boost x1  (14s)
+seg   2/8 target  +19.8  turned  +20.3 deg  off target mean 0.61 max 0.95 cm  pose 9.4  next boost x1  (29s)
+seg   3/8 target  +35.3  turned  +20.1 deg  off target mean 1.12 max 1.37 cm  pose 9.4  next boost x2  (44s)
+seg   4/8 target  +35.1  turned  +19.9 deg  off target mean 1.14 max 1.30 cm  pose 9.4  next boost x4  (141s)
+seg   5/8 target  +34.9  turned  +32.9 deg  off target mean 0.35 max 0.85 cm  pose 9.6  next boost x1  (315s)
+== stall 008
+settled square: centre x 31.5 y 4.2 cm, corner radius 3.56 cm (packed: 3.18)
+seg   1/8 target  +15.0  turned  +10.9 deg  off target mean 0.54 max 0.90 cm  pose 11.1  next boost x1  (16s)
+seg   2/8 target  +25.9  turned   +9.3 deg  off target mean 1.10 max 1.57 cm  pose 11.1  next boost x2  (29s)
+seg   3/8 target  +24.3  turned  +20.7 deg  off target mean 0.30 max 0.44 cm  pose 11.6  next boost x1  (112s)
+seg   4/8 target  +35.7  turned  +30.2 deg  off target mean 0.40 max 0.52 cm  pose 12.3  next boost x1  (128s)
+== stall 028
+settled square: centre x 31.5 y 4.2 cm, corner radius 3.56 cm (packed: 3.18)
+seg   1/8 target  +15.0  turned   +0.3 deg  off target mean 0.99 max 1.10 cm  pose 11.1  next boost x2  (15s)
+seg   2/8 target  +15.3  turned   +0.8 deg  off target mean 1.00 max 1.18 cm  pose 11.1  next boost x4  (109s)
+seg   3/8 target  +15.8  turned  +12.5 deg  off target mean 0.32 max 0.65 cm  pose 11.8  next boost x1  (270s)
+seg   4/8 target  +27.5  turned  +24.4 deg  off target mean 0.72 max 0.91 cm  pose 11.9  next boost x1  (290s)
+seg   5/8 target  +39.4  turned  +24.5 deg  off target mean 1.09 max 1.59 cm  pose 11.9  next boost x2  (308s)
+seg   6/8 target  +39.5  turned  +24.8 deg  off target mean 1.09 max 1.62 cm  pose 11.9  next boost x4  (420s)
+seg   7/8 target  +39.8  turned  +33.0 deg  off target mean 0.79 max 1.04 cm  pose 11.3  next boost x1  (647s)

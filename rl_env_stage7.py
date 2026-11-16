@@ -10,7 +10,26 @@ turns next), and the behaviour cloning pairs. Past the demo's end it loops: one 
 ball back to its own corner (the few degrees' overshoot is rotated in).
 
 Reward per control step:  mean over balls of exp(-error / TRACK_SCALE)   (error: cm to its target)
+                          + w_prog * clip(the balls' turn this step / the targets' nominal turn per step, -1, 1)
                           - W_RATE * |action|^2;   a lost ball ends the episode with -DROP.
+
+A waiting target (`lead_deg`, off by default): the targets' demo clock runs only while they lead the balls'
+own turn by less than `lead_deg`, so a policy stuck at a hard spot keeps a target just ahead of it (with
+the target running away, the error grows to 4-5cm and exp(-error) leaves nothing pulling it on -- runs
+two_01-03 stalled so). `w_prog` (off by default) pays for turning on round the square directly. The level
+test still asks for half of the demo's NOMINAL turn, so waiting does not pass levels (neither variant helped:
+two_05/06 idled or gambled).
+
+Stall-focused starts (`stall_starts`, with `hard_frac`): a stall -- the balls turning < STALL_DEG in STALL_S s --
+is remembered as a hard spot like a loss, at the demo moment where the demo's turn matches the BALLS' (not
+the run-away target's), so the restart puts the target back beside the balls just before the hand-off.
+(two_07: no better -- it stalled more.)
+
+Planner fixes (`fixes`, `fix_frac`): `stage7_stalls.py` saves states where a policy stalls and
+`stage7_teacher.py --resume` plans on from each (a "fix"). A `fix_frac` share of training resets starts from
+a fix's first state and tracks the fix's balls, then the demo on from the matching turn; `fix_pairs()` gives
+behaviour cloning pairs from the fixes as `demo_pairs()` does from the demo (DAgger-style, the planner as the
+expert where the policy fails).
 Lost (the planner's rule): a ball below the palm surface or more than FAR from the square's centre.
 Actions: 40 actuator target changes (both hands; the wrists within +-WRIST_TILT of straight, as the demo).
 """
@@ -50,8 +69,13 @@ def turn_of(balls, center):
 class TwoHandTrackEnv(gym.Env):
     metadata = {"render_modes": []}
 
-    def __init__(self, level=0, randomize=True, demo=DEMO, episode_seconds=None, hard_frac=0.0):
+    def __init__(self, level=0, randomize=True, demo=DEMO, episode_seconds=None, hard_frac=0.0,
+                 lead_deg=None, w_prog=0.0, stall_starts=False, fixes=None, fix_frac=0.0):
         super().__init__()
+        self.stall_starts = bool(stall_starts)
+        self.fix_frac = float(fix_frac)
+        self.lead = None if lead_deg is None else np.radians(lead_deg)
+        self.w_prog = float(w_prog)
         self.w = World(posture=CURL, tilt=WRIST_TILT)
         self.m, self.d = self.w.m, self.w.d
         self.n_sub = int(round(CONTROL_DT / self.m.opt.timestep))
@@ -69,6 +93,9 @@ class TwoHandTrackEnv(gym.Env):
         ahead = self.phase[np.minimum(np.arange(n - 1) + k, n - 1)] - self.phase[:-1]
         wgt = np.maximum(ahead, 0.0) + np.radians(START_FLOOR_DEG)
         self.start_p = wgt / wgt.sum()
+        self.mono = np.maximum.accumulate(self.phase)
+        self.clip = None
+        self.fixes = load_fixes(fixes, self) if fixes else []
         hinge = [j for j in range(self.m.njnt) if self.m.jnt_type[j] == mj.mjtJoint.mjJNT_HINGE]
         self.hq = np.array([self.m.jnt_qposadr[j] for j in hinge])
         self.hv = np.array([self.m.jnt_dofadr[j] for j in hinge])
@@ -95,6 +122,11 @@ class TwoHandTrackEnv(gym.Env):
     # ---- the demo
     def _demo_at(self, t):
         """(ball positions, phase) of the demo `t` s of env time after this episode's start moment."""
+        if self.clip is not None:                       # a fix episode: the fix, then the demo on from it
+            f = min(self.i0 + self.speed * t / CONTROL_DT, len(self.clip["phase"]) - 1.001)
+            j, a = int(f), f - int(f)
+            c = self.clip
+            return (1 - a) * c["balls"][j] + a * c["balls"][j + 1], (1 - a) * c["phase"][j] + a * c["phase"][j + 1]
         n = len(self.phase) - 1
         k, f = divmod(self.i0 + self.speed * t / CONTROL_DT, n)
         j = int(f)
@@ -122,7 +154,7 @@ class TwoHandTrackEnv(gym.Env):
         ]).astype(np.float32)
 
     def _obs(self):
-        t = self.t * CONTROL_DT
+        t = self.tau
         return self.obs_for(self.target_pos(t), self.target_pos(t + AHEAD), self._demo_at(t)[1], self.rate)
 
     def lost(self, b):
@@ -142,6 +174,17 @@ class TwoHandTrackEnv(gym.Env):
     HARD_BACK = (1.0, 3.0)
     HARD_KEEP = 100
     SNAP_EVERY = 25
+    STALL_S, STALL_DEG = 5.0, 3.0
+
+    def _moment(self):
+        """The demo step the targets are at (the waiting target's clock `tau`, s of env time)."""
+        return self.i0 + self.speed * self.tau / CONTROL_DT
+
+    def _aligned(self, turned):
+        """The demo step whose turn matches the balls' after turning `turned` from this episode's start."""
+        n = len(self.phase) - 1
+        r = (self.phase[int(self.i0) % n] + turned) % self.phase[-1]
+        return int(min(np.searchsorted(self.mono, r), n - 1))
 
     def _start(self, i):
         mj.mj_resetData(self.m, self.d)
@@ -152,14 +195,22 @@ class TwoHandTrackEnv(gym.Env):
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
         if not hasattr(self, "hard_moments"):
-            self.hard_moments, self.hard_states, self.snaps = deque(maxlen=self.HARD_KEEP), deque(maxlen=self.HARD_KEEP), deque(maxlen=8)
+            self.hard_moments, self.hard_states, self.snaps = deque(maxlen=self.HARD_KEEP), deque(maxlen=self.HARD_KEEP), deque(maxlen=16)
         self.snaps.clear()
-        self.hard_start = False
+        self.hard_start, self.stalled, self.fix_start, self.clip = False, False, False, None
+        self.turn_hist = deque(maxlen=int(round(self.STALL_S / CONTROL_DT)) + 1)
         n = len(self.phase) - 1
         if options and "start" in options:
             self._start(int(options["start"]))
         elif not self.randomize:
             self._start(0)
+        elif self.fixes and self.np_random.random() < self.fix_frac:
+            self.hard_start = self.fix_start = True
+            fx = self.fixes[int(self.np_random.integers(len(self.fixes)))]
+            self._start(0)
+            self.d.qpos[:], self.d.qvel[:], self.d.ctrl[:] = fx["qpos"], fx["qvel"], fx["ctrl"]
+            mj.mj_forward(self.m, self.d)
+            self.clip, self.i0 = fx, 0
         elif self.hard_moments and self.np_random.random() < self.hard_frac:
             self.hard_start = True
             if self.hard_states and self.np_random.random() < 0.5:
@@ -174,13 +225,13 @@ class TwoHandTrackEnv(gym.Env):
                 self._start(int(round(mo - back)) % n)
         else:
             self._start(int(self.np_random.choice(len(self.start_p), p=self.start_p)))
-        self.t, self.steps = 0, int(round(self.seconds() / CONTROL_DT))
+        self.t, self.tau, self.steps = 0, 0.0, int(round(self.seconds() / CONTROL_DT))
         self.err_sum, self.th_prev, self.turned = 0.0, self._angles(), 0.0
         return self._obs(), {}
 
     def step(self, action):
         if self.hard_frac and self.t % self.SNAP_EVERY == 0:
-            self.snaps.append((self.d.qpos.copy(), self.d.qvel.copy(), self.d.ctrl.copy(), self.i0 + self.speed * self.t))
+            self.snaps.append((self.d.qpos.copy(), self.d.qvel.copy(), self.d.ctrl.copy(), self._moment(), self.turned))
         a = np.clip(action, -1, 1)
         self.d.ctrl[:] = np.clip(self.d.ctrl + a * RATE, self.lo, self.hi)
         for _ in range(self.n_sub):
@@ -188,11 +239,25 @@ class TwoHandTrackEnv(gym.Env):
         self.t += 1
         b = self.w.balls()
         th = self._angles()
-        self.turned += float(np.mean(np.angle(np.exp(1j * (th - self.th_prev)))))
+        dth = float(np.mean(np.angle(np.exp(1j * (th - self.th_prev)))))
+        self.turned += dth
         self.th_prev = th
-        e = np.linalg.norm(b - self.target_pos(self.t * CONTROL_DT), axis=1) * 100
+        self.turn_hist.append(self.turned)
+        if (self.stall_starts and self.hard_frac and not self.stalled and not self.fix_start and len(self.turn_hist) == self.turn_hist.maxlen
+                and self.turned - self.turn_hist[0] < np.radians(self.STALL_DEG)):
+            self.stalled = True                  # once per episode, from where the balls are (not the target)
+            self.hard_moments.append(self._aligned(self.turned))
+            k = int(round((self.STALL_S + np.mean(self.HARD_BACK)) / (self.SNAP_EVERY * CONTROL_DT)))
+            if len(self.snaps) > k:
+                q, v, c, _, tn = self.snaps[-1 - k]
+                self.hard_states.append((q, v, c, self._aligned(tn)))
+        if self.lead is None or self._demo_at(self.tau)[1] - self._demo_at(0.0)[1] - self.turned < self.lead:
+            self.tau += CONTROL_DT
+        e = np.linalg.norm(b - self.target_pos(self.tau), axis=1) * 100
         lost = self.lost(b)
         reward = float(np.mean(np.exp(-e / TRACK_SCALE))) - W_RATE * float(np.sum(a ** 2))
+        if self.w_prog:
+            reward += self.w_prog * float(np.clip(dth / (self.rate * CONTROL_DT), -1.0, 1.0))
         self.err_sum += float(e.mean())
         if lost:
             reward -= DROP
@@ -201,12 +266,14 @@ class TwoHandTrackEnv(gym.Env):
         if lost or truncated:
             mean_err = self.err_sum / self.t
             info.update(lost=lost, mean_err=mean_err, turned=self.turned, level=self.level, tip_rate=0.0,
-                        level_ok=self.level_ok(lost, truncated, mean_err), hard_start=float(self.hard_start))
-            if lost and self.hard_frac:
-                self.hard_moments.append((self.i0 + self.speed * self.t) % (len(self.phase) - 1))
+                        level_ok=self.level_ok(lost, truncated, mean_err), hard_start=float(self.hard_start),
+                        wait_frac=1.0 - self.tau / (self.t * CONTROL_DT), stalled=float(self.stalled),
+                        fix_start=float(self.fix_start))
+            if lost and self.hard_frac and not self.fix_start:
+                self.hard_moments.append(self._moment() % (len(self.phase) - 1))
                 k = int(round(np.mean(self.HARD_BACK) / (self.SNAP_EVERY * CONTROL_DT)))
                 if len(self.snaps) > k:
-                    self.hard_states.append(self.snaps[-1 - k])
+                    self.hard_states.append(self.snaps[-1 - k][:4])
         return self._obs(), reward, lost, truncated and not lost, info
 
     # ---- behaviour cloning pairs from the demo
@@ -221,3 +288,45 @@ class TwoHandTrackEnv(gym.Env):
             obs.append(self.obs_for(z["balls"][i], z["balls"][min(i + k, n - 1)], self.phase[i], self.demo_rate))
             act.append(np.clip((z["ctrl"][i + 1] - z["ctrl"][i]) / RATE, -1, 1))
         return np.array(obs), np.array(act, dtype=np.float32)
+
+    def fix_pairs(self):
+        """(obs, action) per step of each fix's planned part, its targets the fix's own balls (as demo_pairs)."""
+        k, obs, act = int(round(AHEAD / CONTROL_DT)), [], []
+        for fx in self.fixes:
+            z, c = fx["log"], fx
+            n = len(z["qpos"])
+            for i in range(n - 1):
+                self.d.qpos[:], self.d.qvel[:], self.d.ctrl[:] = z["qpos"][i], z["qvel"][i], z["ctrl"][i]
+                mj.mj_forward(self.m, self.d)
+                obs.append(self.obs_for(c["balls"][i], c["balls"][i + k], c["phase"][i], self.demo_rate))
+                act.append(np.clip((z["ctrl"][i + 1] - z["ctrl"][i]) / RATE, -1, 1))
+        return np.array(obs), np.array(act, dtype=np.float32)
+
+
+FIX_MIN_DEG = 20.0
+CLIP_TAIL_S = 40.0
+
+
+def load_fixes(path, env):
+    """The planner fixes in directory `path` that turned >= FIX_MIN_DEG without a loss, each as a clip: the
+    fix's balls, then the demo's on from the demo step matching the fix's end turn (CLIP_TAIL_S s of it)."""
+    out, n = [], len(env.phase) - 1
+    for f in sorted(Path(path).glob("fix_*.npz")):
+        z = np.load(f)
+        s = np.load(Path(path).parent / "stalls" / f.name.replace("fix_", "stall_"))
+        if len(z["balls"]) < 10:
+            continue
+        tn = turn_of(z["balls"], env.center)
+        if np.degrees(tn[-1]) < FIX_MIN_DEG or env.lost(z["balls"][-1]):
+            continue
+        ph = env.phase[int(s["moment"])] + tn
+        j = int(min(np.searchsorted(env.mono, ph[-1] % env.phase[-1]), n - 1))
+        idx = j + np.arange(1, int(CLIP_TAIL_S / CONTROL_DT))
+        wrap = idx // n
+        idx = idx % n
+        tail_ph = env.phase[idx] + wrap * env.phase[-1] - env.phase[j] + ph[-1]
+        out.append(dict(qpos=z["qpos"][0], qvel=z["qvel"][0], ctrl=z["ctrl"][0],
+                        balls=np.concatenate([z["balls"], env.demo["balls"][idx]]),
+                        phase=np.concatenate([ph, tail_ph]),
+                        log={k: z[k] for k in ("qpos", "qvel", "ctrl")}))
+    return out

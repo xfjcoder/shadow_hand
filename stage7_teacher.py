@@ -41,12 +41,19 @@ FAR = 0.06                     # m: a ball this far (horizontally) from the squa
 
 _w = None                      # the worker's World
 POSE_W = 0.0                   # cost per unit of finger/thumb distance from the posture (each actuator / its range, summed)
+MIN_R = 0.0                    # m: (spaced loop) a ball this near the centre counts as lost -- the loop collapsed
+GAP_W = 0.0                    # (spaced loop) cost per cm that two balls' surfaces come closer than MIN_GAP
+MIN_GAP = 1.0                  # cm
+SPIN = 0.0                     # rad/s (signed): the loop keeps rolling -- end-of-segment velocity aimed at this
+SYNC_W = 0.0                   # cost per deg of spread (std) in the balls' angular lag behind their own targets
+SPEED_W = 10.0                 # cost per m/s of the balls' summed speed at a segment's end (lower: tosses allowed)
 
 
 class World:
-    def __init__(self, gap=GAP, ball=BALL_R, tilt=0.0, flex=None, posture=None, band=None):
+    def __init__(self, gap=GAP, ball=BALL_R, tilt=0.0, flex=None, posture=None, band=None, roll=0.0, thumb_band=None,
+                 roll_at="palm"):
         self.posture = POSTURE = dict(stage7_layout.POSTURE, **(posture or {}))
-        _, self.m = build(gap, forearms=False)
+        _, self.m = build(gap, forearms=False, roll=roll, roll_at=roll_at)
         m = self.m
         for b in BALLS:                                # resize as the Stage 5 env does (no mj_setConst)
             g, bid = m.geom(b).id, m.body(b).id
@@ -66,11 +73,17 @@ class World:
         wrist += [m.actuator(left(a)).id for a in ("rh_A_WRJ1", "rh_A_WRJ2")]
         self.lo[wrist] = np.maximum(self.lo[wrist], self.u0[wrist] - tilt)   # the wrists within `tilt` rad
         self.hi[wrist] = np.minimum(self.hi[wrist], self.u0[wrist] + tilt)
+        wrist += [m.actuator(a).id for a in ("rh_A_FRJ", "L_lh_A_FRJ") if roll]   # forearm roll: its ctrlrange
         if band:                                       # fingers and thumbs within `band` x their range of the posture
             span = self.hi - self.lo
             f = np.array([i for i in range(m.nu) if i not in wrist])
             self.lo[f] = np.maximum(self.lo[f], self.u0[f] - band * span[f])
             self.hi[f] = np.minimum(self.hi[f], self.u0[f] + band * span[f])
+        if thumb_band is not None:                     # the thumbs held tighter (they flail, and block the way)
+            th = np.array([i for i in range(m.nu) if "THJ" in m.actuator(i).name])
+            span = self.hi - self.lo if not band else span
+            self.lo[th] = np.maximum(self.lo[th], self.u0[th] - thumb_band * span[th])
+            self.hi[th] = np.minimum(self.hi[th], self.u0[th] + thumb_band * span[th])
         self.bq = [m.jnt_qposadr[m.body_jntadr[m.body(b).id]] for b in BALLS]
         self.bv = [m.jnt_dofadr[m.body_jntadr[m.body(b).id]] for b in BALLS]
 
@@ -80,7 +93,7 @@ class World:
     def speed(self):
         return sum(np.linalg.norm(self.d.qvel[v:v + 3]) for v in self.bv)
 
-    def settle(self, along=0.30, ring=0.04, seconds=3.0):
+    def settle(self, along=0.30, ring=0.04, seconds=3.0, phase=np.pi / 4):
         """The layout: the hands take the posture, the balls are set on a ring over the seam and roll."""
         m, d = self.m, self.d
         mj.mj_resetData(m, d)
@@ -89,23 +102,34 @@ class World:
         for _ in range(int(1.0 / m.opt.timestep)):
             mj.mj_step(m, d)
         seam_y = 0.5 * (d.body("rh_palm").xpos[1] + d.body(left("rh_palm")).xpos[1])
-        places = ring_places([along, seam_y, PALM_Z + self.r + 0.002], ring, np.pi / 4)
+        places = ring_places([along, seam_y, PALM_Z + self.r + 0.002], ring, phase)
         for b, i in zip(BALLS, sorted(range(4), key=lambda i: places[i][1])):
             set_ball(m, d, b, places[i])
         for _ in range(int(seconds / m.opt.timestep)):
             mj.mj_step(m, d)
 
 
-def _init(gap, ball, seg, hold, tilt, flex, posture, pose_w=0.0, band=None):
-    global _w, SEG, HOLD, POSE_W
-    _w = World(gap, ball, tilt, flex, posture, band)
+def _init(gap, ball, seg, hold, tilt, flex, posture, pose_w=0.0, band=None, far=None, min_r=0.0, gap_w=0.0, speed_w=10.0,
+          roll=0.0, thumb_band=None, sync_w=0.0, spin=0.0):
+    global _w, SEG, HOLD, POSE_W, FAR, MIN_R, GAP_W, SPEED_W, SYNC_W, SPIN
+    _w = World(gap, ball, tilt, flex, posture, band, roll, thumb_band)
+    SYNC_W, SPIN = sync_w, spin
+    FAR, MIN_R, GAP_W, SPEED_W = far or FAR, min_r, gap_w, speed_w
     POSE_W = pose_w
     SEG, HOLD = seg, hold
 
 
 def lost_now(w, center):
     b = w.balls()
-    return bool(np.any(b[:, 2] < PALM_Z) or np.any(np.linalg.norm(b[:, :2] - center, axis=1) > FAR))
+    r = np.linalg.norm(b[:, :2] - center, axis=1)
+    return bool(np.any(b[:, 2] < PALM_Z) or np.any(r > FAR) or np.any(r < MIN_R))
+
+
+def crowding(w):
+    """cm by which pairs of balls' surfaces (horizontally) come closer than MIN_GAP, summed."""
+    b = w.balls()[:, :2]
+    g = [np.linalg.norm(b[i] - b[j]) * 100 - 200 * w.r for i in range(len(b)) for j in range(i + 1, len(b))]
+    return float(np.sum(np.maximum(MIN_GAP - np.array(g), 0.0)))
 
 
 def play(w, state, start_ctrl, wps, center, record=None):
@@ -123,6 +147,10 @@ def play(w, state, start_ctrl, wps, center, record=None):
             k += 1
             if record is not None and k % per == 0:
                 record(w)
+            if MIN_R and k % per == 0:                 # (spaced loop) no ball through the middle, even mid-segment
+                r = np.linalg.norm(w.balls()[:, :2] - center, axis=1)
+                if np.any(r < MIN_R):
+                    return True
         if wp is not None:
             prev = wp
         if lost_now(w, center):
@@ -140,7 +168,20 @@ def cost(job):
     e = np.linalg.norm(_w.balls()[:, :2] - targets, axis=1) * 100
     effort = sum(np.abs(a - b).sum() for a, b in zip(wps, [start_ctrl] + list(wps[:-1])))
     pose = np.mean([pose_dev(_w, wp) for wp in wps]) if POSE_W else 0.0
-    return (e.mean() + 0.5 * e.max() + 10 * _w.speed() + 0.02 * effort + POSE_W * pose + (100.0 if lost else 0.0),
+    crowd = GAP_W * crowding(_w) if GAP_W else 0.0
+    if SYNC_W:                                         # the balls step together: equal lag behind their targets
+        b = _w.balls()[:, :2] - center
+        t = targets - center
+        lag = np.degrees(np.angle(np.exp(1j * (np.arctan2(t[:, 1], t[:, 0]) - np.arctan2(b[:, 1], b[:, 0])))))
+        crowd += SYNC_W * float(np.std(lag))
+    if SPIN:                                           # momentum: each ball still rolling round at the loop's rate
+        t = targets - center
+        vdes = SPIN * np.stack([-t[:, 1], t[:, 0]], 1)
+        v = np.array([_w.d.qvel[a:a + 2] for a in _w.bv])
+        speed = float(np.sum(np.linalg.norm(v - vdes, axis=1)))
+    else:
+        speed = _w.speed()
+    return (e.mean() + 0.5 * e.max() + SPEED_W * speed + 0.02 * effort + POSE_W * pose + crowd + (100.0 if lost else 0.0),
             e.mean(), lost)
 
 
@@ -148,7 +189,8 @@ def pose_dev(w, u):
     """How far the fingers and thumbs (not the wrists) are from the posture: each |u - u0| / its range, summed."""
     if not hasattr(w, "fingers"):
         span = np.maximum(w.m.actuator_ctrlrange[:, 1] - w.m.actuator_ctrlrange[:, 0], 1e-9)
-        wr = [w.m.actuator(a).id for a in ("rh_A_WRJ1", "rh_A_WRJ2", "L_lh_A_WRJ1", "L_lh_A_WRJ2")]
+        wr = [w.m.actuator(a).id for a in ("rh_A_WRJ1", "rh_A_WRJ2", "L_lh_A_WRJ1", "L_lh_A_WRJ2", "rh_A_FRJ", "L_lh_A_FRJ")
+              if mj.mj_name2id(w.m, mj.mjtObj.mjOBJ_ACTUATOR, a) >= 0]
         w.fingers = np.array([i for i in range(w.m.nu) if i not in wr])
         w.fspan = span[w.fingers]
     u = np.clip(u, w.lo, w.hi)                          # as executed: samples past a joint's range are clipped
@@ -156,6 +198,7 @@ def pose_dev(w, u):
 
 
 def main():
+    global FAR
     ap = argparse.ArgumentParser()
     ap.add_argument("--gap", type=float, default=GAP)
     ap.add_argument("--ball", type=float, default=BALL_R)
@@ -179,6 +222,24 @@ def main():
     ap.add_argument("--posture", default=None, help="json of actuator targets over stage7_layout.POSTURE (right-hand names)")
     ap.add_argument("--along", type=float, default=0.30, help="m, world x of the start ring (fingers +x)")
     ap.add_argument("--settle", type=float, default=3.0, help="s the balls settle into the start square")
+    ap.add_argument("--ring", type=float, default=0.04, help="m, radius of the start ring")
+    ap.add_argument("--ring-phase", type=float, default=45.0,
+                    help="deg; 0 with --ring 0.06 --along 0.32 and curled fingers: the SPACED loop (a 'plus': "
+                         "fingertips, one palm, heels, the other palm -- the balls stay apart)")
+    ap.add_argument("--far", type=float, default=FAR, help="m: a ball this far from the centre is lost")
+    ap.add_argument("--roll", type=float, default=0.0,
+                    help="deg: add a forearm roll joint (+-this) to each hand -- tilts the palms toward each other")
+    ap.add_argument("--spin", type=float, default=0.0,
+                    help="deg/s: start the balls rolling round the loop at this rate and keep them rolling (momentum); "
+                         "the targets advance at this rate and --step is set from it")
+    ap.add_argument("--sync-weight", type=float, default=0.0,
+                    help="cost per deg of spread in the balls' lag behind their targets (the hands move them together)")
+    ap.add_argument("--thumb-band", type=float, default=None, help="thumbs within this fraction of their range")
+    ap.add_argument("--speed-weight", type=float, default=10.0,
+                    help="cost per m/s of ball speed at a segment's end (lower lets balls be tossed across)")
+    ap.add_argument("--min-r", type=float, default=0.0, help="m: (spaced loop) a ball this near the centre is lost")
+    ap.add_argument("--gap-weight", type=float, default=0.0,
+                    help="(spaced loop) cost per cm two balls come closer than MIN_GAP (1cm) -- keeps them apart")
     ap.add_argument("--resume", default=None, help="an earlier run's npz to continue from (its centre and corners)")
     ap.add_argument("--resume-at", type=int, default=-1, help="the logged control step to continue from")
     ap.add_argument("--pose-weight", type=float, default=0.0,
@@ -189,11 +250,12 @@ def main():
     ap.add_argument("--backtracks", type=int, default=0, help="dead ends (stalls or a lost ball) to back out of")
     args = ap.parse_args()
     rng = np.random.default_rng(args.seed)
+    FAR, MIN_R = args.far, args.min_r
 
     tilt = np.radians(args.wrist_tilt)
     posture = json.loads(args.posture) if args.posture else None
-    w = World(args.gap, args.ball, tilt, args.flex, posture, args.band)
-    w.settle(along=args.along, seconds=args.settle)
+    w = World(args.gap, args.ball, tilt, args.flex, posture, args.band, np.radians(args.roll), args.thumb_band)
+    w.settle(along=args.along, ring=args.ring, seconds=args.settle, phase=np.radians(args.ring_phase))
     b0 = w.balls()
     center = b0[:, :2].mean(0)
     rc = float(np.linalg.norm(b0[:, :2] - center, axis=1).mean())
@@ -209,6 +271,14 @@ def main():
         upto = args.resume_at % len(r["ctrl"]) + 1
         th = np.arctan2(r["balls"][:upto, :, 1] - center[1], r["balls"][:upto, :, 0] - center[0])
         turned = float(np.sum(np.mean(np.angle(np.exp(1j * np.diff(th, axis=0))), axis=1)))
+    if args.spin:
+        args.step = args.spin * (args.waypoints * args.seg + args.hold)      # deg per segment at the loop's rate
+        if not args.resume:                           # give the balls the loop's momentum: rolling round the centre
+            om = args.sign * np.radians(args.spin)
+            for q, v in zip(w.bq, w.bv):
+                dx, dy = w.d.qpos[q] - center[0], w.d.qpos[q + 1] - center[1]
+                w.d.qvel[v:v + 2] = [-om * dy, om * dx]
+            mj.mj_forward(w.m, w.d)
     print(f"settled square: centre x {100 * center[0]:.1f} y {100 * center[1]:.1f} cm, corner radius {100 * rc:.2f} cm "
           f"(packed: {100 * np.sqrt(2) * args.ball:.2f})", flush=True)
     state = np.empty(mj.mj_stateSize(w.m, SPEC))
@@ -248,7 +318,7 @@ def main():
 
     boost, stalled, backtracks, fails = 1, 0, 0, {}
     checkpoints = [dict(state=state.copy(), ctrl=ctrl.copy(), turned=turned, n=len(log["ctrl"]))]
-    with Pool(args.procs, initializer=_init, initargs=(args.gap, args.ball, args.seg, args.hold, tilt, args.flex, posture, args.pose_weight, args.band)) as pool:
+    with Pool(args.procs, initializer=_init, initargs=(args.gap, args.ball, args.seg, args.hold, tilt, args.flex, posture, args.pose_weight, args.band, args.far, args.min_r, args.gap_weight, args.speed_weight, np.radians(args.roll), args.thumb_band, args.sync_weight, args.sign * np.radians(args.spin))) as pool:
         for s in range(4 * n_seg):                      # a budget: backtracking re-plans segments
             phase = turned + args.sign * np.radians(args.step)
             targets = corners(center, rc, own + phase)
@@ -282,7 +352,7 @@ def main():
             print(f"seg {s + 1:3d}/{n_seg} target {np.degrees(phase):+6.1f}  turned {np.degrees(turned):+6.1f} deg  "
                   f"off target mean {e.mean():.2f} max {e.max():.2f} cm  pose {pose_dev(w, ctrl):.1f}  next boost x{boost}"
                   f"{'  LOST' if lost else ''}  ({time.time() - t0:.0f}s)", flush=True)
-            np.savez(args.out, **{k: np.array(v) for k, v in log.items()}, center=center, rc=rc, sign=args.sign)
+            np.savez(args.out, **{k: np.array(v) for k, v in log.items()}, center=center, rc=rc, sign=args.sign, ball=args.ball)
             if abs(turned) >= np.radians(args.degrees):
                 break
             if (lost or stalled >= args.stall) and backtracks < args.backtracks and len(checkpoints) > 1:

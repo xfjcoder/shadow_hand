@@ -22,6 +22,7 @@ def main():
     ap.add_argument("--n", type=int, default=8)
     ap.add_argument("--seed", type=int, default=200)
     ap.add_argument("--stochastic", action="store_true")
+    ap.add_argument("--lead-deg", type=float, default=None, help="the waiting target, as in training")
     ap.add_argument("--record", default=None, help="npz for the episode that turned furthest")
     args = ap.parse_args()
     p = Path(args.ckpt)
@@ -31,7 +32,7 @@ def main():
         vn = p.parent / f"{p.stem}_vecnormalize.pkl"
     vn = pickle.load(open(vn, "rb"))
     model = PPO.load(args.ckpt, device="cpu")
-    env = TwoHandTrackEnv(level=args.level, randomize=False, episode_seconds=args.seconds)
+    env = TwoHandTrackEnv(level=args.level, randomize=False, episode_seconds=args.seconds, lead_deg=args.lead_deg)
     rng = np.random.default_rng(args.seed)
     starts = rng.choice(len(env.start_p), size=args.n, p=env.start_p)
     kept, best = 0, None

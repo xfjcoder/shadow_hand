@@ -11,6 +11,7 @@ at the curriculum's speed-up (`SPEEDS`); a level passes on no ball lost and mean
 Usage:
     python3 train_stage6_track.py --run-name track_01 --bc --timesteps 60000000
     python3 train_stage6_track.py --run-name two_01 --mode two --bc --hard-frac 0.3
+    python3 train_stage6_track.py --run-name two_07 --mode two --resume runs/two_03/checkpoints/ppo_21999945_steps.zip --episode-seconds 30 --hard-frac 0.3 --stall-starts
     python3 train_stage6_track.py --run-name track_01 --mode demo --resume runs/track_01/checkpoints/ppo_26000000_steps.zip --level 0
 """
 import argparse
@@ -58,6 +59,9 @@ class Curriculum(BaseCallback):
             for k in INFO_KEYS[:3] + INFO_KEYS[4:]:
                 self.logger.record(f"track/{k}", float(np.mean([e[k] for e in eps])))
             self.logger.record("track/turned_deg_max", float(np.degrees(max(e["turned"] for e in eps))))
+            for k in ("wait_frac", "stalled", "fix_start"):
+                if k in eps[0]:
+                    self.logger.record(f"track/{k}", float(np.mean([e[k] for e in eps])))
         if self.hard:
             self.logger.record("track/hard_lost", float(np.mean(self.hard)))
             self.logger.record("track/hard_share", len(self.hard) / (len(self.hard) + len(eps)))
@@ -66,9 +70,48 @@ class Curriculum(BaseCallback):
         self.logger.record("track/level_ok_recent", float(np.mean(self.recent)) if self.recent else 0.0)
 
 
-def make_env(seed, level, cls=TrackEnv, demo=DEMO, seconds=None, hard_frac=0.0):
+class BCAux(BaseCallback):
+    """After each rollout, `steps` minibatches of behaviour cloning (the policy's mean action) on fixed
+    (obs, action) pairs -- the planner fixes, DAgger-style -- normalised with the current obs statistics."""
+
+    def __init__(self, obs, act, steps, lr=1e-4, batch=256):
+        super().__init__()
+        self.obs, self.act, self.steps, self.lr, self.batch = obs, torch.as_tensor(act), steps, lr, batch
+
+    def _on_training_start(self):
+        pol = self.model.policy
+        self.opt = torch.optim.Adam(list(pol.mlp_extractor.policy_net.parameters()) + list(pol.action_net.parameters()), lr=self.lr)
+
+    def _on_step(self):
+        return True
+
+    def _on_rollout_end(self):
+        pol, venv = self.model.policy, self.model.get_env()
+        x = torch.as_tensor(venv.normalize_obs(self.obs), dtype=torch.float32)
+        tot = 0.0
+        for _ in range(self.steps):
+            j = torch.randint(len(x), (self.batch,))
+            lat = pol.mlp_extractor.forward_actor(pol.extract_features(x[j], pol.pi_features_extractor))
+            loss = ((pol.action_net(lat) - self.act[j]) ** 2).mean()
+            self.opt.zero_grad()
+            loss.backward()
+            self.opt.step()
+            tot += float(loss)
+        self.logger.record("track/bc_aux_mse", tot / max(self.steps, 1))
+
+
+def bc_aux_pairs(env, with_demo):
+    obs, act = env.fix_pairs()
+    if with_demo:
+        o, a = env.demo_pairs()
+        obs, act = np.concatenate([obs, o]), np.concatenate([act, a])
+    return obs, act
+
+
+def make_env(seed, level, cls=TrackEnv, demo=DEMO, seconds=None, hard_frac=0.0, extra=None):
     def _init():
         kw = {"hard_frac": hard_frac} if hard_frac else {}
+        kw.update(extra or {})
         env = cls(level=level, demo=demo, episode_seconds=seconds, **kw)
         env.reset(seed=seed)
         return env
@@ -126,6 +169,17 @@ def main():
     ap.add_argument("--hard-frac", type=float, default=0.0,
                     help="demo mode: share of resets started just before a remembered ball loss")
     ap.add_argument("--down", action="store_true", help="curriculum steps DOWN the levels (slow a fast policy to 1x)")
+    ap.add_argument("--lead-deg", type=float, default=None,
+                    help="two mode: a waiting target -- its clock runs only while it leads the balls by < this")
+    ap.add_argument("--w-prog", type=float, default=0.0, help="two mode: reward weight on the balls' turn")
+    ap.add_argument("--stall-starts", action="store_true",
+                    help="two mode, with --hard-frac: stalls (not only losses) also become hard starts")
+    ap.add_argument("--fixes", default=None, help="two mode: directory of planner fixes (stage7_stalls.py + stage7_teacher.py)")
+    ap.add_argument("--fix-frac", type=float, default=0.0, help="two mode: share of resets started from a fix")
+    ap.add_argument("--bc-aux", type=int, default=0, help="two mode, with --fixes: BC minibatches on the fixes per rollout")
+    ap.add_argument("--bc-aux-lr", type=float, default=1e-4)
+    ap.add_argument("--bc-aux-demo", action="store_true",
+                    help="mix the demo's own pairs into the BC (two_08: BC on the fixes alone collapsed the policy)")
     ap.add_argument("--checkpoint-freq", type=int, default=2_000_000)
     args = ap.parse_args()
 
@@ -133,7 +187,9 @@ def main():
     cls = {"circle": TrackEnv, "demo": DemoTrackEnv, "two": rl_env_stage7.TwoHandTrackEnv}[args.mode]
     args.demo = args.demo or str(rl_env_stage7.DEMO if args.mode == "two" else DEMO)
     speeds = rl_env_stage7.SPEEDS if args.mode == "two" else SPEEDS
-    env = VecMonitor(SubprocVecEnv([make_env(args.seed + i, args.level, cls, args.demo, args.episode_seconds, args.hard_frac) for i in range(args.n_envs)]),
+    extra = {"lead_deg": args.lead_deg, "w_prog": args.w_prog, "stall_starts": args.stall_starts,
+             "fixes": args.fixes, "fix_frac": args.fix_frac} if args.mode == "two" else {}
+    env = VecMonitor(SubprocVecEnv([make_env(args.seed + i, args.level, cls, args.demo, args.episode_seconds, args.hard_frac, extra) for i in range(args.n_envs)]),
                      info_keywords=())
     if args.resume:
         steps = Path(args.resume).stem.split("_")[-2]
@@ -151,6 +207,8 @@ def main():
             env.save(str(run / "bc_vecnormalize.pkl"))
     cbs = [Curriculum(args.level, args.threshold, args.window,
                       *((speeds, "x demo speed") if args.mode != "circle" else (RATES_DEG, "deg/s")), step=-1 if args.down else 1),
+           *([BCAux(*bc_aux_pairs(cls(demo=args.demo, fixes=args.fixes), args.bc_aux_demo), args.bc_aux, args.bc_aux_lr)]
+             if args.bc_aux else []),
            CheckpointCallback(max(args.checkpoint_freq // args.n_envs, 1), str(run / "checkpoints"), name_prefix="ppo",
                               save_vecnormalize=True)]
     model.learn(args.timesteps, callback=cbs, reset_num_timesteps=not args.resume)

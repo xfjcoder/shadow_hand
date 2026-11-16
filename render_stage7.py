@@ -20,10 +20,15 @@ def main():
     ap.add_argument("--every", type=int, default=3, help="control steps per frame")
     ap.add_argument("--speed", type=float, default=1.0, help="playback speed")
     ap.add_argument("--title", default="two-hand MPC teacher")
+    ap.add_argument("--ball", type=float, default=None, help="m, ball radius (default: the npz's, else 0.0225)")
     args = ap.parse_args()
     z = dict(np.load(args.npz))
     c = z["center"]
-    w = World()
+    z0 = np.load(args.npz)
+    ball = args.ball or (float(z0["ball"]) if "ball" in z0.files else 0.0225)
+    w = World(ball=ball)
+    if w.m.nq != z0["qpos"].shape[1]:                  # recorded with the forearm roll joints (stage7_teacher --roll)
+        w = World(ball=ball, roll=0.5, roll_at=str(z0["roll_at"]) if "roll_at" in z0 else "palm")
     r = mj.Renderer(w.m, height=270, width=360)
     frames = []
     for k in range(0, len(z["qpos"]), args.every):

@@ -475,8 +475,9 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    tracking: free baoding with no reference path is a further step (the reward-only Stage 5 recipe
    stalled at the jam, runs three_01-06).
 
-7. **Two hands, four balls -- B DONE: each hand turns its own pair; A (one loop across both palms): a
-   smooth planner demo done, RL tracking in progress.** Two-hand four-ball patterns found on YouTube: (A) [spheres108, "4 Baoding Balls"](https://www.youtube.com/watch?v=iyMXsvBwHKQ)
+7. **Two hands, four balls -- B DONE: each hand turns its own pair; A (one loop across both palms): in
+   progress -- a finger-wave loop across both cupped hands laps ONE ball every ~2 s (RL); two and four
+   balls next.** Two-hand four-ball patterns found on YouTube: (A) [spheres108, "4 Baoding Balls"](https://www.youtube.com/watch?v=iyMXsvBwHKQ)
    -- palms up side by side, four balls kept apart in ONE loop across both palms, crossing where they
    meet; (B) [Curtis Zimmerman, "How to roll 2 balls in both hands"](https://www.youtube.com/watch?v=OrymhfihtS4)
    -- two-ball baoding in each hand at once; (C) [spheres108, "Passing 4 baoding balls"](https://www.youtube.com/watch?v=UXAFp3tYJBE)
@@ -521,7 +522,7 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    **7A: four balls in one loop across both palms (in progress).** Of two forms -- (1) the four balls
    packed as a 2x2 square across the seam, the square turning so that each ball crosses from one hand to
    the other every half turn, or (2) the balls spaced round a loop as in the video -- (1) first, (2) the
-   fallback.
+   fallback. Both stalled; the way that works so far is the long cup with a finger wave (below).
 
    <p align="center">
      <img src="media/stage7A_smooth_demo.gif" width="480">
@@ -566,8 +567,33 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
      Run two_01 (10 s episodes) reached 2x by 11M, 2.5x by 18M; tested at 1x over 30 s (24 starts,
      `eval_stage7_track.py`) its best checkpoint, 14M, keeps all four balls **18/24**, but turns only
      ~30 deg in the 30 s (the demo: ~100 deg) -- it holds more than it spins so far. 30 s episodes at 2x
-     (two_02) failed: the targets run away from the policy and the reward vanishes. Now: two_03, 30 s
-     episodes from 1x with the curriculum on.
+     (two_02) failed: the targets run away from the policy and the reward vanishes. two_03 (30 s
+     episodes from 1x) is the best so far: **20/24 kept, ~38 deg turned** in 30 s at its 22M checkpoint.
+   - *Where it fails: the hand-off.* The policy tracks for 5-10 s, then stalls just past the square's
+     aligned poses (~90, 180, 270, 360 deg -- the hand-off across the seam) while the targets run on; at
+     4-5cm behind, exp(-error) leaves nothing pulling it on. Five fixes, all scored by the same 24 strict
+     30 s tests at 1x, none beat two_03 @22M:
+
+   | run (resumed from two_03 @22M unless noted) | change | best result (kept / turned) |
+   |---|---|---|
+   | two_03 (longer) | nothing: 26M | 19/24, 29 deg |
+   | two_05 | a *waiting target*: its clock runs only while it leads the balls by < `--lead-deg` | 21/24, 25 deg (idles: waits ~50% of the time) |
+   | two_06 | the waiting target + a reward for turning (`--w-prog`) | 13/24, 40 deg (gambles) |
+   | two_07 | *stall-focused starts* (`--stall-starts`): stalls (< 3 deg in 5 s), not only losses, become restart points, the target re-aligned to the balls | 20/24, 28 deg (stalled more: 73% -> 95% of episodes) |
+   | two_08 | *planner fixes* (DAgger-style, below): 30% of starts from a fix + BC on the fixes after each rollout | collapsed (lost 17% -> 80-100% after the first BC step) |
+   | two_08b | fix starts only | 22/24, 31 deg (or 15/24, 38 deg) |
+   | two_08c | fix starts + BC mixed with the demo's pairs at lr 1e-5 | 21/24, 16 deg |
+
+   - *Planner fixes* (`stage7_stalls.py`, `rl_env_stage7.py` `fixes`): 40 states where two_03 @22M
+     stalls were saved and the planner re-run from each (`stage7_teacher.py --resume <stall> --resume-at 0
+     --degrees 30`, the wrists +-15 deg, no finger band -- the policy's fingers are outside the demo's).
+     It recovers from most: of 28 tried (15 min each at most), 24 turned 20-35 deg with no loss -- so the
+     hand-off *is* possible from where the policy sticks. A fix episode tracks the fix's balls, then the
+     demo on from the matching turn (replaying the fix's own controls tracks it to 0.02cm). But neither
+     restarting there nor cloning the fixes helped: BC on the fixes alone wrecks the policy (offline, 20
+     minibatches at lr 1e-4 take two_03 @22M from 20/24 to 10/24); mixed with the demo at lr 1e-5 it is
+     safe but the policy turns half as much. The packed square's hand-off stays the wall, so next is the
+     fallback, form (2): the balls spaced round a loop.
 
    <p align="center">
      <img src="media/stage7A_rl_14M.gif" width="600">
@@ -582,6 +608,106 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    python3 render_stage7.py data/stage7_demo_smooth360.npz media_full/stage7_teacher_smooth360.gif --every 4 --speed 2
    python3 train_stage6_track.py --run-name two_01 --mode two --bc --hard-frac 0.3 --log-std -1.5 --timesteps 100000000
    python3 eval_stage7_track.py runs/two_01/checkpoints/ppo_13999965_steps.zip --level 0 --seconds 30 --n 8 --seed 200  # also --n 16 --seed 300
+   python3 train_stage6_track.py --run-name two_07 --mode two --resume runs/two_03/checkpoints/ppo_21999945_steps.zip --episode-seconds 30 --hard-frac 0.3 --stall-starts
+   python3 stage7_stalls.py runs/two_03/checkpoints/ppo_21999945_steps.zip --n 40 --out data/stalls
+   python3 stage7_teacher.py --resume data/stalls/stall_003.npz --resume-at 0 --posture '<CURL json>' --wrist-tilt 15 --degrees 30 --backtracks 6 --out data/fixes/fix_003.npz
+   python3 train_stage6_track.py --run-name two_08b --mode two --resume runs/two_03/checkpoints/ppo_21999945_steps.zip --episode-seconds 30 --hard-frac 0.3 --fixes data/fixes --fix-frac 0.3  # + --bc-aux 20 [--bc-aux-lr 1e-5 --bc-aux-demo]
+   ```
+
+   **7A form (2): the balls spaced round a loop on open palms.** 38mm balls, two per palm on a 4.5cm
+   ring over the seam, fingers near open, the wrists +-25 deg and a forearm roll joint per hand (+-20 deg)
+   that tilts the palms toward each other. Every way of driving it crept, held still, or dropped:
+
+   | approach | script | result |
+   |---|---|---|
+   | segment planner on the spaced loop | `stage7_teacher.py` (`logs/stage7_spaced_*`) | best 252 deg in ~90 min of planning, then every plan loses a ball |
+   | receding-horizon sampling MPC | `stage7_mpc.py` | ~32 deg in 38 s (0.9 deg/s) |
+   | a fixed periodic rhythm, CEM over all actuators | `stage7_rhythm.py` | kept for 8 s turning 2-23 deg; lost later |
+   | a hand-designed crossing cycle (flex + roll waves), CEM | `stage7_cross.py` | found holding still (5 deg) |
+   | RL, momentum reward, no demo | `rl_env_stage7_loop.py`, `train_stage7_loop.py` (loop_01-05) | 25-35 deg per episode |
+   | RL tracking the planner's spaced demo + a speed curriculum | `train_stage7_loop.py --track` (track_l1-l3) | track_l3 @16M: 8/8 kept 30 s at 1x, but 33-40 deg for the slowest ball; at 40M it drops at 2x |
+
+   <p align="center">
+     <img src="media/stage7_track_l3_40M_1x.gif" width="600">
+   </p>
+   <p align="center"><sub>Stage 7A form (2), RL track_l3 @40M at 1x: the balls are kept, but they never
+   really circulate -- the hands contort and drag the four along a little.</sub></p>
+
+   - *Why it is hard with open palms*: a palm's tilt moves both of its balls the same way, so tilting can
+     only steer each pair's centroid; turning the pairs takes fingers or walls. The finger-root crease traps
+     the top balls, and with each palm rolling on its own axis the seam between the palms becomes a step
+     the balls cannot cross (fixed with `two_hands.build(roll_at="seam")`: both roll hinges on one axis
+     along the seam, so the two palms tilt as one rigid surface).
+
+   **7A, the long cup** (`stage7_cup.py`). Both hands cupped into one long bowl -- curled fingers the wall
+   at the finger end, the thumbs the far ends, the rolls on the seam axis -- holds all four balls under
+   8-16 deg tilts, and balls cross the seam at 12 deg. A circular tilt of the whole cup (a "swirl", wine
+   round a glass) leaves the top balls stuck (2-14 deg in 15 s, over 32 cup shapes and 45/50mm balls); a
+   knuckle flick once a circle frees them but churns the balls through the middle (85/384 settings keep
+   all four for 15 s). RL as a residual on the swirl + flick (`rl_env_stage7_cup.py`, cup_01, 17.5M) keeps
+   the balls (10/10 for 10 s, vs 7/10 for the rhythm alone) but learns to park them: in 30 s from rest all
+   four slide onto the left palm by 3 s and stay; the fingers never touch them.
+
+   <p align="center">
+     <img src="media/stage7_cup_rl16M.gif" width="600">
+   </p>
+   <p align="center"><sub>The long cup, RL cup_01 @16M: the balls settle on one palm and stay -- the
+   flicking fingers never reach them.</sub></p>
+
+   **7A, the finger wave: fingers as the drive.** With the fingers flat the eight fingers of the two hands
+   make one row across the cup, ~2.2cm apart; a 38mm ball resting on them spans two. A wave of knuckle lifts
+   runs along the row (`stage7_wave.py`): the finger behind the ball rises, the one ahead stays flat, and the
+   ball rolls onto it -- a peristaltic conveyor. Flat fingers do not block a ball rolling over them, and the
+   ball crosses the seam without a hitch. 49 of 216 settings carry one ball the whole row (~15cm), the
+   fastest in 0.62 s; all the best need the wrists flexed (-0.1: the palms' heels high, the ball leaning
+   on the fingers).
+
+   <p align="center">
+     <img src="media/stage7_wave_a.gif" width="600">
+   </p>
+   <p align="center"><sub>The finger wave carries one ball the length of the finger row, across both
+   hands (half speed).</sub></p>
+
+   - *A loop, scripted* (`stage7_wave_loop.py`): out along the finger row on the wave, back along the
+     palms by tilting the cup. The way back fails: the ball ends in the hollow at the left thumb's base.
+     The curled index fingers as end walls stop it falling off the row's ends; feedback tilts on the
+     ball's place (`--fsm`), a lowered thumb, and a thumb sweep (the thumb lifts the ball rather than
+     pushing it -- it rests ON the thumb's base) reach at best 1.3 laps in 15 s, usually 0.3.
+   - *RL on the script, one ball* (`rl_env_stage7_wave.py`, `train_stage7_cup.py --env wave`): a residual
+     on the scripted loop (wave, walls, thumbs 0.3, feedback tilts) on every joint (fingers and thumbs
+     +-0.5 rad, wrists and rolls +-0.15), paid for the ball's turn round the loop centre (full pay at
+     180 deg/s, nothing within 2cm of the centre), -50 for a drop. A bug first: the reset let the ball
+     settle 0.5 s on bare flat fingers and in 15/40 starts it rolled out past the loss radius before the
+     first action -- fixed (the settle runs the script; the fingertips count as on the hands), and the run
+     resumed from 4M as wave_02.
+
+   | one ball, deterministic policy | kept (10 s, random starts) | laps per 10 s |
+   |---|---|---|
+   | the script alone | 4/10 | -- |
+   | wave_01 @4M | 10/10 | 0.1-1.0 (with exploration noise: 1.6-2.7, 7/10 kept) |
+   | wave_02 @8M | 10/10 | 0.3-4.1 |
+   | **wave_02 @24M** | **20/20** | **4.8-5.2** |
+
+   From rest, wave_02 @24M laps the ball **14.9 times in 30 s** (179 deg/s, a lap every 2 s): along the
+   finger row on the wave, up over the left thumb's base where the script stuck, back along the palms,
+   down onto the row again. It is at the reward's full-pay speed. Next: two balls, then four.
+
+   <p align="center">
+     <img src="media/stage7_wave_rl24M.gif" width="600">
+   </p>
+   <p align="center"><sub>Stage 7A finger-wave loop, RL wave_02 @24M: one ball round the loop across both
+   hands, a lap every ~2 s (the first 10 s of 30, ball kept throughout).</sub></p>
+
+   ```
+   python3 stage7_cup.py --out media_full/stage7_cup.png                  # the cup: settle + hold tests
+   python3 stage7_cup.py --swirl --flicks 0.6                             # swirl + flick grid
+   python3 train_stage7_cup.py --run-name cup_01 --log-std -2.0
+   python3 stage7_wave.py                                                 # the wave conveyor, one ball, grid
+   python3 stage7_wave_loop.py --fsm                                      # the scripted loop with feedback tilts
+   python3 train_stage7_cup.py --env wave --run-name wave_01 --ref-deg 180 --timesteps 20000000
+   python3 eval_stage7_cup.py runs/wave_02/checkpoints/ppo_23999940_steps.zip --env wave --n 20 --seconds 10
+   python3 eval_stage7_cup.py runs/wave_02/checkpoints/ppo_23999940_steps.zip --env wave --settled --seconds 30 --record data/stage7_wave_rl24M.npz
+   python3 render_stage7.py data/stage7_wave_rl24M.npz media_full/stage7_wave_rl24M.gif --every 2
    ```
 
 ## Repository layout
@@ -630,6 +756,13 @@ shadow_hand/
 ├── stage7_teacher.py                      # Stage 7A: two-hand segment planner (wrist tilt, finger band, resume)
 ├── render_stage7.py, demo_stats.py        # Stage 7A: render a demo/episode npz; demo smoothness stats
 ├── rl_env_stage7.py, eval_stage7_track.py # Stage 7A: two-hand tracking env; evaluation
+├── stage7_stalls.py                       # Stage 7A: save a policy's stall states for planner fixes
+├── stage7_mpc.py, stage7_rhythm.py, stage7_cross.py   # Stage 7A form (2): MPC, rhythm CEM, crossing cycle
+├── rl_env_stage7_loop.py, train_stage7_loop.py, eval_stage7_loop.py  # Stage 7A form (2): loop RL / tracking
+├── stage7_cup.py                          # Stage 7A: the long cup (hold tests, swirl + flick grids)
+├── rl_env_stage7_cup.py, train_stage7_cup.py, eval_stage7_cup.py     # Stage 7A: cup RL; --env wave: finger-wave RL
+├── stage7_wave.py, stage7_wave_loop.py    # Stage 7A: the finger-wave conveyor; the scripted loop (--fsm)
+├── rl_env_stage7_wave.py                  # Stage 7A: finger-wave loop RL env (one ball)
 ├── data/stage6_*.npz                      # Stage 6: hold postures, jam states, the planner demos
 ├── data/stage7_demo_*.npz                 # Stage 7A: the planner demos (ccw360 = first, smooth360 = used)
 ├── logs/                                  # Stage 5-7: training / planner output of every run
@@ -648,6 +781,10 @@ shadow_hand/
 │   ├── stage6_rl_1x.gif                   # Stage 6: RL (track_10), 21/24 kept 60 s at 1x; 738 deg shown
 │   ├── stage7_two_hands_B.gif             # Stage 7B: two hands, a pair each, 11 swaps per hand in 20 s
 │   ├── stage7A_smooth_demo.gif            # Stage 7A: the smooth planner demo, 364 deg across both palms
-│   └── stage7A_rl_14M.gif                 # Stage 7A: RL (two_01 @14M), 30 s kept at 1x, +68 deg
+│   ├── stage7A_rl_14M.gif                 # Stage 7A: RL (two_01 @14M), 30 s kept at 1x, +68 deg
+│   ├── stage7_track_l3_40M_1x.gif         # Stage 7A form (2): RL track_l3, kept but not circulating
+│   ├── stage7_cup_rl16M.gif               # Stage 7A: the long cup, RL cup_01 parks the balls
+│   ├── stage7_wave_a.gif                  # Stage 7A: the finger wave carries one ball along the row
+│   └── stage7_wave_rl24M.gif              # Stage 7A: RL wave_02 @24M, one ball, a lap every ~2 s
 └── README.md
 ```
