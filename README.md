@@ -477,7 +477,8 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
 
 7. **Two hands, four balls -- B DONE: each hand turns its own pair; A (one loop across both palms): in
    progress -- a finger-wave loop across both cupped hands laps one ball every ~2 s and TWO balls
-   together ~12.5 laps in 30 s each (RL); four balls next.** Two-hand four-ball patterns found on YouTube: (A) [spheres108, "4 Baoding Balls"](https://www.youtube.com/watch?v=iyMXsvBwHKQ)
+   together ~12.5 laps in 30 s each, FOUR balls ~9.5 laps in 30 s each with a ball dropped in a third of
+   30 s runs (RL); closing the drops next.** Two-hand four-ball patterns found on YouTube: (A) [spheres108, "4 Baoding Balls"](https://www.youtube.com/watch?v=iyMXsvBwHKQ)
    -- palms up side by side, four balls kept apart in ONE loop across both palms, crossing where they
    meet; (B) [Curtis Zimmerman, "How to roll 2 balls in both hands"](https://www.youtube.com/watch?v=OrymhfihtS4)
    -- two-ball baoding in each hand at once; (C) [spheres108, "Passing 4 baoding balls"](https://www.youtube.com/watch?v=UXAFp3tYJBE)
@@ -713,14 +714,33 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    | **@18M, deterministic** | **10/10, and 10/10 on 10 fresh starts** | **11.3-12.9** |
 
    wave2_01 @18M keeps both balls going round together, each about **12.5 laps in 30 s** (~145 deg/s,
-   within a few % of each other): about 15% slower per ball than one ball alone. Stopped at 20.7M. Next:
-   four balls, a quarter lap apart.
+   within a few % of each other): about 15% slower per ball than one ball alone. Stopped at 20.7M.
 
    <p align="center">
      <img src="media/stage7_wave2_rl18M.gif" width="600">
    </p>
    <p align="center"><sub>Stage 7A finger-wave loop, RL wave2_01 @18M: two balls half a lap apart round
    the loop across both hands (the first 10 s of 30, both kept, 13.5 laps for the slower ball).</sub></p>
+
+   - *Four balls* (`--n-balls 4`, wave4_01, 40M, a fresh network): the balls start a quarter lap apart
+     (~9cm); everything else as for two. The base alone holds all four (20/20) but turns none.
+
+   | four balls, wave4_01, deterministic | kept (30 s, random starts) | slowest ball, laps per 30 s |
+   |---|---|---|
+   | @18M | 7/10 | ~5 |
+   | @34M | 6/10 | 6.5-8.8 |
+   | **@40M** | **8/10 on two sets of 10; 27/40 over 40 starts** | **8.4-10.0** (~110 deg/s per ball) |
+
+   All four balls go round together, ~9.5 laps in 30 s each. A third of 30 s runs still drop a ball,
+   and every drop is the same: a ball rolls off the heel of the palms at the seam between the hands,
+   toward the wrists, at any time in the run. Training on did not close it (drops ~30% at 6M, ~20% at
+   40M in training). Next: a penalty as a ball nears that palm edge (wave4_02, from 40M).
+
+   <p align="center">
+     <img src="media/stage7_wave4_rl40M.gif" width="600">
+   </p>
+   <p align="center"><sub>Stage 7A finger-wave loop, RL wave4_01 @40M: four balls round the loop across
+   both hands (the first 10 s of 30, all kept, 10.1 laps for the slowest ball).</sub></p>
 
    ```
    python3 stage7_cup.py --out media_full/stage7_cup.png                  # the cup: settle + hold tests
@@ -735,6 +755,8 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    python3 train_stage7_cup.py --env wave --n-balls 2 --run-name wave2_01 --ref-deg 180 --log-std -1.5 --timesteps 30000000
    python3 eval_stage7_cup.py runs/wave2_01/checkpoints/ppo_17999955_steps.zip --env wave --n-balls 2 --n 10 --seconds 30 --seed 500 --record data/stage7_wave2_rl18M.npz
    python3 render_stage7.py data/stage7_wave2_rl18M.npz media_full/stage7_wave2_rl18M.gif --every 3
+   python3 train_stage7_cup.py --env wave --n-balls 4 --run-name wave4_01 --ref-deg 180 --log-std -1.5 --timesteps 40000000
+   python3 eval_stage7_cup.py runs/wave4_01/checkpoints/ppo_39999900_steps.zip --env wave --n-balls 4 --n 10 --seconds 30 --seed 500 --record data/stage7_wave4_rl40M.npz
    ```
 
 ## Repository layout
@@ -813,6 +835,7 @@ shadow_hand/
 │   ├── stage7_cup_rl16M.gif               # Stage 7A: the long cup, RL cup_01 parks the balls
 │   ├── stage7_wave_a.gif                  # Stage 7A: the finger wave carries one ball along the row
 │   ├── stage7_wave_rl24M.gif              # Stage 7A: RL wave_02 @24M, one ball, a lap every ~2 s
-│   └── stage7_wave2_rl18M.gif             # Stage 7A: RL wave2_01 @18M, two balls round the loop
+│   ├── stage7_wave2_rl18M.gif             # Stage 7A: RL wave2_01 @18M, two balls round the loop
+│   └── stage7_wave4_rl40M.gif             # Stage 7A: RL wave4_01 @40M, four balls round the loop
 └── README.md
 ```
