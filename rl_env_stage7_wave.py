@@ -164,8 +164,9 @@ class MultiWaveEnv(WaveEnv):
     - W_RATE |a|^2; any ball lost ends it with -DROP. Starts: the balls spaced evenly round the loop's path (a
     random offset, a little jitter), so with two balls one is on the finger row while the other comes back."""
 
-    def __init__(self, n=2, episode_seconds=None, randomize=True, ref_deg=REF_DEG, w_edge=0.0, w_fast=0.0, flex_n=BASE_FLEX_N):
+    def __init__(self, n=2, episode_seconds=None, randomize=True, ref_deg=REF_DEG, w_edge=0.0, w_fast=0.0, flex_n=BASE_FLEX_N, drop=DROP):
         self.n, self.w_edge = n, w_edge          # w_edge: penalty per ball, ramping 0 -> w_edge from EDGE_X to EDGE_X - EDGE_W
+        self.drop = drop                         # the cost of a lost ball
         self.w_fast = w_fast                     # w_fast: per ball below FAST_X, ramping 0 -> w_fast as -vx goes FAST_V -> +FAST_W
         self.flex_n, self.roll_n = flex_n, BASE_ROLL_N            # the base, per instance (script variants)
         self.wall_r = self.wall_l = BASE["wall"]                  # right / left index-finger end walls
@@ -261,7 +262,7 @@ class MultiWaveEnv(WaveEnv):
                       (-self.d.qvel[self.w.bv[:self.n]] - FAST_V) / FAST_W, 0.0, 1.0))))
         lost = self._lost(b)
         if lost:
-            reward -= DROP
+            reward -= self.drop
         trunc = self.t >= self.steps
         info = {}
         if lost or trunc:

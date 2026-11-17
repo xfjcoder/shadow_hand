@@ -22,10 +22,10 @@ HERE = Path(__file__).parent
 torch.set_num_threads(1)
 
 
-def make_env(seed, seconds, ref_deg, kind="cup", n_balls=1, w_edge=0.0, w_fast=0.0, flex_n=0.0):
+def make_env(seed, seconds, ref_deg, kind="cup", n_balls=1, w_edge=0.0, w_fast=0.0, flex_n=0.0, drop=50.0):
     def _init():
         if kind == "wave" and n_balls > 1:
-            env = MultiWaveEnv(n=n_balls, episode_seconds=seconds, ref_deg=ref_deg, w_edge=w_edge, w_fast=w_fast, flex_n=flex_n)
+            env = MultiWaveEnv(n=n_balls, episode_seconds=seconds, ref_deg=ref_deg, w_edge=w_edge, w_fast=w_fast, flex_n=flex_n, drop=drop)
         else:
             env = (WaveEnv if kind == "wave" else CupEnv)(episode_seconds=seconds, ref_deg=ref_deg)
         env.reset(seed=seed)
@@ -49,10 +49,11 @@ def main():
     ap.add_argument("--w-edge", type=float, default=0.0, help="--n-balls > 1: penalty per ball past the palms' heel")
     ap.add_argument("--w-fast", type=float, default=0.0, help="--n-balls > 1: penalty per ball rushing wristward off the palm leg")
     ap.add_argument("--flex-n", type=float, default=0.0, help="--n-balls > 1: the base wrist flex (-0.05 raises the palms' heel)")
+    ap.add_argument("--drop", type=float, default=50.0, help="--n-balls > 1: the cost of a lost ball")
     ap.add_argument("--resume", default=None)
     args = ap.parse_args()
     run = HERE / "runs" / args.run_name
-    env = VecMonitor(SubprocVecEnv([make_env(args.seed + i, args.episode_seconds, args.ref_deg, args.env, args.n_balls, args.w_edge, args.w_fast, args.flex_n) for i in range(args.n_envs)]))
+    env = VecMonitor(SubprocVecEnv([make_env(args.seed + i, args.episode_seconds, args.ref_deg, args.env, args.n_balls, args.w_edge, args.w_fast, args.flex_n, args.drop) for i in range(args.n_envs)]))
     if args.resume:
         steps = Path(args.resume).stem.split("_")[-2]
         env = VecNormalize.load(str(Path(args.resume).parent / f"ppo_vecnormalize_{steps}_steps.pkl"), env)

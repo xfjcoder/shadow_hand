@@ -475,10 +475,11 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    tracking: free baoding with no reference path is a further step (the reward-only Stage 5 recipe
    stalled at the jam, runs three_01-06).
 
-7. **Two hands, four balls -- B DONE: each hand turns its own pair; A (one loop across both palms): in
-   progress -- a finger-wave loop across both cupped hands laps one ball every ~2 s and TWO balls
+7. **Two hands, four balls -- B DONE: each hand turns its own pair; A (one loop across both palms): four
+   balls round one loop DONE (they follow each other; no crossing yet) -- a finger-wave loop across both cupped hands laps one ball every ~2 s and TWO balls
    together ~12.5 laps in 30 s each, FOUR balls ~9.5 laps in 30 s each with a ball dropped in a third of
-   30 s runs (RL) -- 47/50 kept at ~8.5 laps with the wrists flexed back 0.05.** Two-hand four-ball patterns found on YouTube: (A) [spheres108, "4 Baoding Balls"](https://www.youtube.com/watch?v=iyMXsvBwHKQ)
+   30 s runs, then with the wrists flexed back 0.05 and 30 s training episodes 49/50 kept at ~10 laps
+   each (RL wave4_05 @52M).** Two-hand four-ball patterns found on YouTube: (A) [spheres108, "4 Baoding Balls"](https://www.youtube.com/watch?v=iyMXsvBwHKQ)
    -- palms up side by side, four balls kept apart in ONE loop across both palms, crossing where they
    meet; (B) [Curtis Zimmerman, "How to roll 2 balls in both hands"](https://www.youtube.com/watch?v=OrymhfihtS4)
    -- two-ball baoding in each hand at once; (C) [spheres108, "Passing 4 baoding balls"](https://www.youtube.com/watch?v=UXAFp3tYJBE)
@@ -764,13 +765,26 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    a policy never trained on it, for ~20% of the speed (~105 deg/s per ball). Fine-tuning on it
    (wave4_04, from 50M) bought the speed back and the drops with it: 33/40 at 52M, 20/40 at 54M, 11.6
    laps. Training episodes are 10 s with -50 for a drop, so two laps per 30 s faster outweighs a drop
-   now and then; the test is 30 s. Next: fine-tune with 30 s episodes and a dearer drop.
+   now and then; the test is 30 s.
+
+   So wave4_05 (from 50M, wrists -0.05) trains on what is tested: 30 s episodes, -200 for a drop.
+
+   | wave4_05, deterministic, 30 s, 40 starts | kept | slowest ball, laps per 30 s |
+   |---|---|---|
+   | **@52M** | **39/40, and 10/10 on 10 fresh starts: 49/50** | **10.2** (~120 deg/s per ball) |
+   | @54M | 35/40 | 10.7 |
+   | @56M / 58M / 60M | 24/40 / 26/40 / 26/40 | 10.9 / 11.3 / 11.4 |
+
+   wave4_05 @52M is the four-ball result: **all four balls round both hands, 49/50 kept over 30 s, ~10
+   laps each** -- ~80% of two balls' speed. Later checkpoints drift toward speed again (about 11 laps at
+   65% kept), more slowly than with 10 s episodes; 52M was picked from five checkpoints, the 10 fresh
+   starts back it up.
 
    <p align="center">
-     <img src="media/stage7_wave4_flex05.gif" width="600">
+     <img src="media/stage7_wave4_05_52M.gif" width="600">
    </p>
-   <p align="center"><sub>Stage 7A finger-wave loop, four balls: wave4_03 @50M on the base with the wrists
-   flexed back 0.05 (the first 10 s of 30, all kept, 9.6 laps for the slowest ball).</sub></p>
+   <p align="center"><sub>Stage 7A finger-wave loop, four balls: RL wave4_05 @52M, wrists flexed back
+   0.05 (the first 10 s of 30, all kept, 11.0 laps for the slowest ball).</sub></p>
 
    ```
    python3 stage7_cup.py --out media_full/stage7_cup.png                  # the cup: settle + hold tests
@@ -789,6 +803,8 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    python3 eval_stage7_cup.py runs/wave4_01/checkpoints/ppo_39999900_steps.zip --env wave --n-balls 4 --n 10 --seconds 30 --seed 500 --record data/stage7_wave4_rl40M.npz
    python3 train_stage7_cup.py --env wave --n-balls 4 --w-edge 0.5 --w-fast 0.5 --run-name wave4_03 --ref-deg 180 --resume runs/wave4_02/checkpoints/ppo_45999885_steps.zip --timesteps 10000000
    python3 eval_stage7_cup.py runs/wave4_03/checkpoints/ppo_49999875_steps.zip --env wave --n-balls 4 --flex-n -0.05 --n 10 --seconds 30 --seed 500 --record data/stage7_wave4_flex05.npz
+   python3 train_stage7_cup.py --env wave --n-balls 4 --flex-n -0.05 --drop 200 --episode-seconds 30 --run-name wave4_05 --ref-deg 180 --resume runs/wave4_03/checkpoints/ppo_49999875_steps.zip --timesteps 10000000
+   python3 eval_stage7_cup.py runs/wave4_05/checkpoints/ppo_51999870_steps.zip --env wave --n-balls 4 --flex-n -0.05 --n 10 --seconds 30 --seed 500 --record data/stage7_wave4_05_52M.npz
    ```
 
 ## Repository layout
@@ -869,6 +885,7 @@ shadow_hand/
 │   ├── stage7_wave_rl24M.gif              # Stage 7A: RL wave_02 @24M, one ball, a lap every ~2 s
 │   ├── stage7_wave2_rl18M.gif             # Stage 7A: RL wave2_01 @18M, two balls round the loop
 │   ├── stage7_wave4_rl40M.gif             # Stage 7A: RL wave4_01 @40M, four balls round the loop
-│   └── stage7_wave4_flex05.gif            # Stage 7A: four balls, @50M on wrists flexed -0.05: 47/50 kept
+│   ├── stage7_wave4_flex05.gif            # Stage 7A: four balls, @50M on wrists flexed -0.05: 47/50 kept
+│   └── stage7_wave4_05_52M.gif            # Stage 7A: four balls, RL wave4_05 @52M: 49/50 kept, ~10 laps/30 s
 └── README.md
 ```
