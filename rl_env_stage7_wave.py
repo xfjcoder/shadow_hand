@@ -154,6 +154,8 @@ class WaveEnv(gym.Env):
 # (its +-RES_WRIST reaches both legs' tilts). The wave and the index-finger walls run as before.
 BASE_FLEX_N, BASE_ROLL_N = 0.0, 0.05
 W_CROWD_N = 0.05                          # per cm two balls come closer than 1cm
+EDGE_X, EDGE_W = 0.25, 0.015              # m: the heel of the palms; balls past it roll off toward the wrists
+FAST_X, FAST_V, FAST_W = 0.30, 0.10, 0.10 # balls below x 30cm moving wristward faster than 10cm/s overshoot the palm leg
 
 
 class MultiWaveEnv(WaveEnv):
@@ -162,8 +164,12 @@ class MultiWaveEnv(WaveEnv):
     - W_RATE |a|^2; any ball lost ends it with -DROP. Starts: the balls spaced evenly round the loop's path (a
     random offset, a little jitter), so with two balls one is on the finger row while the other comes back."""
 
-    def __init__(self, n=2, episode_seconds=None, randomize=True, ref_deg=REF_DEG):
-        self.n = n
+    def __init__(self, n=2, episode_seconds=None, randomize=True, ref_deg=REF_DEG, w_edge=0.0, w_fast=0.0, flex_n=BASE_FLEX_N):
+        self.n, self.w_edge = n, w_edge          # w_edge: penalty per ball, ramping 0 -> w_edge from EDGE_X to EDGE_X - EDGE_W
+        self.w_fast = w_fast                     # w_fast: per ball below FAST_X, ramping 0 -> w_fast as -vx goes FAST_V -> +FAST_W
+        self.flex_n, self.roll_n = flex_n, BASE_ROLL_N            # the base, per instance (script variants)
+        self.wall_r = self.wall_l = BASE["wall"]                  # right / left index-finger end walls
+        self.amp_k = np.ones(8)                                   # per-finger scale of the wave's lift
         super().__init__(episode_seconds=episode_seconds, randomize=randomize, ref_deg=ref_deg)
         nobs = 2 * len(self.hq) + 9 * n + 2
         self.observation_space = spaces.Box(-np.inf, np.inf, shape=(nobs,), dtype=np.float32)
@@ -185,11 +191,12 @@ class MultiWaveEnv(WaveEnv):
     def base(self):
         B, w = BASE, self.w
         u = w.u0.copy()
-        u[self.fx] = BASE_FLEX_N
-        u[self.ro] += BASE_ROLL_N
-        u[[self.kn[0], self.kn[-1]]] += B["wall"]
+        u[self.fx] = self.flex_n
+        u[self.ro] += self.roll_n
+        u[self.kn[0]] += self.wall_r
+        u[self.kn[-1]] += self.wall_l
         for k in range(1, 7):
-            u[self.kn[k]] += B["amp"] * max(0.0, np.sin(2 * np.pi * (self.t_wave / B["T"] - k * B["lag"]))) ** 2
+            u[self.kn[k]] += self.amp_k[k] * B["amp"] * max(0.0, np.sin(2 * np.pi * (self.t_wave / B["T"] - k * B["lag"]))) ** 2
         return u
 
     def _angles(self, b):
@@ -248,7 +255,10 @@ class MultiWaveEnv(WaveEnv):
         g = np.array([np.linalg.norm(b[p, :2] - b[q, :2]) * 100 - 200 * BALL_R
                       for p in range(self.n) for q in range(p + 1, self.n)])
         reward = (ALIVE + 0.5 * prog.mean() + 0.5 * prog.min() - W_CROWD_N * float(np.sum(np.maximum(1.0 - g, 0.0)))
-                  - W_RATE * float(np.sum(a ** 2)))
+                  - W_RATE * float(np.sum(a ** 2))
+                  - self.w_edge * float(np.sum(np.clip((EDGE_X - b[:, 0]) / EDGE_W, 0.0, 1.0)))
+                  - self.w_fast * float(np.sum((b[:, 0] < FAST_X) * np.clip(
+                      (-self.d.qvel[self.w.bv[:self.n]] - FAST_V) / FAST_W, 0.0, 1.0))))
         lost = self._lost(b)
         if lost:
             reward -= DROP
