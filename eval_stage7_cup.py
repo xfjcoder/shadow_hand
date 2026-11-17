@@ -15,6 +15,7 @@ import numpy as np
 from stable_baselines3 import PPO
 
 from rl_env_stage7_cup import BALL_R, RIM_R, CupEnv
+from rl_env_stage7_fig8 import FLEX_8, Fig8Env
 from rl_env_stage7_wave import MultiWaveEnv, WaveEnv
 
 
@@ -28,17 +29,22 @@ def main():
     ap.add_argument("--zero", action="store_true", help="zero residual: the rhythm alone")
     ap.add_argument("--stochastic", action="store_true")
     ap.add_argument("--record", default=None)
-    ap.add_argument("--env", default="cup", choices=("cup", "wave"))
-    ap.add_argument("--flex-n", type=float, default=0.0, help="--n-balls > 1: the base wrist flex")
+    ap.add_argument("--env", default="cup", choices=("cup", "wave", "fig8"))
+    ap.add_argument("--flex-n", type=float, default=None, help="the base wrist flex (default 0 for wave, -0.05 for fig8)")
     ap.add_argument("--n-balls", type=int, default=1, help="--env wave: balls round the loop")
     args = ap.parse_args()
     p = Path(args.ckpt)
     vn = pickle.load(open(p.parent / f"ppo_vecnormalize_{p.stem.split('_')[-2]}_steps.pkl", "rb"))
     model = PPO.load(args.ckpt, device="cpu")
-    wave = args.env == "wave"
+    wave = args.env in ("wave", "fig8")
     kw = dict(episode_seconds=args.seconds, randomize=not args.settled)
-    env = (MultiWaveEnv(n=args.n_balls, flex_n=args.flex_n, **kw) if args.n_balls > 1 else WaveEnv(**kw)) if wave else CupEnv(**kw)
-    center = env.c if wave else env.center
+    if args.env == "fig8":
+        env = Fig8Env(n=args.n_balls, flex_n=FLEX_8 if args.flex_n is None else args.flex_n, **kw)
+    elif wave:
+        env = MultiWaveEnv(n=args.n_balls, flex_n=args.flex_n or 0.0, **kw) if args.n_balls > 1 else WaveEnv(**kw)
+    else:
+        env = CupEnv(**kw)
+    center = env.c8 if args.env == "fig8" else env.c if wave else env.center
     n = 1 if args.settled else args.n
     kept, best = 0, None
     for ep in range(n):

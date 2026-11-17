@@ -476,7 +476,8 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    stalled at the jam, runs three_01-06).
 
 7. **Two hands, four balls -- B DONE: each hand turns its own pair; A (one loop across both palms): four
-   balls round one loop DONE (they follow each other; no crossing yet) -- a finger-wave loop across both cupped hands laps one ball every ~2 s and TWO balls
+   balls round one loop DONE (they follow each other; no crossing yet); the crossing figure-8: one ball
+   DONE (12 laps in 30 s, 80/80 kept), two balls in progress -- a finger-wave loop across both cupped hands laps one ball every ~2 s and TWO balls
    together ~12.5 laps in 30 s each, FOUR balls ~9.5 laps in 30 s each with a ball dropped in a third of
    30 s runs, then with the wrists flexed back 0.05 and 30 s training episodes 49/50 kept at ~10 laps
    each (RL wave4_05 @52M).** Two-hand four-ball patterns found on YouTube: (A) [spheres108, "4 Baoding Balls"](https://www.youtube.com/watch?v=iyMXsvBwHKQ)
@@ -786,6 +787,44 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    <p align="center"><sub>Stage 7A finger-wave loop, four balls: RL wave4_05 @52M, wrists flexed back
    0.05 (the first 10 s of 30, all kept, 11.0 laps for the slowest ball).</sub></p>
 
+   **The crossing: a figure-8 across both hands.** Pattern A's balls do not follow each other round one
+   loop -- they cross where the hands meet. `rl_env_stage7_fig8.Fig8Env` asks for a figure-8 over the two
+   cupped hands, a 1:2 Lissajous `x = c_x + a_x sin 4 pi s, y = c_y + a_y sin 2 pi s` (crossing at the seam
+   (32.2, 4.2) cm, half-axes 3.7 x 5.4 cm, 39 cm a lap): out across one hand's fingers to its index wall,
+   back along its palm, through the crossing and round the other hand the other way. The base is the
+   same finger wave, run outward from the seam on both hands, wrists flexed back 0.05; the residual
+   policy does the rest. Reward: progress along the 8 (each ball's place `s` searched near its last one,
+   so the crossing is not ambiguous; full pay at 0.5 laps/s), a cost per ball more than 1.5 cm off the 8,
+   30 s episodes, -200 for a drop. The base alone never drops the ball and never gets it round (-0.1 to
+   +0.2 laps).
+
+   One ball (fig8_01, fresh, 20M): flat until ~6M -- the ball parked at a hand's outer end, where the
+   path turns off the fingers onto the palm, and no constant forearm roll (-0.15 to +0.15) moved it --
+   then it broke through: ~5 laps at 8M, ~12 at 14M.
+
+   | fig8_01, deterministic, 30 s, 40 starts | kept | laps per 30 s (median) | under 1 lap |
+   |---|---|---|---|
+   | @12M | 40/40 | 8.7 | 4 |
+   | @14M | 40/40 | 11.7 | 4 |
+   | **@16M** | **40/40, and 40/40 on 40 fresh starts** | **12.3 (12.2 fresh)** | **0** |
+   | @18M | 40/40 (40/40 fresh) | 12.0 (11.9) | 0 |
+   | @20M | 40/40 | 10.8 | 1 |
+
+   fig8_01 @16M runs the figure-8 at ~150 deg/s, a lap every 2.4 s. It is an 8, not a loop -- the ball
+   crosses itself once each lap, the lobes turned opposite ways -- but a skewed one: the crossing sits
+   ~2.7 cm palmward of the drawn one, and on the palm leg the ball comes within ~1 cm of the palms'
+   heel, the edge four balls fell off on the loop.
+
+   <p align="center">
+     <img src="media/stage7_fig8_one.gif" width="600">
+   </p>
+   <p align="center"><sub>Stage 7A crossing figure-8, one ball: RL fig8_01 @16M (the first 10 s of 30;
+   12.0 laps in the 30 s).</sub></p>
+
+   More balls warm-start from fewer (`widen_stage7_fig8.py`): the first layer of the policy and value
+   nets is widened, the new balls' inputs start at zero weight and their obs normalisation is copied from
+   ball 0 -- the policy at first runs the old balls as before and ignores the new ones.
+
    ```
    python3 stage7_cup.py --out media_full/stage7_cup.png                  # the cup: settle + hold tests
    python3 stage7_cup.py --swirl --flicks 0.6                             # swirl + flick grid
@@ -805,6 +844,10 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    python3 eval_stage7_cup.py runs/wave4_03/checkpoints/ppo_49999875_steps.zip --env wave --n-balls 4 --flex-n -0.05 --n 10 --seconds 30 --seed 500 --record data/stage7_wave4_flex05.npz
    python3 train_stage7_cup.py --env wave --n-balls 4 --flex-n -0.05 --drop 200 --episode-seconds 30 --run-name wave4_05 --ref-deg 180 --resume runs/wave4_03/checkpoints/ppo_49999875_steps.zip --timesteps 10000000
    python3 eval_stage7_cup.py runs/wave4_05/checkpoints/ppo_51999870_steps.zip --env wave --n-balls 4 --flex-n -0.05 --n 10 --seconds 30 --seed 500 --record data/stage7_wave4_05_52M.npz
+   python3 train_stage7_cup.py --env fig8 --run-name fig8_01 --ref-deg 180 --episode-seconds 30 --drop 200 --log-std -1.5 --timesteps 20000000
+   python3 eval_stage7_cup.py runs/fig8_01/checkpoints/ppo_15999960_steps.zip --env fig8 --n 10 --seconds 30 --seed 500 --record data/fig8_01_16M.npz
+   python3 widen_stage7_fig8.py runs/fig8_01/checkpoints/ppo_15999960_steps.zip 2 runs/fig8_02/init/ppo_0_steps.zip
+   python3 train_stage7_cup.py --env fig8 --n-balls 2 --run-name fig8_02 --resume runs/fig8_02/init/ppo_0_steps.zip --ref-deg 180 --episode-seconds 30 --drop 200 --timesteps 20000000
    ```
 
 ## Repository layout
@@ -860,6 +903,8 @@ shadow_hand/
 ├── rl_env_stage7_cup.py, train_stage7_cup.py, eval_stage7_cup.py     # Stage 7A: cup RL; --env wave: finger-wave RL
 ├── stage7_wave.py, stage7_wave_loop.py    # Stage 7A: the finger-wave conveyor; the scripted loop (--fsm)
 ├── rl_env_stage7_wave.py                  # Stage 7A: finger-wave loop RL env (one ball; MultiWaveEnv: 2-4)
+├── rl_env_stage7_fig8.py                  # Stage 7A: the crossing figure-8 across both hands (Fig8Env, 1-4 balls)
+├── widen_stage7_fig8.py                   # Stage 7A: warm-start an n-ball figure-8 policy from fewer balls
 ├── data/stage6_*.npz                      # Stage 6: hold postures, jam states, the planner demos
 ├── data/stage7_demo_*.npz                 # Stage 7A: the planner demos (ccw360 = first, smooth360 = used)
 ├── logs/                                  # Stage 5-7: training / planner output of every run
@@ -886,6 +931,7 @@ shadow_hand/
 │   ├── stage7_wave2_rl18M.gif             # Stage 7A: RL wave2_01 @18M, two balls round the loop
 │   ├── stage7_wave4_rl40M.gif             # Stage 7A: RL wave4_01 @40M, four balls round the loop
 │   ├── stage7_wave4_flex05.gif            # Stage 7A: four balls, @50M on wrists flexed -0.05: 47/50 kept
-│   └── stage7_wave4_05_52M.gif            # Stage 7A: four balls, RL wave4_05 @52M: 49/50 kept, ~10 laps/30 s
+│   ├── stage7_wave4_05_52M.gif            # Stage 7A: four balls, RL wave4_05 @52M: 49/50 kept, ~10 laps/30 s
+│   └── stage7_fig8_one.gif                # Stage 7A: the crossing figure-8, one ball, RL fig8_01 @16M
 └── README.md
 ```

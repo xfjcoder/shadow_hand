@@ -5,6 +5,7 @@ Usage:
     python3 train_stage7_cup.py --run-name cup_01 --timesteps 30000000
     python3 train_stage7_cup.py --env wave --run-name wave_01 --ref-deg 180 --timesteps 20000000
     python3 train_stage7_cup.py --env wave --n-balls 2 --run-name wave2_01 --ref-deg 180 --timesteps 30000000
+    python3 train_stage7_cup.py --env fig8 --run-name fig8_01 --ref-deg 180 --episode-seconds 30 --drop 200
 """
 import argparse
 from pathlib import Path
@@ -15,6 +16,7 @@ from stable_baselines3.common.callbacks import CheckpointCallback
 from stable_baselines3.common.vec_env import SubprocVecEnv, VecMonitor, VecNormalize
 
 from rl_env_stage7_cup import CupEnv
+from rl_env_stage7_fig8 import FLEX_8, Fig8Env
 from rl_env_stage7_wave import MultiWaveEnv, WaveEnv
 from train_stage7_loop import Log
 
@@ -22,10 +24,14 @@ HERE = Path(__file__).parent
 torch.set_num_threads(1)
 
 
-def make_env(seed, seconds, ref_deg, kind="cup", n_balls=1, w_edge=0.0, w_fast=0.0, flex_n=0.0, drop=50.0):
+def make_env(seed, seconds, ref_deg, kind="cup", n_balls=1, w_edge=0.0, w_fast=0.0, flex_n=None, drop=50.0):
     def _init():
-        if kind == "wave" and n_balls > 1:
-            env = MultiWaveEnv(n=n_balls, episode_seconds=seconds, ref_deg=ref_deg, w_edge=w_edge, w_fast=w_fast, flex_n=flex_n, drop=drop)
+        if kind == "fig8":
+            env = Fig8Env(n=n_balls, episode_seconds=seconds, ref_deg=ref_deg, drop=drop,
+                          flex_n=FLEX_8 if flex_n is None else flex_n)
+        elif kind == "wave" and n_balls > 1:
+            env = MultiWaveEnv(n=n_balls, episode_seconds=seconds, ref_deg=ref_deg, w_edge=w_edge, w_fast=w_fast,
+                               flex_n=0.0 if flex_n is None else flex_n, drop=drop)
         else:
             env = (WaveEnv if kind == "wave" else CupEnv)(episode_seconds=seconds, ref_deg=ref_deg)
         env.reset(seed=seed)
@@ -36,7 +42,7 @@ def make_env(seed, seconds, ref_deg, kind="cup", n_balls=1, w_edge=0.0, w_fast=0
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--run-name", required=True)
-    ap.add_argument("--env", default="cup", choices=("cup", "wave"))
+    ap.add_argument("--env", default="cup", choices=("cup", "wave", "fig8"))
     ap.add_argument("--n-balls", type=int, default=1, help="--env wave: balls round the loop (2-4: MultiWaveEnv)")
     ap.add_argument("--timesteps", type=int, default=30_000_000)
     ap.add_argument("--n-envs", type=int, default=15)
@@ -48,7 +54,7 @@ def main():
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--w-edge", type=float, default=0.0, help="--n-balls > 1: penalty per ball past the palms' heel")
     ap.add_argument("--w-fast", type=float, default=0.0, help="--n-balls > 1: penalty per ball rushing wristward off the palm leg")
-    ap.add_argument("--flex-n", type=float, default=0.0, help="--n-balls > 1: the base wrist flex (-0.05 raises the palms' heel)")
+    ap.add_argument("--flex-n", type=float, default=None, help="the base wrist flex (default 0 for wave, -0.05 for fig8)")
     ap.add_argument("--drop", type=float, default=50.0, help="--n-balls > 1: the cost of a lost ball")
     ap.add_argument("--resume", default=None)
     args = ap.parse_args()
