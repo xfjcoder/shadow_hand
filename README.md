@@ -478,7 +478,8 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
 7. **Two hands, four balls -- B DONE: each hand turns its own pair; A (one loop across both palms): four
    balls round one loop DONE (they follow each other; no crossing yet); the crossing figure-8: one ball
    DONE (12 laps in 30 s, 80/80 kept), two balls DONE (80/80 kept, ~5.5 laps each), three
-   DONE (80/80 kept, ~3.5 laps each), four in progress -- a finger-wave loop across both cupped hands laps one ball every ~2 s and TWO balls
+   DONE (80/80 kept, ~3.5 laps each), four kept and crossing (78/80) but bunched and slow (~1.3
+   laps) -- a finger-wave loop across both cupped hands laps one ball every ~2 s and TWO balls
    together ~12.5 laps in 30 s each, FOUR balls ~9.5 laps in 30 s each with a ball dropped in a third of
    30 s runs, then with the wrists flexed back 0.05 and 30 s training episodes 49/50 kept at ~10 laps
    each (RL wave4_05 @52M).** Two-hand four-ball patterns found on YouTube: (A) [spheres108, "4 Baoding Balls"](https://www.youtube.com/watch?v=iyMXsvBwHKQ)
@@ -873,6 +874,34 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    4.0 cm. Even spacing along the path does worse (the best 3.7 cm; spaced a quarter lap they meet at
    the crossing). `Fig8Env.spacing` uses it for four.
 
+   Four balls (fig8_04, from fig8_03 @20M widened, those offsets): the balls lapped from the start, and
+   by 8M the drops were gone -- but the speed flattened from ~0.5M on.
+
+   | fig8_04, deterministic, 30 s, 40 starts | kept | slowest ball, laps per 30 s (median) | under 1 lap |
+   |---|---|---|---|
+   | @4M | 35/40 | 1.1 | 15 |
+   | @6M | 37/40 | 1.2 | 14 |
+   | **@8M** | **40/40, and 38/40 on 40 fresh starts** | **1.35 (1.3 fresh)** | **10 (9)** |
+
+   fig8_04 @8M keeps all four balls (78/80 over 30 s) and every ball crosses between the hands, 3-6
+   times in 30 s -- but this is not yet the trick. The balls do not spread round the 8 at their
+   offsets; they ride as a clump, three on one hand and one on the other half the time, churning
+   slowly (~16 deg/s for the slowest ball, a ninth of one ball's speed). Nothing in the reward asks
+   them to keep apart beyond the crowding cost: progress for the mean and the slowest ball is paid as
+   well by a slow clump.
+
+   | balls on the left hand, share of time | 0 | 1 | 2 | 3 | 4 |
+   |---|---|---|---|---|---|
+   | two balls (fig8_02 @20M) | 0.36 | 0.38 | 0.26 | | |
+   | three balls (fig8_03 @20M) | 0.13 | 0.23 | 0.38 | 0.26 | |
+   | four balls (fig8_04 @8M) | 0.14 | 0.14 | 0.20 | 0.47 | 0.05 |
+
+   <p align="center">
+     <img src="media/stage7_fig8_four.gif" width="600">
+   </p>
+   <p align="center"><sub>Stage 7A crossing figure-8, four balls: RL fig8_04 @8M (the first 10 s of 30;
+   all kept, 1.7 laps for the slowest ball; the balls cross, but as a clump).</sub></p>
+
    ```
    python3 stage7_cup.py --out media_full/stage7_cup.png                  # the cup: settle + hold tests
    python3 stage7_cup.py --swirl --flicks 0.6                             # swirl + flick grid
@@ -902,6 +931,7 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    python3 eval_stage7_cup.py runs/fig8_03/checkpoints/ppo_19999950_steps.zip --env fig8 --n-balls 3 --n 10 --seconds 30 --seed 500 --record data/fig8_03_20M.npz
    python3 widen_stage7_fig8.py runs/fig8_03/checkpoints/ppo_19999950_steps.zip 4 runs/fig8_04/init/ppo_0_steps.zip
    python3 train_stage7_cup.py --env fig8 --n-balls 4 --run-name fig8_04 --resume runs/fig8_04/init/ppo_0_steps.zip --ref-deg 180 --episode-seconds 30 --drop 200 --timesteps 30000000
+   python3 eval_stage7_cup.py runs/fig8_04/checkpoints/ppo_7999980_steps.zip --env fig8 --n-balls 4 --n 10 --seconds 30 --seed 500 --record data/fig8_04_8M.npz
    ```
 
 ## Repository layout
@@ -988,6 +1018,7 @@ shadow_hand/
 │   ├── stage7_wave4_05_52M.gif            # Stage 7A: four balls, RL wave4_05 @52M: 49/50 kept, ~10 laps/30 s
 │   ├── stage7_fig8_one.gif                # Stage 7A: the crossing figure-8, one ball, RL fig8_01 @16M
 │   ├── stage7_fig8_two.gif                # Stage 7A: the crossing figure-8, two balls, RL fig8_02 @20M
-│   └── stage7_fig8_three.gif              # Stage 7A: the crossing figure-8, three balls, RL fig8_03 @20M
+│   ├── stage7_fig8_three.gif              # Stage 7A: the crossing figure-8, three balls, RL fig8_03 @20M
+│   └── stage7_fig8_four.gif               # Stage 7A: the crossing figure-8, four balls, RL fig8_04 @8M (a clump)
 └── README.md
 ```
