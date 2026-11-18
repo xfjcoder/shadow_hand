@@ -6,13 +6,16 @@ Usage:
     python3 train_stage7_cup.py --env wave --run-name wave_01 --ref-deg 180 --timesteps 20000000
     python3 train_stage7_cup.py --env wave --n-balls 2 --run-name wave2_01 --ref-deg 180 --timesteps 30000000
     python3 train_stage7_cup.py --env fig8 --run-name fig8_01 --ref-deg 180 --episode-seconds 30 --drop 200
+    python3 train_stage7_cup.py --env fig8 --n-balls 2 --run-name fig8_09 --resume CKPT --track-rate 0.1 \
+        --slot-tol 0.4 --slot-tol-min 0.1 --ref-deg 180 --episode-seconds 30 --drop 200
 """
 import argparse
 from pathlib import Path
 
+import numpy as np
 import torch
 from stable_baselines3 import PPO
-from stable_baselines3.common.callbacks import CheckpointCallback
+from stable_baselines3.common.callbacks import BaseCallback, CheckpointCallback
 from stable_baselines3.common.vec_env import SubprocVecEnv, VecMonitor, VecNormalize
 
 from rl_env_stage7_cup import CupEnv
@@ -24,13 +27,36 @@ HERE = Path(__file__).parent
 torch.set_num_threads(1)
 
 
+class SlotCurriculum(BaseCallback):
+    """--slot-tol: tighten the slot tolerance by `step` (down to `tol_min`) once the median of the last `window`
+    episodes lasted `seconds` or more."""
+
+    def __init__(self, tol, tol_min, step, seconds, window=300):
+        super().__init__()
+        self.tol, self.tol_min, self.step, self.seconds, self.window, self.recent = tol, tol_min, step, seconds, window, []
+
+    def _on_step(self):
+        self.recent += [i["seconds"] for i in self.locals["infos"] if "seconds" in i]
+        self.recent = self.recent[-self.window:]
+        if len(self.recent) == self.window and np.median(self.recent) >= self.seconds and self.tol > self.tol_min + 1e-9:
+            self.tol = round(max(self.tol - self.step, self.tol_min), 4)
+            self.training_env.set_attr("slot_tol", self.tol)
+            self.recent = []
+            print(f"curriculum: slot tolerance {self.tol:g} laps at {self.num_timesteps} steps", flush=True)
+        return True
+
+    def _on_rollout_end(self):
+        self.logger.record("loop/slot_tol", self.tol)
+        self.logger.record("loop/seconds_median", float(np.median(self.recent)) if self.recent else 0.0)
+
+
 def make_env(seed, seconds, ref_deg, kind="cup", n_balls=1, w_edge=0.0, w_fast=0.0, flex_n=None, drop=50.0,
-             w_spread=0.0, track_rate=None):
+             w_spread=0.0, track_rate=None, slot_tol=None):
     def _init():
         if kind == "fig8":
             env = Fig8Env(n=n_balls, episode_seconds=seconds, ref_deg=ref_deg, drop=drop,
                           flex_n=FLEX_8 if flex_n is None else flex_n, w_spread=w_spread,
-                          track_rate=track_rate)
+                          track_rate=track_rate, slot_tol=slot_tol)
         elif kind == "wave" and n_balls > 1:
             env = MultiWaveEnv(n=n_balls, episode_seconds=seconds, ref_deg=ref_deg, w_edge=w_edge, w_fast=w_fast,
                                flex_n=0.0 if flex_n is None else flex_n, drop=drop)
@@ -60,10 +86,14 @@ def main():
     ap.add_argument("--drop", type=float, default=50.0, help="--n-balls > 1: the cost of a lost ball")
     ap.add_argument("--w-spread", type=float, default=0.0, help="--env fig8: cost of balls out of their slots (a clump)")
     ap.add_argument("--track-rate", type=float, default=None, help="--env fig8: a timetable round the 8, laps/s")
+    ap.add_argument("--slot-tol", type=float, default=None, help="--track-rate: a ball this many laps out of its slot ends the episode")
+    ap.add_argument("--slot-tol-min", type=float, default=None, help="--slot-tol: tighten it down to this (a curriculum)")
+    ap.add_argument("--slot-step", type=float, default=0.05)
+    ap.add_argument("--slot-seconds", type=float, default=15.0, help="--slot-tol-min: tighten once the median episode lasts this long")
     ap.add_argument("--resume", default=None)
     args = ap.parse_args()
     run = HERE / "runs" / args.run_name
-    env = VecMonitor(SubprocVecEnv([make_env(args.seed + i, args.episode_seconds, args.ref_deg, args.env, args.n_balls, args.w_edge, args.w_fast, args.flex_n, args.drop, args.w_spread, args.track_rate) for i in range(args.n_envs)]))
+    env = VecMonitor(SubprocVecEnv([make_env(args.seed + i, args.episode_seconds, args.ref_deg, args.env, args.n_balls, args.w_edge, args.w_fast, args.flex_n, args.drop, args.w_spread, args.track_rate, args.slot_tol) for i in range(args.n_envs)]))
     if args.resume:
         steps = Path(args.resume).stem.split("_")[-2]
         env = VecNormalize.load(str(Path(args.resume).parent / f"ppo_vecnormalize_{steps}_steps.pkl"), env)
@@ -78,6 +108,8 @@ def main():
             model.policy.action_net.bias.zero_()
     cbs = [Log(), CheckpointCallback(max(2_000_000 // args.n_envs, 1), str(run / "checkpoints"), name_prefix="ppo",
                                      save_vecnormalize=True)]
+    if args.slot_tol and args.slot_tol_min:
+        cbs.append(SlotCurriculum(args.slot_tol, args.slot_tol_min, args.slot_step, args.slot_seconds))
     model.learn(args.timesteps, callback=cbs, reset_num_timesteps=not args.resume)
     model.save(run / "final")
     env.save(str(run / "final_vecnormalize.pkl"))

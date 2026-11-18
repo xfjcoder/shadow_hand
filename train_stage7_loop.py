@@ -20,7 +20,7 @@ from rl_env_stage7_loop import SPEEDS, LoopEnv, LoopTrackEnv
 HERE = Path(__file__).parent
 torch.set_num_threads(1)
 KEYS = ("lost", "turned", "turned_min", "seconds")
-TKEYS = ("mean_err", "level_ok", "spread", "ref_err")
+TKEYS = ("mean_err", "level_ok", "spread", "ref_err", "late")
 
 
 class Curriculum(BaseCallback):

@@ -19,7 +19,8 @@ offsets instead of riding as a clump); a ball lost ends it with -drop.
 
 Timetable mode (track_rate, laps/s): the progress terms are replaced by (1 + cos 2 pi err) / 2 per ball, err = the
 ball's s against its slot on a timetable that runs round the 8 at track_rate (ref + offset_k, ref starting at the
-balls' own mean place): spread AND moving, a stalled ball falls out of its slot. (A narrow exp(-(err / 0.05)^2)
+balls' own mean place): spread AND moving, a stalled ball falls out of its slot. With slot_tol, a ball more than
+slot_tol laps out of its slot ends the episode (no cost beyond the pay forgone: keeping time is staying alive). (A narrow exp(-(err / 0.05)^2)
 taught nothing in 4.5M steps: from the clump nearly every ball is a quarter lap out, where it pays ~0.) The obs gets each ball's
 timetable error and the timetable's phase.
 """
@@ -42,12 +43,13 @@ SPREAD_TOL = 0.1                          # laps out of its slot at which a ball
 
 class Fig8Env(MultiWaveEnv):
     def __init__(self, n=1, episode_seconds=None, randomize=True, ref_deg=REF_DEG, drop=DROP, flex_n=FLEX_8,
-                 w_spread=0.0, track_rate=None):
+                 w_spread=0.0, track_rate=None, slot_tol=None):
         super().__init__(n=n, episode_seconds=episode_seconds, randomize=randomize, ref_deg=ref_deg, drop=drop,
                          flex_n=flex_n)
         self.roll_n = 0.0
         self.w_spread = w_spread
         self.track_rate = track_rate                 # laps/s: a timetable for the balls instead of paying progress
+        self.slot_tol = slot_tol                     # laps: timetable mode, any ball further out of its slot ends it
         if track_rate:
             n_obs = self.observation_space.shape[0] + n + 2
             self.observation_space = spaces.Box(-np.inf, np.inf, shape=(n_obs,), dtype=np.float32)
@@ -174,11 +176,12 @@ class Fig8Env(MultiWaveEnv):
         lost = self._lost(b)
         if lost:
             reward -= self.drop
+        late = bool(self.track_rate and self.slot_tol and np.any(np.abs(self._ref_err()) > self.slot_tol))
         trunc = self.t >= self.steps
         info = {}
-        if lost or trunc:
+        if lost or late or trunc:
             deg = np.degrees(self.turn)
             info = dict(lost=lost, turned=float(deg.mean()), turned_min=float(deg.min()), seconds=self.t * CONTROL_DT,
                         off=float(np.mean(self.dist)), spread=float(np.mean(np.abs(err))),
-                        **(dict(ref_err=float(np.mean(np.abs(self._ref_err())))) if self.track_rate else {}))
-        return self._obs(), reward, lost, trunc and not lost, info
+                        **(dict(ref_err=float(np.mean(np.abs(self._ref_err()))), late=late) if self.track_rate else {}))
+        return self._obs(), reward, lost or late, trunc and not (lost or late), info

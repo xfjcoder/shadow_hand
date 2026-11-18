@@ -927,6 +927,35 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    So the timetable is trained in from the start instead: two balls first (from fig8_02, which has no clump
    habit yet), then widened to three and four with the timetable all the way.
 
+   fig8_08 (two balls, timetable 0.1 laps/s, from fig8_02 @20M widened with zero-weight timetable inputs,
+   15M steps): the balls slowed from ~5.5 to ~2.5 laps per 30 s, none lost, but the timetable error only went
+   0.25 -> 0.18; in an episode it never settles (each third of it about as far out), the balls are not
+   locked to their slots at any phase.
+
+   **Can the hands time balls one by one at all?** (`probe_stage7_fig8.py`, a controllability probe, no
+   training.) From states of a policy's own rollouts (one a second, 10-20 episodes), its next 0.5 s of actions
+   are replayed open-loop, with each of the 42 actuators nudged +-0.3 in turn: the change in each ball's place
+   on the 8 is a ball x actuator gain. For every pair of balls on one hand, every actuator is then pushed 0.5
+   in the direction that should speed one past the other, and the change in their gap measured:
+
+   | states from | same-hand pairs | aimed push: gap moved the right way | median gap gained in 0.5 s | random push, same size (undirected) |
+   |---|---|---|---|---|
+   | fig8_04 @8M (4 balls) | 499 | 91% | 0.066 laps | 0.039 laps |
+   | fig8_02 @20M (2 balls, fast) | 163 | 68% | 0.057 laps | 0.069 laps |
+
+   With no handle on single balls the aimed push would be right half the time. From the four-ball states it
+   is right 91% of the time at ~0.13 laps/s, faster than the timetable itself: the hands CAN time balls one by
+   one, so the clump is a learning problem, not a physical limit. (From the fast two-ball states less clearly:
+   there the response is more chaotic.) It is carried mostly by the wrists (flex and side tilt), then the
+   little finger and the forearm rolls: each lobe of the 8 runs out along the fingers and back along the
+   palm, so one tilt pushes a ball on the finger leg and one on the palm leg OPPOSITE ways round the 8. The
+   response is far from linear (the gains overstate it ~5x) and s is tracked in 0.002-lap steps, so the
+   numbers give the scale, not more.
+
+   Next: the timetable as staying alive (`--slot-tol`, DeepMimic's early termination): any ball further out
+   of its slot than the tolerance ends the episode, the tolerance tightening from 0.4 laps to 0.1 as episodes
+   last (`--slot-tol-min`; at 0.4 fig8_08's balls last only ~2.5 s).
+
    ```
    python3 stage7_cup.py --out media_full/stage7_cup.png                  # the cup: settle + hold tests
    python3 stage7_cup.py --swirl --flicks 0.6                             # swirl + flick grid
@@ -960,6 +989,11 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    python3 train_stage7_cup.py --env fig8 --n-balls 4 --run-name fig8_05 --resume runs/fig8_04/checkpoints/ppo_7999980_steps.zip --w-spread 0.5 --ref-deg 180 --episode-seconds 30 --drop 200 --timesteps 20000000
    python3 widen_stage7_fig8.py runs/fig8_04/checkpoints/ppo_7999980_steps.zip 4 runs/fig8_07/init/ppo_0_steps.zip --track-rate 0.06
    python3 train_stage7_cup.py --env fig8 --n-balls 4 --run-name fig8_07 --resume runs/fig8_07/init/ppo_0_steps.zip --track-rate 0.06 --ref-deg 180 --episode-seconds 30 --drop 200 --timesteps 20000000
+   python3 widen_stage7_fig8.py runs/fig8_02/checkpoints/ppo_19999950_steps.zip 2 runs/fig8_08/init/ppo_0_steps.zip --track-rate 0.1
+   python3 train_stage7_cup.py --env fig8 --n-balls 2 --run-name fig8_08 --resume runs/fig8_08/init/ppo_0_steps.zip --track-rate 0.1 --ref-deg 180 --episode-seconds 30 --drop 200 --timesteps 15000000
+   python3 probe_stage7_fig8.py runs/fig8_04/checkpoints/ppo_7999980_steps.zip 4 --seeds 10 --out data/probe_fig8_4.npz
+   python3 probe_stage7_fig8.py runs/fig8_02/checkpoints/ppo_19999950_steps.zip 2 --seeds 20 --seed0 800 --out data/probe_fig8_2.npz
+   python3 train_stage7_cup.py --env fig8 --n-balls 2 --run-name fig8_09 --resume runs/fig8_08/checkpoints/ppo_13999965_steps.zip --track-rate 0.1 --slot-tol 0.4 --slot-tol-min 0.1 --ref-deg 180 --episode-seconds 30 --drop 200 --timesteps 15000000
    ```
 
 ## Repository layout

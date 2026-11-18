@@ -1,0 +1,30 @@
+== runs/fig8_04/checkpoints/ppo_7999980_steps.zip 4 --seeds 10 --out data/probe_fig8_4.npz
+H = 0.2 s: 224 hand-snapshots with >= 2 balls (of 190 snapshots)
+  common speed-up, laps/s   p10/50/90  0.196  0.431  1.125
+  worst-pair differential   p10/50/90  0.283  0.633  1.640
+  sigma_min / sigma_max     p10/50/90  0.060  0.269  0.566
+  nonlinearity |curv|/|J|   p10/50/90  0.510  0.708  0.942
+H = 0.5 s: 224 hand-snapshots with >= 2 balls (of 190 snapshots)
+  common speed-up, laps/s   p10/50/90  0.377  0.685  1.591
+  worst-pair differential   p10/50/90  0.377  1.070  3.072
+  sigma_min / sigma_max     p10/50/90  0.083  0.255  0.553
+  nonlinearity |curv|/|J|   p10/50/90  0.732  0.951  1.232
+check over 0.5 s, 499 same-hand pairs, push 0.5 on every actuator:
+  predicted s_a - s_b, laps      median 0.352
+  realised, aimed push           median +0.066  p10/90 +0.003 +0.142  right sign 91%
+  realised, random push (|.|)    median 0.039
+== runs/fig8_02/checkpoints/ppo_19999950_steps.zip 2 --seeds 20 --seed0 800 --out data/probe_fig8_2.npz
+H = 0.2 s: 163 hand-snapshots with >= 2 balls (of 380 snapshots)
+  common speed-up, laps/s   p10/50/90  0.202  0.567  1.373
+  worst-pair differential   p10/50/90  0.377  1.017  2.713
+  sigma_min / sigma_max     p10/50/90  0.119  0.334  0.735
+  nonlinearity |curv|/|J|   p10/50/90  0.404  0.686  1.013
+H = 0.5 s: 163 hand-snapshots with >= 2 balls (of 380 snapshots)
+  common speed-up, laps/s   p10/50/90  0.451  0.947  2.901
+  worst-pair differential   p10/50/90  0.843  1.773  5.633
+  sigma_min / sigma_max     p10/50/90  0.160  0.404  0.767
+  nonlinearity |curv|/|J|   p10/50/90  0.643  0.908  1.237
+check over 0.5 s, 163 same-hand pairs, push 0.5 on every actuator:
+  predicted s_a - s_b, laps      median 0.443
+  realised, aimed push           median +0.057  p10/90 -0.305 +0.163  right sign 68%
+  realised, random push (|.|)    median 0.069
