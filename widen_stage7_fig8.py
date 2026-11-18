@@ -6,6 +6,8 @@ running obs normalisation of each new ball is copied from ball (k mod n_old). Ev
 
     python3 widen_stage7_fig8.py runs/fig8_01/checkpoints/ppo_19999950_steps.zip 2 runs/fig8_02w/ppo_0_steps.zip
 then train with --resume runs/fig8_02w/ppo_0_steps.zip --n-balls 2.
+--track-rate R adds the timetable inputs (Fig8Env track_rate: each ball's timetable error, the timetable's phase)
+at zero weight, normalised from mean 0 / variance 1.
 """
 import argparse
 import pickle
@@ -44,15 +46,18 @@ def main():
     ap.add_argument("ckpt")
     ap.add_argument("n", type=int)
     ap.add_argument("out")
+    ap.add_argument("--track-rate", type=float, default=None)
     args = ap.parse_args()
     p = Path(args.ckpt)
     steps = p.stem.split("_")[-2]
     old = PPO.load(args.ckpt, device="cpu")
     vn = pickle.load(open(p.parent / f"ppo_vecnormalize_{steps}_steps.pkl", "rb"))
-    env = Fig8Env(n=args.n)
+    env = Fig8Env(n=args.n, track_rate=args.track_rate)
     H = len(env.hq)
     n_old = (old.observation_space.shape[0] - 2 * H - 2) // 9
     src, new = obs_map(H, n_old, args.n)
+    extra = env.observation_space.shape[0] - len(src)            # the timetable inputs, appended
+    src, new = np.r_[src, np.zeros(extra, int)], np.r_[new, np.ones(extra, bool)]
     assert len(src) == env.observation_space.shape[0]
 
     model = PPO("MlpPolicy", env, learning_rate=old.learning_rate, n_steps=old.n_steps, batch_size=old.batch_size,
@@ -74,6 +79,8 @@ def main():
 
     nv = VecNormalize(DummyVecEnv([lambda: env]), gamma=vn.gamma, clip_obs=vn.clip_obs, clip_reward=vn.clip_reward)
     nv.obs_rms.mean, nv.obs_rms.var = vn.obs_rms.mean[src].copy(), vn.obs_rms.var[src].copy()
+    if extra:
+        nv.obs_rms.mean[-extra:], nv.obs_rms.var[-extra:] = 0.0, 1.0
     nv.obs_rms.count, nv.ret_rms = vn.obs_rms.count, vn.ret_rms
     nv.save(str(out.parent / f"ppo_vecnormalize_{out.stem.split('_')[-2]}_steps.pkl"))
     print(f"widened {n_old} -> {args.n} balls ({len(src)} obs, {int(new.sum())} new inputs at zero) -> {out}")

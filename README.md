@@ -478,8 +478,8 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
 7. **Two hands, four balls -- B DONE: each hand turns its own pair; A (one loop across both palms): four
    balls round one loop DONE (they follow each other; no crossing yet); the crossing figure-8: one ball
    DONE (12 laps in 30 s, 80/80 kept), two balls DONE (80/80 kept, ~5.5 laps each), three
-   DONE (80/80 kept, ~3.5 laps each), four kept and crossing (78/80) but bunched and slow (~1.3
-   laps) -- a finger-wave loop across both cupped hands laps one ball every ~2 s and TWO balls
+   DONE (80/80 kept, ~3.5 laps each), four DONE as a clump: all kept and every ball
+   crossing (78/80) but bunched and slow (~1.3 laps); spreading them out (a timetable) in progress -- a finger-wave loop across both cupped hands laps one ball every ~2 s and TWO balls
    together ~12.5 laps in 30 s each, FOUR balls ~9.5 laps in 30 s each with a ball dropped in a third of
    30 s runs, then with the wrists flexed back 0.05 and 30 s training episodes 49/50 kept at ~10 laps
    each (RL wave4_05 @52M).** Two-hand four-ball patterns found on YouTube: (A) [spheres108, "4 Baoding Balls"](https://www.youtube.com/watch?v=iyMXsvBwHKQ)
@@ -902,6 +902,31 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    <p align="center"><sub>Stage 7A crossing figure-8, four balls: RL fig8_04 @8M (the first 10 s of 30;
    all kept, 1.7 laps for the slowest ball; the balls cross, but as a clump).</sub></p>
 
+   fig8_04 @8M is the four-ball figure-8 result: four balls, all kept, every one through the crossing --
+   as a clump. Three tries to spread the clump, all resumed from it, all negative:
+
+   | run (from fig8_04 @8M) | what it adds | steps | slot spread (laps) | timetable error (laps) | slowest ball, deg per episode |
+   |---|---|---|---|---|---|
+   | fig8_05 | `--w-spread 0.5`: a cost per ball out of its slot relative to the others (`_slot_err`: s_k - offset_k about their circular mean) | +4.7M | 0.160 -> 0.164 | | 492 -> 525 |
+   | fig8_06 | `--track-rate 0.08`: a timetable, each ball paid exp(-(err / 0.05)^2) for keeping its slot on a reference that runs round the 8 at 0.08 laps/s (progress no longer paid) | 4.6M | 0.165 -> 0.154 | 0.252 -> 0.246 | 512 -> 391 |
+   | fig8_07 | the timetable at 0.06 laps/s, paid (1 + cos 2 pi err) / 2: half pay a quarter lap out | 12.3M | 0.163 -> 0.154 | 0.245 -> 0.214 | 498 -> 373 |
+
+   (Averages over the first and last 20 training logs; a random timetable error is 0.25 laps.) Why:
+   - the relative cost is met by balls stalled in their slots as well as by balls running in them --
+     one of the four eval runs of fig8_04 already sat in its slots (0.05 laps out) going nowhere;
+   - a timetable fixes that (a stalled ball falls out of its slot), but from the clump nearly every ball
+     is a quarter lap out, where exp(-(err / 0.05)^2) pays nothing: no signal;
+   - the dense cos timetable has a signal everywhere, and 12M steps moved the error from 0.245 to 0.214
+     while the balls slowed: the policy learned the clump over 8M steps of progress pay, and one
+     shared tilt moves all four balls on a hand together -- unlearning it is slow.
+
+   Balls on the left hand, share of time: the timed pattern at those offsets has 1 / 2 / 3 balls there
+   .21 / .58 / .21 of the time, never 0 or 4; fig8_04 @8M .14 / .20 / .47 with 0 or 4 .19; fig8_07 @4M
+   .36 / .24 / .21 with 0 or 4 .18.
+
+   So the timetable is trained in from the start instead: two balls first (from fig8_02, which has no clump
+   habit yet), then widened to three and four with the timetable all the way.
+
    ```
    python3 stage7_cup.py --out media_full/stage7_cup.png                  # the cup: settle + hold tests
    python3 stage7_cup.py --swirl --flicks 0.6                             # swirl + flick grid
@@ -932,6 +957,9 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    python3 widen_stage7_fig8.py runs/fig8_03/checkpoints/ppo_19999950_steps.zip 4 runs/fig8_04/init/ppo_0_steps.zip
    python3 train_stage7_cup.py --env fig8 --n-balls 4 --run-name fig8_04 --resume runs/fig8_04/init/ppo_0_steps.zip --ref-deg 180 --episode-seconds 30 --drop 200 --timesteps 30000000
    python3 eval_stage7_cup.py runs/fig8_04/checkpoints/ppo_7999980_steps.zip --env fig8 --n-balls 4 --n 10 --seconds 30 --seed 500 --record data/fig8_04_8M.npz
+   python3 train_stage7_cup.py --env fig8 --n-balls 4 --run-name fig8_05 --resume runs/fig8_04/checkpoints/ppo_7999980_steps.zip --w-spread 0.5 --ref-deg 180 --episode-seconds 30 --drop 200 --timesteps 20000000
+   python3 widen_stage7_fig8.py runs/fig8_04/checkpoints/ppo_7999980_steps.zip 4 runs/fig8_07/init/ppo_0_steps.zip --track-rate 0.06
+   python3 train_stage7_cup.py --env fig8 --n-balls 4 --run-name fig8_07 --resume runs/fig8_07/init/ppo_0_steps.zip --track-rate 0.06 --ref-deg 180 --episode-seconds 30 --drop 200 --timesteps 20000000
    ```
 
 ## Repository layout

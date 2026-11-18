@@ -24,11 +24,13 @@ HERE = Path(__file__).parent
 torch.set_num_threads(1)
 
 
-def make_env(seed, seconds, ref_deg, kind="cup", n_balls=1, w_edge=0.0, w_fast=0.0, flex_n=None, drop=50.0):
+def make_env(seed, seconds, ref_deg, kind="cup", n_balls=1, w_edge=0.0, w_fast=0.0, flex_n=None, drop=50.0,
+             w_spread=0.0, track_rate=None):
     def _init():
         if kind == "fig8":
             env = Fig8Env(n=n_balls, episode_seconds=seconds, ref_deg=ref_deg, drop=drop,
-                          flex_n=FLEX_8 if flex_n is None else flex_n)
+                          flex_n=FLEX_8 if flex_n is None else flex_n, w_spread=w_spread,
+                          track_rate=track_rate)
         elif kind == "wave" and n_balls > 1:
             env = MultiWaveEnv(n=n_balls, episode_seconds=seconds, ref_deg=ref_deg, w_edge=w_edge, w_fast=w_fast,
                                flex_n=0.0 if flex_n is None else flex_n, drop=drop)
@@ -56,10 +58,12 @@ def main():
     ap.add_argument("--w-fast", type=float, default=0.0, help="--n-balls > 1: penalty per ball rushing wristward off the palm leg")
     ap.add_argument("--flex-n", type=float, default=None, help="the base wrist flex (default 0 for wave, -0.05 for fig8)")
     ap.add_argument("--drop", type=float, default=50.0, help="--n-balls > 1: the cost of a lost ball")
+    ap.add_argument("--w-spread", type=float, default=0.0, help="--env fig8: cost of balls out of their slots (a clump)")
+    ap.add_argument("--track-rate", type=float, default=None, help="--env fig8: a timetable round the 8, laps/s")
     ap.add_argument("--resume", default=None)
     args = ap.parse_args()
     run = HERE / "runs" / args.run_name
-    env = VecMonitor(SubprocVecEnv([make_env(args.seed + i, args.episode_seconds, args.ref_deg, args.env, args.n_balls, args.w_edge, args.w_fast, args.flex_n, args.drop) for i in range(args.n_envs)]))
+    env = VecMonitor(SubprocVecEnv([make_env(args.seed + i, args.episode_seconds, args.ref_deg, args.env, args.n_balls, args.w_edge, args.w_fast, args.flex_n, args.drop, args.w_spread, args.track_rate) for i in range(args.n_envs)]))
     if args.resume:
         steps = Path(args.resume).stem.split("_")[-2]
         env = VecNormalize.load(str(Path(args.resume).parent / f"ppo_vecnormalize_{steps}_steps.pkl"), env)

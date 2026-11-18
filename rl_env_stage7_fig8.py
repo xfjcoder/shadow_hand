@@ -13,7 +13,15 @@ balls back inward on the palms).
 Each ball's place on the 8 is tracked (`s`, searched near its last value, so the crossing is not ambiguous).
 Reward per step: ALIVE + 0.5 mean + 0.5 min over balls of clip(ds / REF, -1, 1) - W_OFF per ball off the path
 (ramping from OFF0 to OFF0 + OFF_W away; going round one hand's lobe and skipping the crossing is off the path)
-- W_CROWD_N * crowding - W_RATE |a|^2; a ball lost ends it with -drop.
+- W_CROWD_N * crowding - W_RATE |a|^2 - w_spread * mean over balls of min(|slot error| / SPREAD_TOL, 1)
+(each ball's s against its start offset from the others, `_slot_err`: keeps them spread round the 8 at their
+offsets instead of riding as a clump); a ball lost ends it with -drop.
+
+Timetable mode (track_rate, laps/s): the progress terms are replaced by (1 + cos 2 pi err) / 2 per ball, err = the
+ball's s against its slot on a timetable that runs round the 8 at track_rate (ref + offset_k, ref starting at the
+balls' own mean place): spread AND moving, a stalled ball falls out of its slot. (A narrow exp(-(err / 0.05)^2)
+taught nothing in 4.5M steps: from the clump nearly every ball is a quarter lap out, where it pays ~0.) The obs gets each ball's
+timetable error and the timetable's phase.
 """
 import gymnasium as gym
 import mujoco as mj
@@ -29,13 +37,20 @@ from stage7_wave import PARK
 FLEX_8 = -0.05
 OFF0, OFF_W, W_OFF = 0.015, 0.015, 0.3     # m off the 8 before it costs, ramp, per-ball cost at full
 WIN = np.linspace(-0.04, 0.08, 61)        # where to look for a ball's s next step (fractions of the 8)
+SPREAD_TOL = 0.1                          # laps out of its slot at which a ball costs w_spread in full
 
 
 class Fig8Env(MultiWaveEnv):
-    def __init__(self, n=1, episode_seconds=None, randomize=True, ref_deg=REF_DEG, drop=DROP, flex_n=FLEX_8):
+    def __init__(self, n=1, episode_seconds=None, randomize=True, ref_deg=REF_DEG, drop=DROP, flex_n=FLEX_8,
+                 w_spread=0.0, track_rate=None):
         super().__init__(n=n, episode_seconds=episode_seconds, randomize=randomize, ref_deg=ref_deg, drop=drop,
                          flex_n=flex_n)
         self.roll_n = 0.0
+        self.w_spread = w_spread
+        self.track_rate = track_rate                 # laps/s: a timetable for the balls instead of paying progress
+        if track_rate:
+            n_obs = self.observation_space.shape[0] + n + 2
+            self.observation_space = spaces.Box(-np.inf, np.inf, shape=(n_obs,), dtype=np.float32)
         x_row, x_palm = self.row[:, 0].mean() + 0.02, 0.285
         y0, y1 = self.row[1, 1], self.row[6, 1]
         self.c8 = np.array([(x_row + x_palm) / 2, (y0 + y1) / 2])       # the crossing
@@ -83,6 +98,19 @@ class Fig8Env(MultiWaveEnv):
             s[i], dist[i] = cand[j], dd[j]
         return s, dist
 
+    def _slot_err(self):
+        """Each ball's place on the 8 against its slot: s_k - offset_k about their circular mean, in laps (0 when
+        the balls keep their start spacing, however fast they go)."""
+        if self.n < 2:
+            return np.zeros(self.n)
+        ph = 2 * np.pi * (self.s - self.spacing())
+        m = np.angle(np.mean(np.exp(1j * ph)))
+        return np.angle(np.exp(1j * (ph - m))) / (2 * np.pi)
+
+    def _ref_err(self):
+        """Timetable mode: each ball's s against its slot on the timetable (ref + offset_k), in laps, wrapped."""
+        return np.angle(np.exp(2j * np.pi * (self.s - self.ref - self.spacing()))) / (2 * np.pi)
+
     def _obs(self):
         b = self.balls_n()
         rel = b[:, :2] - self.c8
@@ -91,8 +119,9 @@ class Fig8Env(MultiWaveEnv):
         return np.concatenate([
             self.d.qpos[self.hq], 0.1 * self.d.qvel[self.hv],
             10 * np.column_stack([rel, b[:, 2] - PALM_Z]).ravel(), v, np.cos(2 * np.pi * self.s),
-            np.sin(2 * np.pi * self.s), 10 * self.dist, [np.cos(ph), np.sin(ph)]
-        ]).astype(np.float32)
+            np.sin(2 * np.pi * self.s), 10 * self.dist, [np.cos(ph), np.sin(ph)]]
+            + ([10 * self._ref_err(), [np.cos(2 * np.pi * self.ref), np.sin(2 * np.pi * self.ref)]] if self.track_rate else [])
+        ).astype(np.float32)
 
     def reset(self, seed=None, options=None):
         gym.Env.reset(self, seed=seed)
@@ -113,6 +142,7 @@ class Fig8Env(MultiWaveEnv):
                 mj.mj_step(m, d)
             self.t_wave += CONTROL_DT
         self.s, self.dist = self._track(self.balls_n())
+        self.ref = np.angle(np.mean(np.exp(2j * np.pi * (self.s - self.spacing())))) / (2 * np.pi)
         self.t, self.steps = 0, int(round(self.seconds / CONTROL_DT))
         self.turn = np.zeros(self.n)                 # radians: 2 pi per lap of the 8 (as the loop envs report turns)
         return self._obs(), {}
@@ -129,11 +159,17 @@ class Fig8Env(MultiWaveEnv):
         ds = s - self.s
         self.s = s
         self.turn += 2 * np.pi * ds
-        prog = np.clip(ds / self.ref_s, -1.0, 1.0)
+        if self.track_rate:
+            self.ref += self.track_rate * CONTROL_DT
+            prog = 0.5 * (1 + np.cos(2 * np.pi * self._ref_err()))   # on the timetable 1, a quarter lap out 1/2
+        else:
+            prog = np.clip(ds / self.ref_s, -1.0, 1.0)
         off = np.clip((self.dist - OFF0) / OFF_W, 0.0, 1.0)
         g = np.array([np.linalg.norm(b[p, :2] - b[q, :2]) * 100 - 200 * BALL_R
                       for p in range(self.n) for q in range(p + 1, self.n)])
+        err = self._slot_err()
         reward = (ALIVE + 0.5 * prog.mean() + 0.5 * prog.min() - W_OFF * float(off.sum())
+                  - self.w_spread * float(np.mean(np.minimum(np.abs(err) / SPREAD_TOL, 1.0)))
                   - W_CROWD_N * float(np.sum(np.maximum(1.0 - g, 0.0))) - W_RATE * float(np.sum(a ** 2)))
         lost = self._lost(b)
         if lost:
@@ -143,5 +179,6 @@ class Fig8Env(MultiWaveEnv):
         if lost or trunc:
             deg = np.degrees(self.turn)
             info = dict(lost=lost, turned=float(deg.mean()), turned_min=float(deg.min()), seconds=self.t * CONTROL_DT,
-                        off=float(np.mean(self.dist)))
+                        off=float(np.mean(self.dist)), spread=float(np.mean(np.abs(err))),
+                        **(dict(ref_err=float(np.mean(np.abs(self._ref_err())))) if self.track_rate else {}))
         return self._obs(), reward, lost, trunc and not lost, info

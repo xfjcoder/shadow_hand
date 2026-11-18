@@ -31,6 +31,7 @@ def main():
     ap.add_argument("--record", default=None)
     ap.add_argument("--env", default="cup", choices=("cup", "wave", "fig8"))
     ap.add_argument("--flex-n", type=float, default=None, help="the base wrist flex (default 0 for wave, -0.05 for fig8)")
+    ap.add_argument("--track-rate", type=float, default=None, help="--env fig8: the timetable's pace, laps/s (a timetable run)")
     ap.add_argument("--n-balls", type=int, default=1, help="--env wave: balls round the loop")
     args = ap.parse_args()
     p = Path(args.ckpt)
@@ -39,7 +40,8 @@ def main():
     wave = args.env in ("wave", "fig8")
     kw = dict(episode_seconds=args.seconds, randomize=not args.settled)
     if args.env == "fig8":
-        env = Fig8Env(n=args.n_balls, flex_n=FLEX_8 if args.flex_n is None else args.flex_n, **kw)
+        env = Fig8Env(n=args.n_balls, flex_n=FLEX_8 if args.flex_n is None else args.flex_n, track_rate=args.track_rate,
+                      **kw)
     elif wave:
         env = MultiWaveEnv(n=args.n_balls, flex_n=args.flex_n or 0.0, **kw) if args.n_balls > 1 else WaveEnv(**kw)
     else:
