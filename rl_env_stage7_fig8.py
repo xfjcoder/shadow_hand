@@ -49,7 +49,11 @@ class Fig8Env(MultiWaveEnv):
 
     def spacing(self):
         """Start offsets: the 8 passes the crossing at s = 0 and 1/2, so balls half a lap apart would meet there.
-        Offsets distinct mod 1/2 (k / 2n apart), every other one on the other lobe: they cross by turns."""
+        Offsets distinct mod 1/2 (k / 2n apart), every other one on the other lobe: they cross by turns.
+        Four balls that way pass 2.8 cm apart (they are 3.8 cm); the offsets below (a grid search for the
+        widest closest pass, moving at a constant rate in s) keep them 4.0 cm apart."""
+        if self.n == 4:
+            return np.array([0.0, 0.396, 0.604, 0.792])
         k = np.arange(self.n)
         return k * 0.5 / self.n + (k % 2) * 0.5
 

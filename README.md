@@ -477,8 +477,8 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
 
 7. **Two hands, four balls -- B DONE: each hand turns its own pair; A (one loop across both palms): four
    balls round one loop DONE (they follow each other; no crossing yet); the crossing figure-8: one ball
-   DONE (12 laps in 30 s, 80/80 kept), two balls DONE (80/80 kept, ~5.5 laps each), three in
-   progress -- a finger-wave loop across both cupped hands laps one ball every ~2 s and TWO balls
+   DONE (12 laps in 30 s, 80/80 kept), two balls DONE (80/80 kept, ~5.5 laps each), three
+   DONE (80/80 kept, ~3.5 laps each), four in progress -- a finger-wave loop across both cupped hands laps one ball every ~2 s and TWO balls
    together ~12.5 laps in 30 s each, FOUR balls ~9.5 laps in 30 s each with a ball dropped in a third of
    30 s runs, then with the wrists flexed back 0.05 and 30 s training episodes 49/50 kept at ~10 laps
    each (RL wave4_05 @52M).** Two-hand four-ball patterns found on YouTube: (A) [spheres108, "4 Baoding Balls"](https://www.youtube.com/watch?v=iyMXsvBwHKQ)
@@ -848,6 +848,31 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    <p align="center"><sub>Stage 7A crossing figure-8, two balls: RL fig8_02 @20M (the first 10 s of 30;
    all kept, 6.0 laps for the slower ball).</sub></p>
 
+   Three balls (fig8_03, from fig8_02 @20M widened, 20M; offsets 0, 1/3, 2/3 -- a closest pass of 5.7 cm
+   at an even pace): 10/10 kept from 4M on, the speed climbing slowly.
+
+   | fig8_03, deterministic, 30 s, 40 starts | kept | slowest ball, laps per 30 s (median) | under 1 lap |
+   |---|---|---|---|
+   | @12M / 14M | 40/40 / 40/40 | 2.6 / 2.6 | 1 / 0 |
+   | @16M / 18M | 40/40 / 40/40 | 2.9 / 3.3 | 0 / 0 |
+   | **@20M** | **40/40, and 40/40 on 40 fresh starts** | **3.5 (3.5 fresh)** | **0** |
+
+   fig8_03 @20M: **three balls through the crossing, 80/80 kept over 30 s, ~3.5 laps each** (~45
+   deg/s), still climbing at 20M. As with two, they bunch -- often all three on one hand -- and go
+   over the crossing one after another rather than spread round the 8.
+
+   <p align="center">
+     <img src="media/stage7_fig8_three.gif" width="600">
+   </p>
+   <p align="center"><sub>Stage 7A crossing figure-8, three balls: RL fig8_03 @20M (the first 10 s of 30;
+   all kept, 4.1 laps for the slowest ball).</sub></p>
+
+   Four balls cannot run the 8 at an even pace from the three-ball offsets: spaced k/8 they pass 2.8 cm
+   apart, and the balls are 3.8 cm. A grid search over start offsets (moving at a constant rate in s,
+   fast through the crossing, slow at the outer ends) finds 0, 0.396, 0.604, 0.792: a closest pass of
+   4.0 cm. Even spacing along the path does worse (the best 3.7 cm; spaced a quarter lap they meet at
+   the crossing). `Fig8Env.spacing` uses it for four.
+
    ```
    python3 stage7_cup.py --out media_full/stage7_cup.png                  # the cup: settle + hold tests
    python3 stage7_cup.py --swirl --flicks 0.6                             # swirl + flick grid
@@ -873,6 +898,10 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    python3 train_stage7_cup.py --env fig8 --n-balls 2 --run-name fig8_02 --resume runs/fig8_02/init/ppo_0_steps.zip --ref-deg 180 --episode-seconds 30 --drop 200 --timesteps 20000000
    python3 eval_stage7_cup.py runs/fig8_02/checkpoints/ppo_19999950_steps.zip --env fig8 --n-balls 2 --n 10 --seconds 30 --seed 500 --record data/fig8_02_20M.npz
    python3 widen_stage7_fig8.py runs/fig8_02/checkpoints/ppo_19999950_steps.zip 3 runs/fig8_03/init/ppo_0_steps.zip
+   python3 train_stage7_cup.py --env fig8 --n-balls 3 --run-name fig8_03 --resume runs/fig8_03/init/ppo_0_steps.zip --ref-deg 180 --episode-seconds 30 --drop 200 --timesteps 20000000
+   python3 eval_stage7_cup.py runs/fig8_03/checkpoints/ppo_19999950_steps.zip --env fig8 --n-balls 3 --n 10 --seconds 30 --seed 500 --record data/fig8_03_20M.npz
+   python3 widen_stage7_fig8.py runs/fig8_03/checkpoints/ppo_19999950_steps.zip 4 runs/fig8_04/init/ppo_0_steps.zip
+   python3 train_stage7_cup.py --env fig8 --n-balls 4 --run-name fig8_04 --resume runs/fig8_04/init/ppo_0_steps.zip --ref-deg 180 --episode-seconds 30 --drop 200 --timesteps 30000000
    ```
 
 ## Repository layout
@@ -958,6 +987,7 @@ shadow_hand/
 │   ├── stage7_wave4_flex05.gif            # Stage 7A: four balls, @50M on wrists flexed -0.05: 47/50 kept
 │   ├── stage7_wave4_05_52M.gif            # Stage 7A: four balls, RL wave4_05 @52M: 49/50 kept, ~10 laps/30 s
 │   ├── stage7_fig8_one.gif                # Stage 7A: the crossing figure-8, one ball, RL fig8_01 @16M
-│   └── stage7_fig8_two.gif                # Stage 7A: the crossing figure-8, two balls, RL fig8_02 @20M
+│   ├── stage7_fig8_two.gif                # Stage 7A: the crossing figure-8, two balls, RL fig8_02 @20M
+│   └── stage7_fig8_three.gif              # Stage 7A: the crossing figure-8, three balls, RL fig8_03 @20M
 └── README.md
 ```
