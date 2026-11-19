@@ -956,6 +956,22 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    of its slot than the tolerance ends the episode, the tolerance tightening from 0.4 laps to 0.1 as episodes
    last (`--slot-tol-min`; at 0.4 fig8_08's balls last only ~2.5 s).
 
+   fig8_09 (from fig8_08 @14M, 15M steps): the median episode at 0.4 laps went 3.3 s -> ~11 s, the tolerance
+   tightened to 0.35 at 27M. At 28M, run without the cut-off (seeds 500-509): ~3 laps per 30 s (the
+   timetable's pace), the timetable error 0.14-0.15 laps all episode (fig8_08: ~0.22, drifting), 7/10 kept
+   (the drops come where training never goes: a ball far out of its slot ends a training episode first).
+   fig8_10 (from fig8_09's end, tightening at a 10 s median): at 0.35 the median stayed at 4-8 s for 8M steps.
+
+   **Per-ball actions** (`--ball-act`, Fig8Env `_tilt`): n more actions, one per ball, each tilting the hand
+   it is on (wrist flex for x, forearm roll for y, 0.1 rad per unit) so gravity pushes that ball along the 8's
+   direction there (calibrated: +1 rad of WRJ1 tilts the palm normal ~-1 in x, +1 rad of FRJ ~-0.97 in y).
+   The probe's hand-found mix, given as a handle. Open-loop on top of the policy's own actions, u = +1 for one
+   ball and -1 for another on the same hand for 0.5 s: from fig8_04's four-ball states 95% of 499 pairs move
+   apart the right way (median 0.067 laps; the probe's 42-actuator push 91%, 0.066), from fig8_10's two-ball
+   states 79% of 29. `widen_stage7_fig8.py --ball-act` adds them to a policy at zero weight (it then acts
+   exactly as before), and now also carries an old model's timetable inputs over. fig8_11: fig8_10 @37M with
+   the per-ball actions, the slot tolerance from 0.35.
+
    ```
    python3 stage7_cup.py --out media_full/stage7_cup.png                  # the cup: settle + hold tests
    python3 stage7_cup.py --swirl --flicks 0.6                             # swirl + flick grid
@@ -994,6 +1010,9 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    python3 probe_stage7_fig8.py runs/fig8_04/checkpoints/ppo_7999980_steps.zip 4 --seeds 10 --out data/probe_fig8_4.npz
    python3 probe_stage7_fig8.py runs/fig8_02/checkpoints/ppo_19999950_steps.zip 2 --seeds 20 --seed0 800 --out data/probe_fig8_2.npz
    python3 train_stage7_cup.py --env fig8 --n-balls 2 --run-name fig8_09 --resume runs/fig8_08/checkpoints/ppo_13999965_steps.zip --track-rate 0.1 --slot-tol 0.4 --slot-tol-min 0.1 --ref-deg 180 --episode-seconds 30 --drop 200 --timesteps 15000000
+   python3 train_stage7_cup.py --env fig8 --n-balls 2 --run-name fig8_10 --resume runs/fig8_10/init/ppo_29022045_steps.zip --track-rate 0.1 --slot-tol 0.35 --slot-tol-min 0.1 --slot-seconds 10 --ref-deg 180 --episode-seconds 30 --drop 200 --timesteps 30000000
+   python3 widen_stage7_fig8.py runs/fig8_10/checkpoints/ppo_37022025_steps.zip 2 runs/fig8_11/init/ppo_0_steps.zip --track-rate 0.1 --ball-act
+   python3 train_stage7_cup.py --env fig8 --n-balls 2 --run-name fig8_11 --resume runs/fig8_11/init/ppo_0_steps.zip --track-rate 0.1 --ball-act --slot-tol 0.35 --slot-tol-min 0.1 --slot-seconds 10 --ref-deg 180 --episode-seconds 30 --drop 200 --timesteps 30000000
    ```
 
 ## Repository layout

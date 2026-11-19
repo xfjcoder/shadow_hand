@@ -39,17 +39,24 @@ FLEX_8 = -0.05
 OFF0, OFF_W, W_OFF = 0.015, 0.015, 0.3     # m off the 8 before it costs, ramp, per-ball cost at full
 WIN = np.linspace(-0.04, 0.08, 61)        # where to look for a ball's s next step (fractions of the 8)
 SPREAD_TOL = 0.1                          # laps out of its slot at which a ball costs w_spread in full
+TILT_K = 0.1                              # rad of hand tilt per unit of a per-ball action (ball_act)
+SEAM_W = 0.005                            # m: a ball within ~this of the seam's y tilts both hands, blended
 
 
 class Fig8Env(MultiWaveEnv):
     def __init__(self, n=1, episode_seconds=None, randomize=True, ref_deg=REF_DEG, drop=DROP, flex_n=FLEX_8,
-                 w_spread=0.0, track_rate=None, slot_tol=None):
+                 w_spread=0.0, track_rate=None, slot_tol=None, ball_act=False):
         super().__init__(n=n, episode_seconds=episode_seconds, randomize=randomize, ref_deg=ref_deg, drop=drop,
                          flex_n=flex_n)
         self.roll_n = 0.0
         self.w_spread = w_spread
         self.track_rate = track_rate                 # laps/s: a timetable for the balls instead of paying progress
         self.slot_tol = slot_tol                     # laps: timetable mode, any ball further out of its slot ends it
+        self.ball_act = ball_act                     # n more actions: speed each ball along the 8 by tilting its hand
+        if ball_act:
+            self.action_space = spaces.Box(-1.0, 1.0, shape=(self.m.nu + n,), dtype=np.float32)
+            self.tilt_x = [self.m.actuator(f"{h}_A_WRJ1").id for h in ("rh", "L_lh")]   # palm normal -x per rad
+            self.tilt_y = [self.m.actuator(f"{h}_A_FRJ").id for h in ("rh", "L_lh")]    # palm normal -y per rad
         if track_rate:
             n_obs = self.observation_space.shape[0] + n + 2
             self.observation_space = spaces.Box(-np.inf, np.inf, shape=(n_obs,), dtype=np.float32)
@@ -89,6 +96,26 @@ class Fig8Env(MultiWaveEnv):
         for k in range(1, 7):
             u[self.kn[k]] += B["amp"] * max(0.0, np.sin(2 * np.pi * (self.t_wave / B["T"] - self.out[k] * B["lag"]))) ** 2
         return u
+
+    def tangent(self, s):
+        """The 8's direction of travel at s (unit, in the plane)."""
+        t = np.stack([self.a8[0] * 4 * np.pi * np.cos(4 * np.pi * s), self.a8[1] * 2 * np.pi * np.cos(2 * np.pi * s)], -1)
+        return t / np.linalg.norm(t, axis=-1, keepdims=True)
+
+    def _tilt(self, u):
+        """Per-ball actions -> each hand's wrist flex and forearm roll: tilt the palm so gravity pushes each ball on
+        it along the 8 (u > 0 forward). A tilt moves every ball on the hand, but balls on the finger leg and the
+        palm leg run opposite ways, so one tilt can speed one and hold back the other (probe_stage7_fig8.py).
+        Calibrated: +1 rad of WRJ1 tilts the palm normal ~-1 in x, +1 rad of FRJ ~-0.97 in y, either hand."""
+        b = self.balls_n()
+        left = 1.0 / (1.0 + np.exp(-(b[:, 1] - self.c8[1]) / SEAM_W))      # the left hand is y > the seam
+        v = u[:, None] * self.tangent(self.s % 1.0)
+        du = np.zeros(self.m.nu)
+        for h, w in ((0, 1.0 - left), (1, left)):                          # rh = 0, L_lh = 1 as in tilt_x / tilt_y
+            n = TILT_K * (w[:, None] * v).sum(0)
+            du[self.tilt_x[h]] -= n[0]
+            du[self.tilt_y[h]] -= n[1] / 0.97
+        return du
 
     def _track(self, b):
         """Each ball's s near its last one, and its distance from the 8 there."""
@@ -151,7 +178,9 @@ class Fig8Env(MultiWaveEnv):
 
     def step(self, action):
         a = np.clip(action, -1, 1)
-        self.d.ctrl[:] = np.clip(self.base() + self.res * a, self.w.lo, self.w.hi)
+        u = self.base() + (self._tilt(a[self.m.nu:]) if self.ball_act else 0.0)
+        a = a[:self.m.nu]
+        self.d.ctrl[:] = np.clip(u + self.res * a, self.w.lo, self.w.hi)
         for _ in range(self.n_sub):
             mj.mj_step(self.m, self.d)
         self.t += 1
