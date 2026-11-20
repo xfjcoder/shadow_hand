@@ -10,6 +10,8 @@ then train with --resume runs/fig8_02w/ppo_0_steps.zip --n-balls 2.
 at zero weight, normalised from mean 0 / variance 1; if the old model has them they carry over like the rest.
 --ball-act adds the per-ball tilt actions (Fig8Env ball_act) at zero weight (the policy starts as before), their
 noise at the old actions' mean; N may equal the old ball count then (actions only).
+--tilt-scale F scales the per-ball actions' means by F and their noise by F (train with --tilt-k = old / F: the
+same tilts in radians, more reach).
 """
 import argparse
 import pickle
@@ -64,6 +66,7 @@ def main():
     ap.add_argument("out")
     ap.add_argument("--track-rate", type=float, default=None)
     ap.add_argument("--ball-act", action="store_true")
+    ap.add_argument("--tilt-scale", type=float, default=1.0)
     args = ap.parse_args()
     p = Path(args.ckpt)
     steps = p.stem.split("_")[-2]
@@ -93,6 +96,13 @@ def main():
                 w = o[:, src].clone()
                 w[:, torch.as_tensor(new)] = 0.0
                 t.copy_(w)
+    if args.tilt_scale != 1.0:
+        sd2 = model.policy.state_dict()
+        nu = env.m.nu
+        with torch.no_grad():
+            sd2["action_net.weight"][nu:] *= args.tilt_scale
+            sd2["action_net.bias"][nu:] *= args.tilt_scale
+            sd2["log_std"][nu:] += float(np.log(args.tilt_scale))
     model.num_timesteps = 0
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)

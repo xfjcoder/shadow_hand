@@ -41,19 +41,21 @@ FLEX_8 = -0.05
 OFF0, OFF_W, W_OFF = 0.015, 0.015, 0.3     # m off the 8 before it costs, ramp, per-ball cost at full
 WIN = np.linspace(-0.04, 0.08, 61)        # where to look for a ball's s next step (fractions of the 8)
 SPREAD_TOL = 0.1                          # laps out of its slot at which a ball costs w_spread in full
-TILT_K = 0.1                              # rad of hand tilt per unit of a per-ball action (ball_act)
+TILT_K = 0.1                              # rad of hand tilt per unit of a per-ball action (ball_act; default)
+# (at the outer walls 0.1 moves a ball ~0.008 laps in 0.5 s, too weak to unstall it; 0.3 moves it 0.04-0.08)
 SEAM_W = 0.005                            # m: a ball within ~this of the seam's y tilts both hands, blended
 
 
 class Fig8Env(MultiWaveEnv):
     def __init__(self, n=1, episode_seconds=None, randomize=True, ref_deg=REF_DEG, drop=DROP, flex_n=FLEX_8,
-                 w_spread=0.0, track_rate=None, slot_tol=None, ball_act=False, grace=0.0):
+                 w_spread=0.0, track_rate=None, slot_tol=None, ball_act=False, grace=0.0, tilt_k=TILT_K):
         super().__init__(n=n, episode_seconds=episode_seconds, randomize=randomize, ref_deg=ref_deg, drop=drop,
                          flex_n=flex_n)
         self.roll_n = 0.0
         self.w_spread = w_spread
         self.track_rate = track_rate                 # laps/s: a timetable for the balls instead of paying progress
         self.slot_tol = slot_tol                     # laps: timetable mode, any ball further out of its slot ends it
+        self.tilt_k = tilt_k                         # rad of hand tilt per unit of a per-ball action
         self.grace = grace                           # s: timetable spin-up, it follows the balls
         self.ball_act = ball_act                     # n more actions: speed each ball along the 8 by tilting its hand
         if ball_act:
@@ -118,7 +120,7 @@ class Fig8Env(MultiWaveEnv):
         v = u[:, None] * self.tangent(self.s % 1.0)
         du = np.zeros(self.m.nu)
         for h, w in ((0, 1.0 - left), (1, left)):                          # rh = 0, L_lh = 1 as in tilt_x / tilt_y
-            n = TILT_K * (w[:, None] * v).sum(0)
+            n = self.tilt_k * (w[:, None] * v).sum(0)
             du[self.tilt_x[h]] -= n[0]
             du[self.tilt_y[h]] -= n[1] / 0.97
         return du
