@@ -78,7 +78,10 @@ class Fig8Env(MultiWaveEnv):
         """Start offsets: the 8 passes the crossing at s = 0 and 1/2, so balls half a lap apart would meet there.
         Offsets distinct mod 1/2 (k / 2n apart), every other one on the other lobe: they cross by turns.
         Four balls that way pass 2.8 cm apart (they are 3.8 cm); the offsets below (a grid search for the
-        widest closest pass, moving at a constant rate in s) keep them 4.0 cm apart."""
+        widest closest pass, moving at a constant rate in s) keep them 4.0 cm apart. Two balls go as near half a
+        lap apart as clears the crossing: 0.4 (closest pass 4.4 cm; at 0.45 it is 2.3 cm), not 1/4."""
+        if self.n == 2:
+            return np.array([0.0, 0.4])
         if self.n == 4:
             return np.array([0.0, 0.396, 0.604, 0.792])
         k = np.arange(self.n)
