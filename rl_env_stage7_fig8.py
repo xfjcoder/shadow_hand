@@ -25,6 +25,8 @@ taught nothing in 4.5M steps: from the clump nearly every ball is a quarter lap 
 timetable error and the timetable's phase. With grace (s), the first grace seconds are a spin-up: the
 timetable sits on the balls' own mean place (only their spacing counts) and nobody is late; then it runs at
 track_rate from there (balls start at rest, and at full pace from t = 0 half the episodes ended late in 3 s).
+In the spin-up a ball is paid only as far as it moves at the timetable's pace (paid for spacing alone, fig8_16
+learned at slot_tol 0.1, where episodes end soon after it, to keep the balls still and spaced through it).
 With lead (laps), the timetable waits for the balls: it never runs more than lead ahead of their mean place. For
 running a policy trained with slot_tol: it never saw errors past slot_tol, and the error is wrapped, so a ball
 over half a lap behind reads as ahead; without lead the balls then wait a whole lap for the timetable.
@@ -212,6 +214,8 @@ class Fig8Env(MultiWaveEnv):
                 ahead = -np.angle(np.mean(np.exp(2j * np.pi * self._ref_err()))) / (2 * np.pi)   # policy's
                 self.ref -= max(ahead - self.lead, 0.0)                                          # error in range
             prog = 0.5 * (1 + np.cos(2 * np.pi * self._ref_err()))   # on the timetable 1, a quarter lap out 1/2
+            if spin:                                 # spin-up: spaced AND getting up to pace (spaced and still paid
+                prog = prog * np.clip(ds / (self.track_rate * CONTROL_DT), 0.0, 1.0)   # in full: fig8_16 stopped)
         else:
             prog = np.clip(ds / self.ref_s, -1.0, 1.0)
         off = np.clip((self.dist - OFF0) / OFF_W, 0.0, 1.0)

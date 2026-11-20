@@ -1007,6 +1007,12 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
 
    ![fig8_16](media/stage7_fig8_16.gif)
 
+   After the tolerance reached 0.1 (19.3M), fig8_16 fell apart: laps / 30 s (waiting timetable, 10 episodes)
+   4.6 @20M, 2.6 @22M, 1.4 @24M, 0.8 @30M. In the spin-up the timetable sits on the balls, and spaced balls
+   were paid in full even standing still; at 0.1 episodes end soon after the spin-up, so standing still
+   through it became the best policy. Fixed: in the spin-up a ball is paid only as far as it moves at the
+   timetable's pace. The two-ball result is fig8_16 @18M. Three balls (fig8_17) start from it.
+
    ```
    python3 stage7_cup.py --out media_full/stage7_cup.png                  # the cup: settle + hold tests
    python3 stage7_cup.py --swirl --flicks 0.6                             # swirl + flick grid
@@ -1052,6 +1058,8 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    python3 train_stage7_cup.py --env fig8 --n-balls 2 --run-name fig8_16 --resume runs/fig8_16/init/ppo_0_steps.zip --track-rate 0.18 --ball-act --tilt-k 0.3 --grace 3 --slot-tol 0.4 --slot-tol-min 0.1 --slot-seconds 10 --ref-deg 180 --episode-seconds 30 --drop 200 --timesteps 30000000
    python3 eval_stage7_cup.py runs/fig8_16/checkpoints/ppo_7999980_steps.zip --env fig8 --n-balls 2 --track-rate 0.18 --ball-act --tilt-k 0.3 --grace 3 --n 8 --seed 500 --record data/fig8_16_8M.npz
    python3 eval_stage7_cup.py runs/fig8_16/checkpoints/ppo_17999955_steps.zip --env fig8 --n-balls 2 --track-rate 0.18 --ball-act --tilt-k 0.3 --grace 3 --lead 0.1 --n 8 --seed 500 --record data/fig8_16_18M.npz
+   python3 widen_stage7_fig8.py runs/fig8_16/checkpoints/ppo_17999955_steps.zip 3 runs/fig8_17/init/ppo_0_steps.zip --track-rate 0.18 --ball-act
+   python3 train_stage7_cup.py --env fig8 --n-balls 3 --run-name fig8_17 --resume runs/fig8_17/init/ppo_0_steps.zip --track-rate 0.18 --ball-act --tilt-k 0.3 --grace 3 --slot-tol 0.4 --slot-tol-min 0.1 --slot-seconds 10 --ref-deg 180 --episode-seconds 30 --drop 200 --timesteps 40000000
    ```
 
 ## Repository layout
