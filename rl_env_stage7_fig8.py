@@ -25,6 +25,9 @@ taught nothing in 4.5M steps: from the clump nearly every ball is a quarter lap 
 timetable error and the timetable's phase. With grace (s), the first grace seconds are a spin-up: the
 timetable sits on the balls' own mean place (only their spacing counts) and nobody is late; then it runs at
 track_rate from there (balls start at rest, and at full pace from t = 0 half the episodes ended late in 3 s).
+With lead (laps), the timetable waits for the balls: it never runs more than lead ahead of their mean place. For
+running a policy trained with slot_tol: it never saw errors past slot_tol, and the error is wrapped, so a ball
+over half a lap behind reads as ahead; without lead the balls then wait a whole lap for the timetable.
 """
 import gymnasium as gym
 import mujoco as mj
@@ -48,7 +51,7 @@ SEAM_W = 0.005                            # m: a ball within ~this of the seam's
 
 class Fig8Env(MultiWaveEnv):
     def __init__(self, n=1, episode_seconds=None, randomize=True, ref_deg=REF_DEG, drop=DROP, flex_n=FLEX_8,
-                 w_spread=0.0, track_rate=None, slot_tol=None, ball_act=False, grace=0.0, tilt_k=TILT_K):
+                 w_spread=0.0, track_rate=None, slot_tol=None, ball_act=False, grace=0.0, tilt_k=TILT_K, lead=None):
         super().__init__(n=n, episode_seconds=episode_seconds, randomize=randomize, ref_deg=ref_deg, drop=drop,
                          flex_n=flex_n)
         self.roll_n = 0.0
@@ -56,6 +59,7 @@ class Fig8Env(MultiWaveEnv):
         self.track_rate = track_rate                 # laps/s: a timetable for the balls instead of paying progress
         self.slot_tol = slot_tol                     # laps: timetable mode, any ball further out of its slot ends it
         self.tilt_k = tilt_k                         # rad of hand tilt per unit of a per-ball action
+        self.lead = lead                             # laps: the timetable waits, never leading the balls by more
         self.grace = grace                           # s: timetable spin-up, it follows the balls
         self.ball_act = ball_act                     # n more actions: speed each ball along the 8 by tilting its hand
         if ball_act:
@@ -204,6 +208,9 @@ class Fig8Env(MultiWaveEnv):
         if self.track_rate:
             spin = self.t * CONTROL_DT <= self.grace
             self.ref = self._mean_place() if spin else self.ref + self.track_rate * CONTROL_DT
+            if self.lead and not spin:               # waiting timetable (for running, not training): keeps the
+                ahead = -np.angle(np.mean(np.exp(2j * np.pi * self._ref_err()))) / (2 * np.pi)   # policy's
+                self.ref -= max(ahead - self.lead, 0.0)                                          # error in range
             prog = 0.5 * (1 + np.cos(2 * np.pi * self._ref_err()))   # on the timetable 1, a quarter lap out 1/2
         else:
             prog = np.clip(ds / self.ref_s, -1.0, 1.0)

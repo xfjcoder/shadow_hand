@@ -988,15 +988,22 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
      (0.03 elsewhere, the right sign ~90% on both hands): too weak to unstall it; at 0.3 it moves it
      0.04-0.08. `widen --tilt-scale 1/3` rescales a model's tilt outputs so it starts exactly as before.
 
-   fig8_16 (fig8_13 @46M rescaled, all three): tolerance 0.4 -> 0.2 in 2.8M steps, 0.15 at 8.6M. @8M,
-   deterministic, same seeds as fig8_13 @46M:
+   fig8_16 (fig8_13 @46M rescaled, all three): tolerance 0.4 -> 0.2 in 2.8M steps, 0.15 at 8.6M, 0.1 (the
+   curriculum's end) at 19.3M. A catch in judging it: the slot error is wrapped, so balls a whole lap behind
+   read as on their slots. Run without the cut-off, the policy (which never saw errors past the tolerance)
+   falls behind, and past half a lap the wrapped error says "ahead": both balls then wait a whole lap for the
+   timetable (spacing kept; at 18M, 12 of 20 episodes ended 1-3 laps behind). (An earlier "0.10 laps median"
+   for @8M was this wrapped error.) The fix for running a policy: a timetable that waits (`--lead 0.1`: it
+   never leads the balls' mean place by more than 0.1 lap), so the policy's error stays in the range it was
+   trained on. Deterministic, 20 episodes (seed 300):
 
-   | | fig8_13 @46M | fig8_16 @8M |
-   |---|---|---|
-   | kept, 20 episodes (seed 300) | 15/20 | 19/20 |
-   | laps / 30 s (timetable 5.4) | 3.8 | 4.7 |
-   | worse ball's slot error, median (laps) | 0.17 | 0.10 |
-   | gap between the balls, median (target 0.40) | 0.37 | 0.38 |
+   | | fig8_13 @46M | fig8_16 @8M | fig8_16 @18M | @18M, waiting timetable |
+   |---|---|---|---|---|
+   | kept | 15/20 | 19/20 | 20/20 | 20/20 |
+   | laps / 30 s, mean (p10) (timetable 5.4) | 3.8 | 4.7 (3.4) | 4.2 (3.1) | 4.8 (4.2) |
+   | spacing error (each ball vs the other's slot), median | - | 0.060 | 0.048 | 0.043 laps |
+   | both balls within 0.1 lap of their slots | - | 51% | 59% | 71% |
+   | timetable waited | - | - | - | 0.4 laps / episode |
 
    ![fig8_16](media/stage7_fig8_16.gif)
 
@@ -1044,6 +1051,7 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    python3 widen_stage7_fig8.py runs/fig8_13/checkpoints/ppo_45999885_steps.zip 2 runs/fig8_16/init/ppo_0_steps.zip --track-rate 0.18 --ball-act --tilt-scale 0.3333333
    python3 train_stage7_cup.py --env fig8 --n-balls 2 --run-name fig8_16 --resume runs/fig8_16/init/ppo_0_steps.zip --track-rate 0.18 --ball-act --tilt-k 0.3 --grace 3 --slot-tol 0.4 --slot-tol-min 0.1 --slot-seconds 10 --ref-deg 180 --episode-seconds 30 --drop 200 --timesteps 30000000
    python3 eval_stage7_cup.py runs/fig8_16/checkpoints/ppo_7999980_steps.zip --env fig8 --n-balls 2 --track-rate 0.18 --ball-act --tilt-k 0.3 --grace 3 --n 8 --seed 500 --record data/fig8_16_8M.npz
+   python3 eval_stage7_cup.py runs/fig8_16/checkpoints/ppo_17999955_steps.zip --env fig8 --n-balls 2 --track-rate 0.18 --ball-act --tilt-k 0.3 --grace 3 --lead 0.1 --n 8 --seed 500 --record data/fig8_16_18M.npz
    ```
 
 ## Repository layout
