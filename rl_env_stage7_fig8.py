@@ -22,7 +22,9 @@ ball's s against its slot on a timetable that runs round the 8 at track_rate (re
 balls' own mean place): spread AND moving, a stalled ball falls out of its slot. With slot_tol, a ball more than
 slot_tol laps out of its slot ends the episode (no cost beyond the pay forgone: keeping time is staying alive). (A narrow exp(-(err / 0.05)^2)
 taught nothing in 4.5M steps: from the clump nearly every ball is a quarter lap out, where it pays ~0.) The obs gets each ball's
-timetable error and the timetable's phase.
+timetable error and the timetable's phase. With grace (s), the first grace seconds are a spin-up: the
+timetable sits on the balls' own mean place (only their spacing counts) and nobody is late; then it runs at
+track_rate from there (balls start at rest, and at full pace from t = 0 half the episodes ended late in 3 s).
 """
 import gymnasium as gym
 import mujoco as mj
@@ -45,13 +47,14 @@ SEAM_W = 0.005                            # m: a ball within ~this of the seam's
 
 class Fig8Env(MultiWaveEnv):
     def __init__(self, n=1, episode_seconds=None, randomize=True, ref_deg=REF_DEG, drop=DROP, flex_n=FLEX_8,
-                 w_spread=0.0, track_rate=None, slot_tol=None, ball_act=False):
+                 w_spread=0.0, track_rate=None, slot_tol=None, ball_act=False, grace=0.0):
         super().__init__(n=n, episode_seconds=episode_seconds, randomize=randomize, ref_deg=ref_deg, drop=drop,
                          flex_n=flex_n)
         self.roll_n = 0.0
         self.w_spread = w_spread
         self.track_rate = track_rate                 # laps/s: a timetable for the balls instead of paying progress
         self.slot_tol = slot_tol                     # laps: timetable mode, any ball further out of its slot ends it
+        self.grace = grace                           # s: timetable spin-up, it follows the balls
         self.ball_act = ball_act                     # n more actions: speed each ball along the 8 by tilting its hand
         if ball_act:
             self.action_space = spaces.Box(-1.0, 1.0, shape=(self.m.nu + n,), dtype=np.float32)
@@ -136,6 +139,9 @@ class Fig8Env(MultiWaveEnv):
         m = np.angle(np.mean(np.exp(1j * ph)))
         return np.angle(np.exp(1j * (ph - m))) / (2 * np.pi)
 
+    def _mean_place(self):
+        return np.angle(np.mean(np.exp(2j * np.pi * (self.s - self.spacing())))) / (2 * np.pi)
+
     def _ref_err(self):
         """Timetable mode: each ball's s against its slot on the timetable (ref + offset_k), in laps, wrapped."""
         return np.angle(np.exp(2j * np.pi * (self.s - self.ref - self.spacing()))) / (2 * np.pi)
@@ -171,7 +177,7 @@ class Fig8Env(MultiWaveEnv):
                 mj.mj_step(m, d)
             self.t_wave += CONTROL_DT
         self.s, self.dist = self._track(self.balls_n())
-        self.ref = np.angle(np.mean(np.exp(2j * np.pi * (self.s - self.spacing())))) / (2 * np.pi)
+        self.ref = self._mean_place()
         self.t, self.steps = 0, int(round(self.seconds / CONTROL_DT))
         self.turn = np.zeros(self.n)                 # radians: 2 pi per lap of the 8 (as the loop envs report turns)
         return self._obs(), {}
@@ -191,7 +197,8 @@ class Fig8Env(MultiWaveEnv):
         self.s = s
         self.turn += 2 * np.pi * ds
         if self.track_rate:
-            self.ref += self.track_rate * CONTROL_DT
+            spin = self.t * CONTROL_DT <= self.grace
+            self.ref = self._mean_place() if spin else self.ref + self.track_rate * CONTROL_DT
             prog = 0.5 * (1 + np.cos(2 * np.pi * self._ref_err()))   # on the timetable 1, a quarter lap out 1/2
         else:
             prog = np.clip(ds / self.ref_s, -1.0, 1.0)
@@ -205,7 +212,7 @@ class Fig8Env(MultiWaveEnv):
         lost = self._lost(b)
         if lost:
             reward -= self.drop
-        late = bool(self.track_rate and self.slot_tol and np.any(np.abs(self._ref_err()) > self.slot_tol))
+        late = bool(self.track_rate and self.slot_tol and not spin and np.any(np.abs(self._ref_err()) > self.slot_tol))
         trunc = self.t >= self.steps
         info = {}
         if lost or late or trunc:
