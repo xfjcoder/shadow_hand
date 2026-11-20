@@ -972,6 +972,34 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    exactly as before), and now also carries an old model's timetable inputs over. fig8_11: fig8_10 @37M with
    the per-ball actions, the slot tolerance from 0.35.
 
+   fig8_11 tightened 0.35 -> 0.30 in 2.7M steps, then held (slot error 0.136 laps); fig8_12 (more tilt noise)
+   changed nothing. At 0.1 laps/s the balls sat stuck 39% of the time at the 8's corners, so fig8_13 (from
+   fig8_12 @16M) ran the timetable at 0.18 laps/s, the balls' own pace: tightened to 0.30 at 40M; @46M kept
+   18/20, 4.6 laps / 30 s, slot error 0.136. Then three fixes, each found by looking at how episodes end:
+   - **Spin-up** (`--grace 3`): balls start at rest and the timetable ran at full pace from t = 0, so half the
+     episodes ended late in the first 0.6-3 s and the curriculum's median measured the spin-up (fig8_13b: 13M
+     steps at 0.3, no tightening). For the first 3 s the timetable now sits on the balls' mean place. Same
+     model, tol 0.3: median episode 2.7 s -> 16.6 s. fig8_14 tightened to 0.25, then held for 17M steps.
+   - **Two balls 0.4 lap apart** (was 1/4): exactly half a lap apart they reach the crossing together (closest
+     pass 0 cm); 0.4 is the nearest that clears (4.4 cm, balls 3.8 cm; the crossings 0.1 lap apart). Three
+     balls stay at thirds (5.7 cm); four at the searched offsets (exact quarters collide too).
+   - **Tilt reach** (`--tilt-k 0.3`, was 0.1): fig8_14's balls stalled at the outer walls (s ~0.25, 0.75),
+     ~80% of it on the right hand. A ball's tilt action pushed +-1 for 0.5 s moved it 0.006-0.008 laps there
+     (0.03 elsewhere, the right sign ~90% on both hands): too weak to unstall it; at 0.3 it moves it
+     0.04-0.08. `widen --tilt-scale 1/3` rescales a model's tilt outputs so it starts exactly as before.
+
+   fig8_16 (fig8_13 @46M rescaled, all three): tolerance 0.4 -> 0.2 in 2.8M steps, 0.15 at 8.6M. @8M,
+   deterministic, same seeds as fig8_13 @46M:
+
+   | | fig8_13 @46M | fig8_16 @8M |
+   |---|---|---|
+   | kept, 20 episodes (seed 300) | 15/20 | 19/20 |
+   | laps / 30 s (timetable 5.4) | 3.8 | 4.7 |
+   | worse ball's slot error, median (laps) | 0.17 | 0.10 |
+   | gap between the balls, median (target 0.40) | 0.37 | 0.38 |
+
+   ![fig8_16](media/stage7_fig8_16.gif)
+
    ```
    python3 stage7_cup.py --out media_full/stage7_cup.png                  # the cup: settle + hold tests
    python3 stage7_cup.py --swirl --flicks 0.6                             # swirl + flick grid
@@ -1013,6 +1041,9 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    python3 train_stage7_cup.py --env fig8 --n-balls 2 --run-name fig8_10 --resume runs/fig8_10/init/ppo_29022045_steps.zip --track-rate 0.1 --slot-tol 0.35 --slot-tol-min 0.1 --slot-seconds 10 --ref-deg 180 --episode-seconds 30 --drop 200 --timesteps 30000000
    python3 widen_stage7_fig8.py runs/fig8_10/checkpoints/ppo_37022025_steps.zip 2 runs/fig8_11/init/ppo_0_steps.zip --track-rate 0.1 --ball-act
    python3 train_stage7_cup.py --env fig8 --n-balls 2 --run-name fig8_11 --resume runs/fig8_11/init/ppo_0_steps.zip --track-rate 0.1 --ball-act --slot-tol 0.35 --slot-tol-min 0.1 --slot-seconds 10 --ref-deg 180 --episode-seconds 30 --drop 200 --timesteps 30000000
+   python3 widen_stage7_fig8.py runs/fig8_13/checkpoints/ppo_45999885_steps.zip 2 runs/fig8_16/init/ppo_0_steps.zip --track-rate 0.18 --ball-act --tilt-scale 0.3333333
+   python3 train_stage7_cup.py --env fig8 --n-balls 2 --run-name fig8_16 --resume runs/fig8_16/init/ppo_0_steps.zip --track-rate 0.18 --ball-act --tilt-k 0.3 --grace 3 --slot-tol 0.4 --slot-tol-min 0.1 --slot-seconds 10 --ref-deg 180 --episode-seconds 30 --drop 200 --timesteps 30000000
+   python3 eval_stage7_cup.py runs/fig8_16/checkpoints/ppo_7999980_steps.zip --env fig8 --n-balls 2 --track-rate 0.18 --ball-act --tilt-k 0.3 --grace 3 --n 8 --seed 500 --record data/fig8_16_8M.npz
    ```
 
 ## Repository layout
