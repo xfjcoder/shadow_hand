@@ -1019,6 +1019,11 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    late one nothing, waiting to be cut off is the safe play. fig8_18 starts instead from fig8_03 (three balls
    running free, clumped: 10/10 kept, 3.7 laps / 30 s, spacing error 0.21) with the timetable at its own
    pace, 0.13 laps/s, the way the two-ball runs started from fig8_02's lineage.
+   fig8_18: 8M steps at 0.4 without a tightening, a quarter of its episodes ending just after the spin-up
+   with one ball 0.4 lap out of its slot (unchecked in the spin-up, it clumped). With the tolerance applied
+   there too (to spacing), fig8_19 (from fig8_18 @8M) tightened 0.4 -> 0.25 by 21.3M; @20M (waiting
+   timetable, 10 episodes): 10/10 kept, 3.4 laps / 30 s (timetable 3.9), spacing error 0.15 laps (0.18 at
+   the start).
 
    Gallery, in training order (best of the episodes recorded for each):
 
@@ -1038,6 +1043,7 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    |---|---|---|
    | fig8_03, free running | ![](media/stage7_fig8_three.gif) | 3.7 laps, clumped; fig8_18's start |
    | fig8_17 @40M, from the two-ball policy | ![](media/stage7_fig8_17_40M.gif) | failed: the balls barely move |
+   | fig8_19 @20M, from fig8_03, timetable 0.13 | ![](media/stage7_fig8_19_20M.gif) | 10/10 kept, 3.4 laps, spacing error 0.15 |
 
    ```
    python3 stage7_cup.py --out media_full/stage7_cup.png                  # the cup: settle + hold tests
