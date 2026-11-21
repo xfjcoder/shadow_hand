@@ -1011,7 +1011,14 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    4.6 @20M, 2.6 @22M, 1.4 @24M, 0.8 @30M. In the spin-up the timetable sits on the balls, and spaced balls
    were paid in full even standing still; at 0.1 episodes end soon after the spin-up, so standing still
    through it became the best policy. Fixed: in the spin-up a ball is paid only as far as it moves at the
-   timetable's pace. The two-ball result is fig8_16 @18M. Three balls (fig8_17) start from it.
+   timetable's pace. The two-ball result is fig8_16 @18M.
+
+   Three balls, 1/3 lap apart. fig8_17 (fig8_16 @18M widened to three balls): 40M steps without one
+   tightening; the balls never got moving (0.1-0.6 laps / 30 s at every checkpoint, spacing 0.04-0.07).
+   Widened, the two-ball policy moved three balls 0.24 laps / 30 s, and with a lost ball costing 200 and a
+   late one nothing, waiting to be cut off is the safe play. fig8_18 starts instead from fig8_03 (three balls
+   running free, clumped: 10/10 kept, 3.7 laps / 30 s, spacing error 0.21) with the timetable at its own
+   pace, 0.13 laps/s, the way the two-ball runs started from fig8_02's lineage.
 
    ```
    python3 stage7_cup.py --out media_full/stage7_cup.png                  # the cup: settle + hold tests
@@ -1058,8 +1065,8 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    python3 train_stage7_cup.py --env fig8 --n-balls 2 --run-name fig8_16 --resume runs/fig8_16/init/ppo_0_steps.zip --track-rate 0.18 --ball-act --tilt-k 0.3 --grace 3 --slot-tol 0.4 --slot-tol-min 0.1 --slot-seconds 10 --ref-deg 180 --episode-seconds 30 --drop 200 --timesteps 30000000
    python3 eval_stage7_cup.py runs/fig8_16/checkpoints/ppo_7999980_steps.zip --env fig8 --n-balls 2 --track-rate 0.18 --ball-act --tilt-k 0.3 --grace 3 --n 8 --seed 500 --record data/fig8_16_8M.npz
    python3 eval_stage7_cup.py runs/fig8_16/checkpoints/ppo_17999955_steps.zip --env fig8 --n-balls 2 --track-rate 0.18 --ball-act --tilt-k 0.3 --grace 3 --lead 0.1 --n 8 --seed 500 --record data/fig8_16_18M.npz
-   python3 widen_stage7_fig8.py runs/fig8_16/checkpoints/ppo_17999955_steps.zip 3 runs/fig8_17/init/ppo_0_steps.zip --track-rate 0.18 --ball-act
-   python3 train_stage7_cup.py --env fig8 --n-balls 3 --run-name fig8_17 --resume runs/fig8_17/init/ppo_0_steps.zip --track-rate 0.18 --ball-act --tilt-k 0.3 --grace 3 --slot-tol 0.4 --slot-tol-min 0.1 --slot-seconds 10 --ref-deg 180 --episode-seconds 30 --drop 200 --timesteps 40000000
+   python3 widen_stage7_fig8.py runs/fig8_03/checkpoints/ppo_19999950_steps.zip 3 runs/fig8_18/init/ppo_0_steps.zip --track-rate 0.13 --ball-act
+   python3 train_stage7_cup.py --env fig8 --n-balls 3 --run-name fig8_18 --resume runs/fig8_18/init/ppo_0_steps.zip --track-rate 0.13 --ball-act --tilt-k 0.3 --grace 3 --slot-tol 0.4 --slot-tol-min 0.1 --slot-seconds 10 --ref-deg 180 --episode-seconds 30 --drop 200 --timesteps 40000000
    ```
 
 ## Repository layout
