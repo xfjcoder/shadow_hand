@@ -1,0 +1,5 @@
+13:40 ppo_53999865_steps.zip tol=0.15 LEAD 0.1: kept 9/10  laps/30 s mean 2.72 (p10 0.27)  clock waited 0.64 laps/episode  spacing err median 0.114  both within 0.1 of the clock 19%
+14:11 ppo_55999860_steps.zip tol=0.15 LEAD 0.1: kept 10/10  laps/30 s mean 3.31 (p10 2.47)  clock waited 0.36 laps/episode  spacing err median 0.117  both within 0.1 of the clock 25%
+14:40 ppo_57999855_steps.zip tol=0.15 LEAD 0.1: kept 7/10  laps/30 s mean 2.67 (p10 1.26)  clock waited 0.40 laps/episode  spacing err median 0.110  both within 0.1 of the clock 22%
+15:09 ppo_59999850_steps.zip tol=0.15 LEAD 0.1: kept 8/10  laps/30 s mean 2.65 (p10 1.16)  clock waited 0.66 laps/episode  spacing err median 0.105  both within 0.1 of the clock 18%
+15:40 ppo_61999845_steps.zip tol=0.15 LEAD 0.1: kept 4/10  laps/30 s mean 2.23 (p10 1.15)  clock waited 0.61 laps/episode  spacing err median 0.111  both within 0.1 of the clock 19%

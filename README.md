@@ -1030,6 +1030,19 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    held at 0.2: no slowing; @52M 10/10 kept, 3.8 laps / 30 s (on the timetable; it never waited), spacing
    error 0.129 (flat), all three within 0.1 lap 24% (from 18%). The three-ball result for now. fig8_21 goes on
    from it tightening again, a late end now costing 100 (`--late-cost`, half a drop).
+   fig8_21 tightened to 0.15 at once and then dropped balls instead (kept 4/10 @62M; spacing 0.105-0.117).
+   The common cause of all three breakdowns: once tight, episodes from a standing start end in 3-5 s, so
+   nearly all training is the spin-up and the steady circulation drifts. Two fixes:
+   - **Mid-run starts** (`bank_stage7_fig8.py`, `--bank --p-bank`): 571 states from fig8_20 @52M with every
+     ball within 0.1 lap of its slot; half the episodes start from one, past the spin-up (checked: a bank
+     start replays identically).
+   - **Natural-pace timetable** (`--pace`): even from a bank state the policy held 0.15 for under a second.
+     The slot error swings with the place on the 8 (peak-to-peak 0.17 lap, 27% of its variance): balls go
+     round the outer walls ~5x slower than through the crossing (0.05 vs 0.25 laps/s), and a clock even in s
+     reads that as falling behind and catching up every lap. With the clock at the balls' measured pace
+     (`data/pace_fig8_3.npy`, symmetric over the two halves; slots even in time), fig8_20 @52M unchanged:
+     spacing error 0.129 -> 0.112, all three within 0.1 lap 24% -> 36% of the time, within 0.15 79% -> 98%.
+   fig8_22: from fig8_20 @52M with both, tightening from 0.2.
 
    Gallery, in training order (best of the episodes recorded for each):
 
@@ -1097,6 +1110,8 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    python3 eval_stage7_cup.py runs/fig8_16/checkpoints/ppo_7999980_steps.zip --env fig8 --n-balls 2 --track-rate 0.18 --ball-act --tilt-k 0.3 --grace 3 --n 8 --seed 500 --record data/fig8_16_8M.npz
    python3 eval_stage7_cup.py runs/fig8_16/checkpoints/ppo_17999955_steps.zip --env fig8 --n-balls 2 --track-rate 0.18 --ball-act --tilt-k 0.3 --grace 3 --lead 0.1 --n 8 --seed 500 --record data/fig8_16_18M.npz
    python3 widen_stage7_fig8.py runs/fig8_03/checkpoints/ppo_19999950_steps.zip 3 runs/fig8_18/init/ppo_0_steps.zip --track-rate 0.13 --ball-act
+   python3 bank_stage7_fig8.py runs/fig8_20/checkpoints/ppo_51999870_steps.zip 3 --track-rate 0.13 --tilt-k 0.3 --out data/bank_fig8_3.npz
+   python3 train_stage7_cup.py --env fig8 --n-balls 3 --run-name fig8_22 --resume runs/fig8_22/init/ppo_51999870_steps.zip --track-rate 0.13 --pace data/pace_fig8_3.npy --bank data/bank_fig8_3.npz --p-bank 0.5 --ball-act --tilt-k 0.3 --grace 3 --slot-tol 0.2 --slot-tol-min 0.1 --slot-seconds 10 --ref-deg 180 --episode-seconds 30 --drop 200 --timesteps 30000000
    python3 train_stage7_cup.py --env fig8 --n-balls 3 --run-name fig8_18 --resume runs/fig8_18/init/ppo_0_steps.zip --track-rate 0.13 --ball-act --tilt-k 0.3 --grace 3 --slot-tol 0.4 --slot-tol-min 0.1 --slot-seconds 10 --ref-deg 180 --episode-seconds 30 --drop 200 --timesteps 40000000
    ```
 

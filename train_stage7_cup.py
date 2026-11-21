@@ -51,12 +51,12 @@ class SlotCurriculum(BaseCallback):
 
 
 def make_env(seed, seconds, ref_deg, kind="cup", n_balls=1, w_edge=0.0, w_fast=0.0, flex_n=None, drop=50.0,
-             w_spread=0.0, track_rate=None, slot_tol=None, ball_act=False, grace=0.0, tilt_k=0.1, late_cost=0.0):
+             w_spread=0.0, track_rate=None, slot_tol=None, ball_act=False, grace=0.0, tilt_k=0.1, late_cost=0.0, bank=None, p_bank=0.0, pace=None):
     def _init():
         if kind == "fig8":
             env = Fig8Env(n=n_balls, episode_seconds=seconds, ref_deg=ref_deg, drop=drop,
                           flex_n=FLEX_8 if flex_n is None else flex_n, w_spread=w_spread,
-                          track_rate=track_rate, slot_tol=slot_tol, ball_act=ball_act, grace=grace, tilt_k=tilt_k, late_cost=late_cost)
+                          track_rate=track_rate, slot_tol=slot_tol, ball_act=ball_act, grace=grace, tilt_k=tilt_k, late_cost=late_cost, bank=bank, p_bank=p_bank, pace=pace)
         elif kind == "wave" and n_balls > 1:
             env = MultiWaveEnv(n=n_balls, episode_seconds=seconds, ref_deg=ref_deg, w_edge=w_edge, w_fast=w_fast,
                                flex_n=0.0 if flex_n is None else flex_n, drop=drop)
@@ -94,10 +94,13 @@ def main():
     ap.add_argument("--grace", type=float, default=0.0, help="--track-rate: spin-up seconds before the timetable runs")
     ap.add_argument("--tilt-k", type=float, default=0.1, help="--ball-act: rad of hand tilt per unit of a per-ball action")
     ap.add_argument("--late-cost", type=float, default=0.0, help="--slot-tol: the cost of a ball out of its slot ending it")
+    ap.add_argument("--bank", default=None, help="--env fig8: mid-run states to start episodes from (bank_stage7_fig8.py)")
+    ap.add_argument("--p-bank", type=float, default=0.0, help="--bank: the share of episodes started from it")
+    ap.add_argument("--pace", default=None, help="--track-rate: the balls' natural pace over the 8 (.npy): the timetable's clock")
     ap.add_argument("--resume", default=None)
     args = ap.parse_args()
     run = HERE / "runs" / args.run_name
-    env = VecMonitor(SubprocVecEnv([make_env(args.seed + i, args.episode_seconds, args.ref_deg, args.env, args.n_balls, args.w_edge, args.w_fast, args.flex_n, args.drop, args.w_spread, args.track_rate, args.slot_tol, args.ball_act, args.grace, args.tilt_k, args.late_cost) for i in range(args.n_envs)]))
+    env = VecMonitor(SubprocVecEnv([make_env(args.seed + i, args.episode_seconds, args.ref_deg, args.env, args.n_balls, args.w_edge, args.w_fast, args.flex_n, args.drop, args.w_spread, args.track_rate, args.slot_tol, args.ball_act, args.grace, args.tilt_k, args.late_cost, args.bank, args.p_bank, args.pace) for i in range(args.n_envs)]))
     if args.resume:
         steps = Path(args.resume).stem.split("_")[-2]
         env = VecNormalize.load(str(Path(args.resume).parent / f"ppo_vecnormalize_{steps}_steps.pkl"), env)

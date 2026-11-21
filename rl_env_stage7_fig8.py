@@ -25,7 +25,7 @@ taught nothing in 4.5M steps: from the clump nearly every ball is a quarter lap 
 timetable error and the timetable's phase. With grace (s), the first grace seconds are a spin-up: the
 timetable sits on the balls' own mean place (only their spacing counts) and nobody is late; then it runs at
 track_rate from there (balls start at rest, and at full pace from t = 0 half the episodes ended late in 3 s).
-With late_cost, a late end costs that (free, past what a policy can hold, slow and spaced was the safe play: fig8_16, fig8_19 slowed after tightening). In the spin-up the slot tolerance still applies (to spacing: the timetable is on the balls) and a ball is paid only as far as it moves at the timetable's pace (paid for spacing alone, fig8_16
+With late_cost, a late end costs that (free, past what a policy can hold, slow and spaced was the safe play: fig8_16, fig8_19 slowed after tightening). With pace (the balls' natural pace over the 8), the timetable's clock runs at that pace: slots even in time, not in s. With bank, a share p_bank of episodes starts mid-run from a good policy's states instead (past the spin-up). In the spin-up the slot tolerance still applies (to spacing: the timetable is on the balls) and a ball is paid only as far as it moves at the timetable's pace (paid for spacing alone, fig8_16
 learned at slot_tol 0.1, where episodes end soon after it, to keep the balls still and spaced through it).
 With lead (laps), the timetable waits for the balls: it never runs more than lead ahead of their mean place. For
 running a policy trained with slot_tol: it never saw errors past slot_tol, and the error is wrapped, so a ball
@@ -48,12 +48,13 @@ WIN = np.linspace(-0.04, 0.08, 61)        # where to look for a ball's s next st
 SPREAD_TOL = 0.1                          # laps out of its slot at which a ball costs w_spread in full
 TILT_K = 0.1                              # rad of hand tilt per unit of a per-ball action (ball_act; default)
 # (at the outer walls 0.1 moves a ball ~0.008 laps in 0.5 s, too weak to unstall it; 0.3 moves it 0.04-0.08)
+SPEC_BANK = mj.mjtState.mjSTATE_INTEGRATION       # what a bank state (bank_stage7_fig8.py) holds
 SEAM_W = 0.005                            # m: a ball within ~this of the seam's y tilts both hands, blended
 
 
 class Fig8Env(MultiWaveEnv):
     def __init__(self, n=1, episode_seconds=None, randomize=True, ref_deg=REF_DEG, drop=DROP, flex_n=FLEX_8,
-                 w_spread=0.0, track_rate=None, slot_tol=None, ball_act=False, grace=0.0, tilt_k=TILT_K, lead=None, late_cost=0.0):
+                 w_spread=0.0, track_rate=None, slot_tol=None, ball_act=False, grace=0.0, tilt_k=TILT_K, lead=None, late_cost=0.0, bank=None, p_bank=0.0, pace=None):
         super().__init__(n=n, episode_seconds=episode_seconds, randomize=randomize, ref_deg=ref_deg, drop=drop,
                          flex_n=flex_n)
         self.roll_n = 0.0
@@ -61,6 +62,13 @@ class Fig8Env(MultiWaveEnv):
         self.track_rate = track_rate                 # laps/s: a timetable for the balls instead of paying progress
         self.slot_tol = slot_tol                     # laps: timetable mode, any ball further out of its slot ends it
         self.tilt_k = tilt_k                         # rad of hand tilt per unit of a per-ball action
+        self.bank = dict(np.load(bank)) if bank else None   # mid-run states (bank_stage7_fig8.py): a share
+        if pace is not None:                         # the balls' natural pace over s in [0, 1/2) (the 8 is
+            v = np.tile(np.load(pace) if isinstance(pace, str) else np.asarray(pace), 2)   # symmetric), equal bins
+            c = np.concatenate([[0.0], np.cumsum(1.0 / v)])
+            self.pace_s, self.pace_ph = np.linspace(0, 1, len(c)), c / c[-1]
+        self.pace = pace is not None                 # timetable in natural-pace phase (slots even in time)
+        self.p_bank = p_bank                         # p_bank of episodes starts from one, past the spin-up
         self.late_cost = late_cost                   # a ball out of its slot (slot_tol) ends it with -late_cost
         self.lead = lead                             # laps: the timetable waits, never leading the balls by more
         self.grace = grace                           # s: timetable spin-up, it follows the balls
@@ -151,12 +159,18 @@ class Fig8Env(MultiWaveEnv):
         m = np.angle(np.mean(np.exp(1j * ph)))
         return np.angle(np.exp(1j * (ph - m))) / (2 * np.pi)
 
+    def _phase(self):
+        """Each ball's place on the timetable's clock: s itself, or with pace its natural-pace phase (balls go
+        round the outer walls ~5x slower than through the crossing; on a clock even in s that alone swings each
+        ball +-0.09 lap in and out of its slot every lap)."""
+        return np.interp(self.s % 1.0, self.pace_s, self.pace_ph) if self.pace else self.s
+
     def _mean_place(self):
-        return np.angle(np.mean(np.exp(2j * np.pi * (self.s - self.spacing())))) / (2 * np.pi)
+        return np.angle(np.mean(np.exp(2j * np.pi * (self._phase() - self.spacing())))) / (2 * np.pi)
 
     def _ref_err(self):
         """Timetable mode: each ball's s against its slot on the timetable (ref + offset_k), in laps, wrapped."""
-        return np.angle(np.exp(2j * np.pi * (self.s - self.ref - self.spacing()))) / (2 * np.pi)
+        return np.angle(np.exp(2j * np.pi * (self._phase() - self.ref - self.spacing()))) / (2 * np.pi)
 
     def _obs(self):
         b = self.balls_n()
@@ -173,6 +187,17 @@ class Fig8Env(MultiWaveEnv):
     def reset(self, seed=None, options=None):
         gym.Env.reset(self, seed=seed)
         rng, m, d, w = self.np_random, self.m, self.d, self.w
+        if self.bank is not None and rng.random() < self.p_bank:
+            i = rng.integers(len(self.bank["ref"]))
+            mj.mj_setState(m, d, self.bank["state"][i], SPEC_BANK)
+            self.t_wave, self.s = float(self.bank["t_wave"][i]), self.bank["s"][i].copy()
+            self.dist, self.ref = self.bank["dist"][i].copy(), float(self.bank["ref"][i])
+            if self.pace:                            # the bank's clock was even in s
+                self.ref = self._mean_place()
+            self.steps = int(round(self.seconds / CONTROL_DT))
+            self.t = int(np.ceil(self.grace / CONTROL_DT)) + 1         # past the spin-up: the timetable runs
+            self.turn = np.zeros(self.n)
+            return self._obs(), {}
         mj.mj_setState(m, d, w.st0, stage7_wave.S)
         s0 = rng.random() if self.randomize else 0.1
         self.s = (s0 + self.spacing()) % 1.0
