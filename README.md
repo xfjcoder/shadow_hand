@@ -1020,6 +1020,25 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    running free, clumped: 10/10 kept, 3.7 laps / 30 s, spacing error 0.21) with the timetable at its own
    pace, 0.13 laps/s, the way the two-ball runs started from fig8_02's lineage.
 
+   Gallery, in training order (best of the episodes recorded for each):
+
+   | | two balls | |
+   |---|---|---|
+   | fig8_02, free running | ![](media/stage7_fig8_two.gif) | moving, clumped; the start |
+   | fig8_08, timetable 0.1 laps/s | ![](media/stage7_fig8_08.gif) | slot error ~0.22 |
+   | fig8_09 @28M, slot cut-off | ![](media/stage7_fig8_two_timetable.gif) | error ~0.15, 7/10 kept |
+   | fig8_13 @18M, timetable 0.18 | ![](media/stage7_fig8_13.gif) | 8/10 kept, ~3 laps / 30 s |
+   | fig8_13 @46M | ![](media/stage7_fig8_13_latest.gif) | 18/20 kept, 4.6 laps |
+   | fig8_14 @78M, 1/4-lap gap, spin-up | ![](media/stage7_fig8_14_latest.gif) | slower, ~4 laps |
+   | fig8_16 @8M, 0.4-lap gap, tilt 0.3 | ![](media/stage7_fig8_16_8M.gif) | 19/20 kept, 4.7 laps |
+   | **fig8_16 @18M, the result** | ![](media/stage7_fig8_16.gif) | 20/20, 4.8 laps, spacing error 0.043 |
+   | fig8_16 @30M, collapsed | ![](media/stage7_fig8_16_30M.gif) | balls held still (the spin-up loophole) |
+
+   | | three balls | |
+   |---|---|---|
+   | fig8_03, free running | ![](media/stage7_fig8_three.gif) | 3.7 laps, clumped; fig8_18's start |
+   | fig8_17 @40M, from the two-ball policy | ![](media/stage7_fig8_17_40M.gif) | failed: the balls barely move |
+
    ```
    python3 stage7_cup.py --out media_full/stage7_cup.png                  # the cup: settle + hold tests
    python3 stage7_cup.py --swirl --flicks 0.6                             # swirl + flick grid
