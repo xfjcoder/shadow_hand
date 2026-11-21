@@ -1023,7 +1023,11 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    with one ball 0.4 lap out of its slot (unchecked in the spin-up, it clumped). With the tolerance applied
    there too (to spacing), fig8_19 (from fig8_18 @8M) tightened 0.4 -> 0.25 by 21.3M; @20M (waiting
    timetable, 10 episodes): 10/10 kept, 3.4 laps / 30 s (timetable 3.9), spacing error 0.15 laps (0.18 at
-   the start).
+   the start). It went on to 0.2 at 30.3M (@40M: 10/10, 3.6 laps, spacing error 0.125, all three balls
+   within 0.1 lap of their slots 19% of the time) and 0.15 at 44.5M, after which it slowed as fig8_16 did
+   (final @48M: 1.6 laps / 30 s, the timetable waiting 1.9 laps). Past what it can hold, slow and spaced is
+   the safe play: being cut off late costs nothing. Three-ball result for now: fig8_19 @40M. fig8_20 goes on
+   from it with the tolerance held at 0.2.
 
    Gallery, in training order (best of the episodes recorded for each):
 
