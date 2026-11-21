@@ -25,7 +25,7 @@ taught nothing in 4.5M steps: from the clump nearly every ball is a quarter lap 
 timetable error and the timetable's phase. With grace (s), the first grace seconds are a spin-up: the
 timetable sits on the balls' own mean place (only their spacing counts) and nobody is late; then it runs at
 track_rate from there (balls start at rest, and at full pace from t = 0 half the episodes ended late in 3 s).
-In the spin-up a ball is paid only as far as it moves at the timetable's pace (paid for spacing alone, fig8_16
+In the spin-up the slot tolerance still applies (to spacing: the timetable is on the balls) and a ball is paid only as far as it moves at the timetable's pace (paid for spacing alone, fig8_16
 learned at slot_tol 0.1, where episodes end soon after it, to keep the balls still and spaced through it).
 With lead (laps), the timetable waits for the balls: it never runs more than lead ahead of their mean place. For
 running a policy trained with slot_tol: it never saw errors past slot_tol, and the error is wrapped, so a ball
@@ -228,7 +228,8 @@ class Fig8Env(MultiWaveEnv):
         lost = self._lost(b)
         if lost:
             reward -= self.drop
-        late = bool(self.track_rate and self.slot_tol and not spin and np.any(np.abs(self._ref_err()) > self.slot_tol))
+        late = bool(self.track_rate and self.slot_tol and np.any(np.abs(self._ref_err()) > self.slot_tol))   # in the
+        # spin-up the timetable sits on the balls, so this is spacing alone (unchecked, fig8_18 clumped through it)
         trunc = self.t >= self.steps
         info = {}
         if lost or late or trunc:
