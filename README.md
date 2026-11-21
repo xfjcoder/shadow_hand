@@ -1026,8 +1026,10 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    the start). It went on to 0.2 at 30.3M (@40M: 10/10, 3.6 laps, spacing error 0.125, all three balls
    within 0.1 lap of their slots 19% of the time) and 0.15 at 44.5M, after which it slowed as fig8_16 did
    (final @48M: 1.6 laps / 30 s, the timetable waiting 1.9 laps). Past what it can hold, slow and spaced is
-   the safe play: being cut off late costs nothing. Three-ball result for now: fig8_19 @40M. fig8_20 goes on
-   from it with the tolerance held at 0.2.
+   the safe play: being cut off late costs only the pay forgone. fig8_20 went on from @40M with the tolerance
+   held at 0.2: no slowing; @52M 10/10 kept, 3.8 laps / 30 s (on the timetable; it never waited), spacing
+   error 0.129 (flat), all three within 0.1 lap 24% (from 18%). The three-ball result for now. fig8_21 goes on
+   from it tightening again, a late end now costing 100 (`--late-cost`, half a drop).
 
    Gallery, in training order (best of the episodes recorded for each):
 
