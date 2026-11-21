@@ -1,0 +1,627 @@
+Logging to /home/cstu/robo/shadow_hand/runs/fig8_15/tb/PPO_0
+---------------------------------
+| loop/              |          |
+|    late            | 0.703    |
+|    lost            | 0.189    |
+|    ref_err         | 0.239    |
+|    seconds         | 12.7     |
+|    seconds_median  | 8.04     |
+|    slot_tol        | 0.4      |
+|    spread          | 0.113    |
+|    turned          | 781      |
+|    turned_min      | 738      |
+| rollout/           |          |
+|    ep_len_mean     | 515      |
+|    ep_rew_mean     | 338      |
+| time/              |          |
+|    fps             | 1860     |
+|    iterations      | 1        |
+|    time_elapsed    | 16       |
+|    total_timesteps | 46030605 |
+---------------------------------
+-----------------------------------------
+| loop/                   |             |
+|    late                 | 0.656       |
+|    lost                 | 0.0625      |
+|    ref_err              | 0.235       |
+|    seconds              | 17.6        |
+|    seconds_median       | 13.1        |
+|    slot_tol             | 0.4         |
+|    spread               | 0.0982      |
+|    turned               | 1.09e+03    |
+|    turned_min           | 1.05e+03    |
+| rollout/                |             |
+|    ep_len_mean          | 635         |
+|    ep_rew_mean          | 422         |
+| time/                   |             |
+|    fps                  | 1456        |
+|    iterations           | 2           |
+|    time_elapsed         | 42          |
+|    total_timesteps      | 46061325    |
+| train/                  |             |
+|    approx_kl            | 0.039608054 |
+|    clip_fraction        | 0.376       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | 16.9        |
+|    explained_variance   | 0.446       |
+|    learning_rate        | 0.0001      |
+|    loss                 | -0.0037     |
+|    n_updates            | 7485        |
+|    policy_gradient_loss | -0.0282     |
+|    std                  | 0.169       |
+|    value_loss           | 0.157       |
+-----------------------------------------
+-----------------------------------------
+| loop/                   |             |
+|    late                 | 0.433       |
+|    lost                 | 0.0333      |
+|    ref_err              | 0.207       |
+|    seconds              | 23.3        |
+|    seconds_median       | 16.6        |
+|    slot_tol             | 0.4         |
+|    spread               | 0.0973      |
+|    turned               | 1.5e+03     |
+|    turned_min           | 1.46e+03    |
+| rollout/                |             |
+|    ep_len_mean          | 865         |
+|    ep_rew_mean          | 586         |
+| time/                   |             |
+|    fps                  | 1363        |
+|    iterations           | 3           |
+|    time_elapsed         | 67          |
+|    total_timesteps      | 46092045    |
+| train/                  |             |
+|    approx_kl            | 0.038196057 |
+|    clip_fraction        | 0.362       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | 16.9        |
+|    explained_variance   | 0.605       |
+|    learning_rate        | 0.0001      |
+|    loss                 | -0.0309     |
+|    n_updates            | 7490        |
+|    policy_gradient_loss | -0.0301     |
+|    std                  | 0.169       |
+|    value_loss           | 0.0861      |
+-----------------------------------------
+-----------------------------------------
+| loop/                   |             |
+|    late                 | 0.686       |
+|    lost                 | 0.171       |
+|    ref_err              | 0.248       |
+|    seconds              | 14.4        |
+|    seconds_median       | 15.5        |
+|    slot_tol             | 0.4         |
+|    spread               | 0.108       |
+|    turned               | 870         |
+|    turned_min           | 830         |
+| rollout/                |             |
+|    ep_len_mean          | 899         |
+|    ep_rew_mean          | 610         |
+| time/                   |             |
+|    fps                  | 1326        |
+|    iterations           | 4           |
+|    time_elapsed         | 92          |
+|    total_timesteps      | 46122765    |
+| train/                  |             |
+|    approx_kl            | 0.041898783 |
+|    clip_fraction        | 0.376       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | 16.9        |
+|    explained_variance   | 0.628       |
+|    learning_rate        | 0.0001      |
+|    loss                 | -0.0395     |
+|    n_updates            | 7495        |
+|    policy_gradient_loss | -0.0299     |
+|    std                  | 0.169       |
+|    value_loss           | 0.0648      |
+-----------------------------------------
+-----------------------------------------
+| loop/                   |             |
+|    late                 | 0.486       |
+|    lost                 | 0.135       |
+|    ref_err              | 0.203       |
+|    seconds              | 18.4        |
+|    seconds_median       | 15.6        |
+|    slot_tol             | 0.4         |
+|    spread               | 0.101       |
+|    turned               | 1.12e+03    |
+|    turned_min           | 1.08e+03    |
+| rollout/                |             |
+|    ep_len_mean          | 924         |
+|    ep_rew_mean          | 624         |
+| time/                   |             |
+|    fps                  | 1296        |
+|    iterations           | 5           |
+|    time_elapsed         | 118         |
+|    total_timesteps      | 46153485    |
+| train/                  |             |
+|    approx_kl            | 0.043725476 |
+|    clip_fraction        | 0.382       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | 16.9        |
+|    explained_variance   | 0.733       |
+|    learning_rate        | 0.0001      |
+|    loss                 | -0.0241     |
+|    n_updates            | 7500        |
+|    policy_gradient_loss | -0.0268     |
+|    std                  | 0.169       |
+|    value_loss           | 0.0716      |
+-----------------------------------------
+----------------------------------------
+| loop/                   |            |
+|    late                 | 0.467      |
+|    lost                 | 0.0667     |
+|    ref_err              | 0.21       |
+|    seconds              | 19.8       |
+|    seconds_median       | 16.6       |
+|    slot_tol             | 0.4        |
+|    spread               | 0.0898     |
+|    turned               | 1.24e+03   |
+|    turned_min           | 1.2e+03    |
+| rollout/                |            |
+|    ep_len_mean          | 878        |
+|    ep_rew_mean          | 592        |
+| time/                   |            |
+|    fps                  | 1275       |
+|    iterations           | 6          |
+|    time_elapsed         | 144        |
+|    total_timesteps      | 46184205   |
+| train/                  |            |
+|    approx_kl            | 0.04513815 |
+|    clip_fraction        | 0.389      |
+|    clip_range           | 0.2        |
+|    entropy_loss         | 16.9       |
+|    explained_variance   | 0.76       |
+|    learning_rate        | 0.0001     |
+|    loss                 | -0.0274    |
+|    n_updates            | 7505       |
+|    policy_gradient_loss | -0.028     |
+|    std                  | 0.169      |
+|    value_loss           | 0.0619     |
+----------------------------------------
+-----------------------------------------
+| loop/                   |             |
+|    late                 | 0.5         |
+|    lost                 | 0.1         |
+|    ref_err              | 0.21        |
+|    seconds              | 18.5        |
+|    seconds_median       | 17.4        |
+|    slot_tol             | 0.4         |
+|    spread               | 0.0909      |
+|    turned               | 1.16e+03    |
+|    turned_min           | 1.12e+03    |
+| rollout/                |             |
+|    ep_len_mean          | 956         |
+|    ep_rew_mean          | 652         |
+| time/                   |             |
+|    fps                  | 1261        |
+|    iterations           | 7           |
+|    time_elapsed         | 170         |
+|    total_timesteps      | 46214925    |
+| train/                  |             |
+|    approx_kl            | 0.043718863 |
+|    clip_fraction        | 0.391       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | 17          |
+|    explained_variance   | 0.775       |
+|    learning_rate        | 0.0001      |
+|    loss                 | -0.033      |
+|    n_updates            | 7510        |
+|    policy_gradient_loss | -0.0253     |
+|    std                  | 0.169       |
+|    value_loss           | 0.0496      |
+-----------------------------------------
+-----------------------------------------
+| loop/                   |             |
+|    late                 | 0.641       |
+|    lost                 | 0.0513      |
+|    ref_err              | 0.239       |
+|    seconds              | 16.8        |
+|    seconds_median       | 16.4        |
+|    slot_tol             | 0.4         |
+|    spread               | 0.108       |
+|    turned               | 1.04e+03    |
+|    turned_min           | 1e+03       |
+| rollout/                |             |
+|    ep_len_mean          | 916         |
+|    ep_rew_mean          | 632         |
+| time/                   |             |
+|    fps                  | 1112        |
+|    iterations           | 8           |
+|    time_elapsed         | 220         |
+|    total_timesteps      | 46245645    |
+| train/                  |             |
+|    approx_kl            | 0.045260213 |
+|    clip_fraction        | 0.398       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | 17          |
+|    explained_variance   | 0.696       |
+|    learning_rate        | 0.0001      |
+|    loss                 | -0.0289     |
+|    n_updates            | 7515        |
+|    policy_gradient_loss | -0.0239     |
+|    std                  | 0.169       |
+|    value_loss           | 0.0477      |
+-----------------------------------------
+curriculum: slot tolerance 0.35 laps at 46269945 steps
+-----------------------------------------
+| loop/                   |             |
+|    late                 | 0.605       |
+|    lost                 | 0.132       |
+|    ref_err              | 0.207       |
+|    seconds              | 16.8        |
+|    seconds_median       | 8.95        |
+|    slot_tol             | 0.35        |
+|    spread               | 0.0973      |
+|    turned               | 1.05e+03    |
+|    turned_min           | 1.02e+03    |
+| rollout/                |             |
+|    ep_len_mean          | 874         |
+|    ep_rew_mean          | 604         |
+| time/                   |             |
+|    fps                  | 1081        |
+|    iterations           | 9           |
+|    time_elapsed         | 255         |
+|    total_timesteps      | 46276365    |
+| train/                  |             |
+|    approx_kl            | 0.048294485 |
+|    clip_fraction        | 0.394       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | 17          |
+|    explained_variance   | 0.793       |
+|    learning_rate        | 0.0001      |
+|    loss                 | -0.0305     |
+|    n_updates            | 7520        |
+|    policy_gradient_loss | -0.0256     |
+|    std                  | 0.169       |
+|    value_loss           | 0.0513      |
+-----------------------------------------
+----------------------------------------
+| loop/                   |            |
+|    late                 | 0.784      |
+|    lost                 | 0.118      |
+|    ref_err              | 0.208      |
+|    seconds              | 12.7       |
+|    seconds_median       | 10.1       |
+|    slot_tol             | 0.35       |
+|    spread               | 0.106      |
+|    turned               | 808        |
+|    turned_min           | 767        |
+| rollout/                |            |
+|    ep_len_mean          | 718        |
+|    ep_rew_mean          | 497        |
+| time/                   |            |
+|    fps                  | 1080       |
+|    iterations           | 10         |
+|    time_elapsed         | 284        |
+|    total_timesteps      | 46307085   |
+| train/                  |            |
+|    approx_kl            | 0.04710903 |
+|    clip_fraction        | 0.404      |
+|    clip_range           | 0.2        |
+|    entropy_loss         | 17         |
+|    explained_variance   | 0.734      |
+|    learning_rate        | 0.0001     |
+|    loss                 | -0.0217    |
+|    n_updates            | 7525       |
+|    policy_gradient_loss | -0.0248    |
+|    std                  | 0.169      |
+|    value_loss           | 0.0636     |
+----------------------------------------
+-----------------------------------------
+| loop/                   |             |
+|    late                 | 0.868       |
+|    lost                 | 0.0566      |
+|    ref_err              | 0.231       |
+|    seconds              | 12.1        |
+|    seconds_median       | 9.37        |
+|    slot_tol             | 0.35        |
+|    spread               | 0.114       |
+|    turned               | 805         |
+|    turned_min           | 765         |
+| rollout/                |             |
+|    ep_len_mean          | 614         |
+|    ep_rew_mean          | 436         |
+| time/                   |             |
+|    fps                  | 1085        |
+|    iterations           | 11          |
+|    time_elapsed         | 311         |
+|    total_timesteps      | 46337805    |
+| train/                  |             |
+|    approx_kl            | 0.051703148 |
+|    clip_fraction        | 0.426       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | 17          |
+|    explained_variance   | 0.661       |
+|    learning_rate        | 0.0001      |
+|    loss                 | -0.003      |
+|    n_updates            | 7530        |
+|    policy_gradient_loss | -0.0225     |
+|    std                  | 0.169       |
+|    value_loss           | 0.0927      |
+-----------------------------------------
+Process ForkServerProcess-14:
+Process ForkServerProcess-15:
+Process ForkServerProcess-11:
+Process ForkServerProcess-13:
+Process ForkServerProcess-12:
+Process ForkServerProcess-10:
+Process ForkServerProcess-9:
+Process ForkServerProcess-7:
+Process ForkServerProcess-8:
+Process ForkServerProcess-6:
+Process ForkServerProcess-4:
+Process ForkServerProcess-2:
+Process ForkServerProcess-5:
+Process ForkServerProcess-3:
+Process ForkServerProcess-1:
+Traceback (most recent call last):
+Traceback (most recent call last):
+Traceback (most recent call last):
+Traceback (most recent call last):
+Traceback (most recent call last):
+Traceback (most recent call last):
+Traceback (most recent call last):
+Traceback (most recent call last):
+Traceback (most recent call last):
+Traceback (most recent call last):
+Traceback (most recent call last):
+Traceback (most recent call last):
+Traceback (most recent call last):
+Traceback (most recent call last):
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/home/cstu/robo/lib/python3.12/site-packages/stable_baselines3/common/vec_env/subproc_vec_env.py", line 33, in _worker
+    cmd, data = remote.recv()
+                ^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/cstu/robo/lib/python3.12/site-packages/stable_baselines3/common/vec_env/subproc_vec_env.py", line 33, in _worker
+    cmd, data = remote.recv()
+                ^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/home/cstu/robo/lib/python3.12/site-packages/stable_baselines3/common/vec_env/subproc_vec_env.py", line 33, in _worker
+    cmd, data = remote.recv()
+                ^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 250, in recv
+    buf = self._recv_bytes()
+          ^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/cstu/robo/lib/python3.12/site-packages/stable_baselines3/common/vec_env/subproc_vec_env.py", line 33, in _worker
+    cmd, data = remote.recv()
+                ^^^^^^^^^^^^^
+  File "/home/cstu/robo/lib/python3.12/site-packages/stable_baselines3/common/vec_env/subproc_vec_env.py", line 33, in _worker
+    cmd, data = remote.recv()
+                ^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 250, in recv
+    buf = self._recv_bytes()
+          ^^^^^^^^^^^^^^^^^^
+  File "/home/cstu/robo/lib/python3.12/site-packages/stable_baselines3/common/vec_env/subproc_vec_env.py", line 33, in _worker
+    cmd, data = remote.recv()
+                ^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 250, in recv
+    buf = self._recv_bytes()
+          ^^^^^^^^^^^^^^^^^^
+  File "/home/cstu/robo/lib/python3.12/site-packages/stable_baselines3/common/vec_env/subproc_vec_env.py", line 33, in _worker
+    cmd, data = remote.recv()
+                ^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 430, in _recv_bytes
+    buf = self._recv(4)
+          ^^^^^^^^^^^^^
+  File "/home/cstu/robo/lib/python3.12/site-packages/stable_baselines3/common/vec_env/subproc_vec_env.py", line 33, in _worker
+    cmd, data = remote.recv()
+                ^^^^^^^^^^^^^
+  File "/home/cstu/robo/lib/python3.12/site-packages/stable_baselines3/common/vec_env/subproc_vec_env.py", line 33, in _worker
+    cmd, data = remote.recv()
+                ^^^^^^^^^^^^^
+  File "/home/cstu/robo/lib/python3.12/site-packages/stable_baselines3/common/vec_env/subproc_vec_env.py", line 33, in _worker
+    cmd, data = remote.recv()
+                ^^^^^^^^^^^^^
+  File "/home/cstu/robo/lib/python3.12/site-packages/stable_baselines3/common/vec_env/subproc_vec_env.py", line 33, in _worker
+    cmd, data = remote.recv()
+                ^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 250, in recv
+    buf = self._recv_bytes()
+          ^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 250, in recv
+    buf = self._recv_bytes()
+          ^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 430, in _recv_bytes
+    buf = self._recv(4)
+          ^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 250, in recv
+    buf = self._recv_bytes()
+          ^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 430, in _recv_bytes
+    buf = self._recv(4)
+          ^^^^^^^^^^^^^
+  File "/home/cstu/robo/lib/python3.12/site-packages/stable_baselines3/common/vec_env/subproc_vec_env.py", line 33, in _worker
+    cmd, data = remote.recv()
+                ^^^^^^^^^^^^^
+  File "/home/cstu/robo/lib/python3.12/site-packages/stable_baselines3/common/vec_env/subproc_vec_env.py", line 33, in _worker
+    cmd, data = remote.recv()
+                ^^^^^^^^^^^^^
+  File "/home/cstu/robo/lib/python3.12/site-packages/stable_baselines3/common/vec_env/subproc_vec_env.py", line 33, in _worker
+    cmd, data = remote.recv()
+                ^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 250, in recv
+    buf = self._recv_bytes()
+          ^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 395, in _recv
+    chunk = read(handle, remaining)
+            ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 250, in recv
+    buf = self._recv_bytes()
+          ^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 250, in recv
+    buf = self._recv_bytes()
+          ^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 250, in recv
+    buf = self._recv_bytes()
+          ^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 250, in recv
+    buf = self._recv_bytes()
+          ^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 430, in _recv_bytes
+    buf = self._recv(4)
+          ^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 430, in _recv_bytes
+    buf = self._recv(4)
+          ^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 395, in _recv
+    chunk = read(handle, remaining)
+            ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/cstu/robo/lib/python3.12/site-packages/stable_baselines3/common/vec_env/subproc_vec_env.py", line 33, in _worker
+    cmd, data = remote.recv()
+                ^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 430, in _recv_bytes
+    buf = self._recv(4)
+          ^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 395, in _recv
+    chunk = read(handle, remaining)
+            ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 250, in recv
+    buf = self._recv_bytes()
+          ^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 250, in recv
+    buf = self._recv_bytes()
+          ^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 250, in recv
+    buf = self._recv_bytes()
+          ^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 430, in _recv_bytes
+    buf = self._recv(4)
+          ^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 430, in _recv_bytes
+    buf = self._recv(4)
+          ^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 430, in _recv_bytes
+    buf = self._recv(4)
+          ^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 430, in _recv_bytes
+    buf = self._recv(4)
+          ^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 430, in _recv_bytes
+    buf = self._recv(4)
+          ^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 395, in _recv
+    chunk = read(handle, remaining)
+            ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 395, in _recv
+    chunk = read(handle, remaining)
+            ^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [Errno 104] Connection reset by peer
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 395, in _recv
+    chunk = read(handle, remaining)
+            ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 250, in recv
+    buf = self._recv_bytes()
+          ^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 430, in _recv_bytes
+    buf = self._recv(4)
+          ^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 430, in _recv_bytes
+    buf = self._recv(4)
+          ^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 430, in _recv_bytes
+    buf = self._recv(4)
+          ^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 395, in _recv
+    chunk = read(handle, remaining)
+            ^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [Errno 104] Connection reset by peer
+ConnectionResetError: [Errno 104] Connection reset by peer
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 395, in _recv
+    chunk = read(handle, remaining)
+            ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 395, in _recv
+    chunk = read(handle, remaining)
+            ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 395, in _recv
+    chunk = read(handle, remaining)
+            ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 395, in _recv
+    chunk = read(handle, remaining)
+            ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 430, in _recv_bytes
+    buf = self._recv(4)
+          ^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 395, in _recv
+    chunk = read(handle, remaining)
+            ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 395, in _recv
+    chunk = read(handle, remaining)
+            ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 395, in _recv
+    chunk = read(handle, remaining)
+            ^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [Errno 104] Connection reset by peer
+ConnectionResetError: [Errno 104] Connection reset by peer
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 395, in _recv
+    chunk = read(handle, remaining)
+            ^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [Errno 104] Connection reset by peer
+ConnectionResetError: [Errno 104] Connection reset by peer
+ConnectionResetError: [Errno 104] Connection reset by peer
+ConnectionResetError: [Errno 104] Connection reset by peer
+ConnectionResetError: [Errno 104] Connection reset by peer
+ConnectionResetError: [Errno 104] Connection reset by peer
+ConnectionResetError: [Errno 104] Connection reset by peer
+ConnectionResetError: [Errno 104] Connection reset by peer
+ConnectionResetError: [Errno 104] Connection reset by peer
+ConnectionResetError: [Errno 104] Connection reset by peer
