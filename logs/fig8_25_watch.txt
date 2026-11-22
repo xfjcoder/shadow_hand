@@ -1,0 +1,8 @@
+12:23 ppo_55999860_steps.zip kept 18/20  laps/30 s 3.09  slot err median 0.070  all within 0.06 11%  |  touching 20%  under 1 cm 64%  closest gap median 0.6 cm
+12:53 ppo_57999855_steps.zip kept 15/20  laps/30 s 2.93  slot err median 0.068  all within 0.06 10%  |  touching 17%  under 1 cm 59%  closest gap median 0.8 cm
+13:22 ppo_59999850_steps.zip ValueError: all the input arrays must have same number of dimensions, but the array at index 0 has 2 dimension(s) and the array at index 18 has 1 dimension(s)
+13:23 ppo_59999850_steps.zip kept 33/40  laps/30 s 2.95  slot err median 0.072  all within 0.06 6%  |  touching 17%  under 1 cm 58%  closest gap median 0.8 cm
+13:52 ppo_61999845_steps.zip kept 37/40  laps/30 s 3.28  slot err median 0.070  all within 0.06 3%  |  touching 12%  under 1 cm 53%  closest gap median 0.9 cm
+14:21 ppo_63999840_steps.zip kept 31/40  laps/30 s 2.74  slot err median 0.073  all within 0.06 3%  |  touching 15%  under 1 cm 55%  closest gap median 0.9 cm
+14:53 ppo_65999835_steps.zip kept 35/40  laps/30 s 2.95  slot err median 0.070  all within 0.06 5%  |  touching 13%  under 1 cm 47%  closest gap median 1.1 cm
+15:22 ppo_67999830_steps.zip kept 31/40  laps/30 s 2.85  slot err median 0.070  all within 0.06 6%  |  touching 10%  under 1 cm 42%  closest gap median 1.2 cm

@@ -1068,6 +1068,7 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    | fig8_17 @40M, from the two-ball policy | ![](media/stage7_fig8_17_40M.gif) | failed: the balls barely move |
    | fig8_19 @20M, from fig8_03, timetable 0.13 | ![](media/stage7_fig8_19_20M.gif) | 10/10 kept, 3.4 laps, spacing error 0.15 |
    | **fig8_22 @54M, the result** (pace clock, mid-run starts) | ![](media/stage7_fig8_22_54M.gif) | 19/20 kept, 3.2 laps, spacing error 0.106 |
+   | fig8_25 @62M, gap-scaled pay (`--clear 1`, retrain) | ![](media/stage7_fig8_25_62M.gif) | 37/40 kept, 3.3 laps, touching 12% of the time (fig8_22 @54M: 24%) |
 
    ```
    python3 stage7_cup.py --out media_full/stage7_cup.png                  # the cup: settle + hold tests
