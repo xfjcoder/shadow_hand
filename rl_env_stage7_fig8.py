@@ -30,6 +30,9 @@ learned at slot_tol 0.1, where episodes end soon after it, to keep the balls sti
 With lead (laps), the timetable waits for the balls: it never runs more than lead ahead of their mean place. For
 running a policy trained with slot_tol: it never saw errors past slot_tol, and the error is wrapped, so a ball
 over half a lap behind reads as ahead; without lead the balls then wait a whole lap for the timetable.
+With clear (cm), each ball's timetable pay scales with its surface gap to the nearest ball, 0 touching, full at clear
+(the crowd cost alone, 0.05 a step against pay up to 1, left fig8_22's balls touching 23% of the time; exact slots
+clear 1.6-1.8 cm). With touch_end, two balls touching ends the episode as a late ball does.
 """
 import gymnasium as gym
 import mujoco as mj
@@ -46,6 +49,7 @@ FLEX_8 = -0.05
 OFF0, OFF_W, W_OFF = 0.015, 0.015, 0.3     # m off the 8 before it costs, ramp, per-ball cost at full
 WIN = np.linspace(-0.04, 0.08, 61)        # where to look for a ball's s next step (fractions of the 8)
 SPREAD_TOL = 0.1                          # laps out of its slot at which a ball costs w_spread in full
+TOUCH = 0.1                               # cm: two balls this close count as touching
 TILT_K = 0.1                              # rad of hand tilt per unit of a per-ball action (ball_act; default)
 # (at the outer walls 0.1 moves a ball ~0.008 laps in 0.5 s, too weak to unstall it; 0.3 moves it 0.04-0.08)
 SPEC_BANK = mj.mjtState.mjSTATE_INTEGRATION       # what a bank state (bank_stage7_fig8.py) holds
@@ -54,7 +58,7 @@ SEAM_W = 0.005                            # m: a ball within ~this of the seam's
 
 class Fig8Env(MultiWaveEnv):
     def __init__(self, n=1, episode_seconds=None, randomize=True, ref_deg=REF_DEG, drop=DROP, flex_n=FLEX_8,
-                 w_spread=0.0, track_rate=None, slot_tol=None, ball_act=False, grace=0.0, tilt_k=TILT_K, lead=None, late_cost=0.0, bank=None, p_bank=0.0, pace=None):
+                 w_spread=0.0, track_rate=None, slot_tol=None, ball_act=False, grace=0.0, tilt_k=TILT_K, lead=None, late_cost=0.0, bank=None, p_bank=0.0, pace=None, clear=None, touch_end=False):
         super().__init__(n=n, episode_seconds=episode_seconds, randomize=randomize, ref_deg=ref_deg, drop=drop,
                          flex_n=flex_n)
         self.roll_n = 0.0
@@ -70,6 +74,8 @@ class Fig8Env(MultiWaveEnv):
         self.pace = pace is not None                 # timetable in natural-pace phase (slots even in time)
         self.p_bank = p_bank                         # p_bank of episodes starts from one, past the spin-up
         self.late_cost = late_cost                   # a ball out of its slot (slot_tol) ends it with -late_cost
+        self.clear = clear                           # cm: a ball's pay scales with its gap to the nearest ball, full at clear
+        self.touch_end = touch_end                   # two balls touching ends it (like a late ball)
         self.lead = lead                             # laps: the timetable waits, never leading the balls by more
         self.grace = grace                           # s: timetable spin-up, it follows the balls
         self.ball_act = ball_act                     # n more actions: speed each ball along the 8 by tilting its hand
@@ -172,6 +178,14 @@ class Fig8Env(MultiWaveEnv):
         """Timetable mode: each ball's s against its slot on the timetable (ref + offset_k), in laps, wrapped."""
         return np.angle(np.exp(2j * np.pi * (self._phase() - self.ref - self.spacing()))) / (2 * np.pi)
 
+    def _gaps(self, b):
+        """cm: each ball's surface gap to its nearest other ball (centres in 3D)."""
+        if self.n < 2:
+            return np.full(1, np.inf)
+        D = np.linalg.norm(b[:, None, :] - b[None, :, :], axis=2) * 100 - 200 * BALL_R
+        np.fill_diagonal(D, np.inf)
+        return D.min(1)
+
     def _obs(self):
         b = self.balls_n()
         rel = b[:, :2] - self.c8
@@ -196,7 +210,7 @@ class Fig8Env(MultiWaveEnv):
                 self.ref = self._mean_place()
             self.steps = int(round(self.seconds / CONTROL_DT))
             self.t = int(np.ceil(self.grace / CONTROL_DT)) + 1         # past the spin-up: the timetable runs
-            self.turn = np.zeros(self.n)
+            self.turn, self.n_touch = np.zeros(self.n), 0
             return self._obs(), {}
         mj.mj_setState(m, d, w.st0, stage7_wave.S)
         s0 = rng.random() if self.randomize else 0.1
@@ -216,6 +230,7 @@ class Fig8Env(MultiWaveEnv):
         self.s, self.dist = self._track(self.balls_n())
         self.ref = self._mean_place()
         self.t, self.steps = 0, int(round(self.seconds / CONTROL_DT))
+        self.n_touch = 0
         self.turn = np.zeros(self.n)                 # radians: 2 pi per lap of the 8 (as the loop envs report turns)
         return self._obs(), {}
 
@@ -244,6 +259,11 @@ class Fig8Env(MultiWaveEnv):
                 prog = prog * np.clip(ds / (self.track_rate * CONTROL_DT), 0.0, 1.0)   # in full: fig8_16 stopped)
         else:
             prog = np.clip(ds / self.ref_s, -1.0, 1.0)
+        gk = self._gaps(b)                            # cm, each ball's surface gap to its nearest ball
+        touch = bool(self.n > 1 and gk.min() < TOUCH)
+        self.n_touch += touch
+        if self.track_rate and self.clear:
+            prog = prog * np.clip(gk / self.clear, 0.0, 1.0)
         off = np.clip((self.dist - OFF0) / OFF_W, 0.0, 1.0)
         g = np.array([np.linalg.norm(b[p, :2] - b[q, :2]) * 100 - 200 * BALL_R
                       for p in range(self.n) for q in range(p + 1, self.n)])
@@ -258,11 +278,13 @@ class Fig8Env(MultiWaveEnv):
         # spin-up the timetable sits on the balls, so this is spacing alone (unchecked, fig8_18 clumped through it)
         if late and not lost:
             reward -= self.late_cost
+        late = late or (self.touch_end and touch and not lost)
         trunc = self.t >= self.steps
         info = {}
         if lost or late or trunc:
             deg = np.degrees(self.turn)
             info = dict(lost=lost, turned=float(deg.mean()), turned_min=float(deg.min()), seconds=self.t * CONTROL_DT,
                         off=float(np.mean(self.dist)), spread=float(np.mean(np.abs(err))),
-                        **(dict(ref_err=float(np.mean(np.abs(self._ref_err()))), late=late) if self.track_rate else {}))
+                        **(dict(ref_err=float(np.mean(np.abs(self._ref_err()))), late=late) if self.track_rate else {}),
+                        touch=self.n_touch / max(self.t, 1), touch_end=bool(touch and not lost))
         return self._obs(), reward, lost or late, trunc and not (lost or late), info
