@@ -1042,7 +1042,11 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
      reads that as falling behind and catching up every lap. With the clock at the balls' measured pace
      (`data/pace_fig8_3.npy`, symmetric over the two halves; slots even in time), fig8_20 @52M unchanged:
      spacing error 0.129 -> 0.112, all three within 0.1 lap 24% -> 36% of the time, within 0.15 79% -> 98%.
-   fig8_22: from fig8_20 @52M with both, tightening from 0.2.
+   fig8_22: from fig8_20 @52M with both, tightening from 0.2. It reached 0.15 at once (52.3M) and 0.1 at 60.1M,
+   then collapsed (@64M: 5/10 kept, 1.5 laps), the third run to break at 0.1 (fig8_19, fig8_21). Best @54M, on 20
+   fresh episodes against fig8_20 @52M (both on the natural-pace clock, waiting timetable): 19/20 kept for both,
+   3.2 vs 3.4 laps, spacing error 0.106 vs 0.112, all three within 0.1 lap 40% vs 33% of the time: a small gain.
+   The three-ball result: thirds of a lap apart, about a tenth of a lap off slot, ~3.3 laps / 30 s.
 
    Gallery, in training order (best of the episodes recorded for each):
 
@@ -1063,6 +1067,7 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    | fig8_03, free running | ![](media/stage7_fig8_three.gif) | 3.7 laps, clumped; fig8_18's start |
    | fig8_17 @40M, from the two-ball policy | ![](media/stage7_fig8_17_40M.gif) | failed: the balls barely move |
    | fig8_19 @20M, from fig8_03, timetable 0.13 | ![](media/stage7_fig8_19_20M.gif) | 10/10 kept, 3.4 laps, spacing error 0.15 |
+   | **fig8_22 @54M, the result** (pace clock, mid-run starts) | ![](media/stage7_fig8_22_54M.gif) | 19/20 kept, 3.2 laps, spacing error 0.106 |
 
    ```
    python3 stage7_cup.py --out media_full/stage7_cup.png                  # the cup: settle + hold tests
