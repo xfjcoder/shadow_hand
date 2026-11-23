@@ -31,6 +31,7 @@ def main():
     ap.add_argument("--record", default=None)
     ap.add_argument("--tilt-k", type=float, default=0.1, help="--ball-act: rad of hand tilt per unit of a per-ball action")
     ap.add_argument("--lead", type=float, default=None, help="--track-rate: the timetable waits, leading the balls by at most this (laps)")
+    ap.add_argument("--offsets", type=float, nargs="+", default=None, help="--env fig8: the balls' slots (laps)")
     ap.add_argument("--ball-r", type=float, default=None, help="--env fig8: ball radius (m; default 0.019)")
     ap.add_argument("--pace", default=None, help="--track-rate: the balls' natural pace over the 8 (.npy): the timetable's clock")
     ap.add_argument("--grace", type=float, default=0.0, help="--track-rate: spin-up seconds before the timetable runs")
@@ -47,7 +48,7 @@ def main():
     kw = dict(episode_seconds=args.seconds, randomize=not args.settled)
     if args.env == "fig8":
         env = Fig8Env(n=args.n_balls, flex_n=FLEX_8 if args.flex_n is None else args.flex_n, track_rate=args.track_rate, ball_act=args.ball_act, grace=args.grace, tilt_k=args.tilt_k, lead=args.lead, pace=args.pace,
-                      **({"ball_r": args.ball_r} if args.ball_r else {}), **kw)
+                      **({"ball_r": args.ball_r} if args.ball_r else {}), **({"offsets": args.offsets} if args.offsets else {}), **kw)
     elif wave:
         env = MultiWaveEnv(n=args.n_balls, flex_n=args.flex_n or 0.0, **kw) if args.n_balls > 1 else WaveEnv(**kw)
     else:

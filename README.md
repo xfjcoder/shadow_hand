@@ -1072,6 +1072,27 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
 
    (40-episode scores swing by +-4 balls kept: fig8_27 @96M scored 36/40 on the first set, 31/40 on each next.)
 
+   **Four balls, 3.8 cm, contact allowed.** Smaller balls were tried first (`--ball-r`): the rhythm and the
+   end walls are tuned to 3.8 cm, and balls of 2.2-3.0 cm don't go round (the four-ball fig8_04 kept 3-8/10
+   and they wander ~2 cm off the 8). A bigger 8 isn't possible: the finger rows and palms span it. So four
+   3.8 cm balls, aiming only to stop bunching and head-on hits at the crossing, with the slots a train
+   (`--offsets 0 .21 .42 .63`: no pair half a lap apart, so none meet at the crossing; followers may touch).
+   fig8_04's clump already is a loose train: from it, the train slots last a median 17 s before a ball is
+   0.4 lap out, the near-quarter slots (0, .396, .604, .792) 5 s. Four balls fill 39% of the 8 and jam
+   at the outer walls (standing still 35-45% of the time even at the start), so the timetable is slower
+   (0.045 laps/s; at 0.06 fig8_30b gained nothing), with mid-run starts from a four-ball bank
+   (`data/bank_fig8_4.npz`) and the tolerance tightened only when training episodes last 22 s (at 10 s it
+   tightened on noise). Judged on the training clock (a ball out by the tolerance ends it; a clock that
+   waits made a policy trained at 0.4 look slower than it is), 60 episodes:
+
+   | 60 episodes, clock 0.045 laps/s | kept | full 30 s on time (tol 0.2) | median s on time | worst slot error, median | touching | at the crossing |
+   |---|---|---|---|---|---|---|
+   | start (fig8_04 + timetable inputs), 30 eps, tol 0.4 | 30/30 | 10% (tol 0.4) | 10.3 | 0.20 | 64% | 9% |
+   | **fig8_31 @26M** | **59/60** | **43%** | **25.9** | **0.09** | 61% | 10% |
+
+   The four balls keep their train slots now, but they touch most of the time (followers), and one in
+   ten moments a pair touches at the crossing.
+
    Gallery, in training order (best of the episodes recorded for each):
 
    | | two balls | |
@@ -1096,6 +1117,7 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    | fig8_25 @78M (final), same | ![](media/stage7_fig8_25_78M.gif) | touching 5%, under 1 cm 19%, gap median 2.0 cm; but 29/40 kept (ball 0 pushed off) |
    | **fig8_26 @88M**, from fig8_25 @76M, `--drop 400` | ![](media/stage7_fig8_26_88M.gif) | over 80 episodes: 68/80 kept (fig8_22 @54M 73/80), touching 7.5% (24%), under 1 cm 22% (70%), gap median 1.95 cm (0.5) |
    | **fig8_27 @104M, the result** (from fig8_26 @88M) | ![](media/stage7_fig8_27_104M.gif) | 110/120 kept, 3.0 laps, touching 6%, gap median 2.0 cm |
+   | fig8_31 @26M, **four balls** as a train (slots 0, .21, .42, .63; 3.8 cm balls, contact allowed; best of 8 episodes shown) | ![](media/stage7_fig8_31_26M.gif) | 60 episodes, timetable 0.045 laps/s: 59/60 kept; on time (no ball >0.2 lap out) for the full 30 s in 43%, median 25.9 s; touching 61% of the time, 10% at the crossing |
 
    ```
    python3 stage7_cup.py --out media_full/stage7_cup.png                  # the cup: settle + hold tests
@@ -1147,6 +1169,7 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    python3 train_stage7_cup.py --env fig8 --n-balls 3 --run-name fig8_22 --resume runs/fig8_22/init/ppo_51999870_steps.zip --track-rate 0.13 --pace data/pace_fig8_3.npy --bank data/bank_fig8_3.npz --p-bank 0.5 --ball-act --tilt-k 0.3 --grace 3 --slot-tol 0.2 --slot-tol-min 0.1 --slot-seconds 10 --ref-deg 180 --episode-seconds 30 --drop 200 --timesteps 30000000
    python3 train_stage7_cup.py --env fig8 --n-balls 3 --run-name fig8_25 --resume runs/fig8_25/init/ppo_53999865_steps.zip --track-rate 0.13 --pace data/pace_fig8_3.npy --bank data/bank_fig8_3.npz --p-bank 0.5 --ball-act --tilt-k 0.3 --grace 3 --slot-tol 0.15 --clear 1.0 --ref-deg 180 --episode-seconds 30 --drop 200 --timesteps 24000000
    python3 train_stage7_cup.py --env fig8 --n-balls 3 --run-name fig8_27 --resume runs/fig8_27/init/ppo_87999780_steps.zip --track-rate 0.13 --pace data/pace_fig8_3.npy --bank data/bank_fig8_3.npz --p-bank 0.5 --ball-act --tilt-k 0.3 --grace 3 --slot-tol 0.15 --clear 1.0 --ref-deg 180 --episode-seconds 30 --drop 400 --timesteps 16000000
+   python3 train_stage7_cup.py --env fig8 --n-balls 4 --run-name fig8_31 --resume runs/fig8_31/init/ppo_5999994_steps.zip --track-rate 0.045 --pace data/pace_fig8_3.npy --offsets 0 0.21 0.42 0.63 --bank data/bank_fig8_4.npz --p-bank 0.5 --ball-act --tilt-k 0.3 --grace 3 --slot-tol 0.4 --slot-tol-min 0.15 --slot-seconds 22 --ref-deg 180 --episode-seconds 30 --drop 200 --timesteps 30000000
    python3 train_stage7_cup.py --env fig8 --n-balls 3 --run-name fig8_18 --resume runs/fig8_18/init/ppo_0_steps.zip --track-rate 0.13 --ball-act --tilt-k 0.3 --grace 3 --slot-tol 0.4 --slot-tol-min 0.1 --slot-seconds 10 --ref-deg 180 --episode-seconds 30 --drop 200 --timesteps 40000000
    ```
 
