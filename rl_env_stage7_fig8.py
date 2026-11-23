@@ -58,9 +58,9 @@ SEAM_W = 0.005                            # m: a ball within ~this of the seam's
 
 class Fig8Env(MultiWaveEnv):
     def __init__(self, n=1, episode_seconds=None, randomize=True, ref_deg=REF_DEG, drop=DROP, flex_n=FLEX_8,
-                 w_spread=0.0, track_rate=None, slot_tol=None, ball_act=False, grace=0.0, tilt_k=TILT_K, lead=None, late_cost=0.0, bank=None, p_bank=0.0, pace=None, clear=None, touch_end=False):
+                 w_spread=0.0, track_rate=None, slot_tol=None, ball_act=False, grace=0.0, tilt_k=TILT_K, lead=None, late_cost=0.0, bank=None, p_bank=0.0, pace=None, clear=None, touch_end=False, ball_r=BALL_R):
         super().__init__(n=n, episode_seconds=episode_seconds, randomize=randomize, ref_deg=ref_deg, drop=drop,
-                         flex_n=flex_n)
+                         flex_n=flex_n, ball_r=ball_r)
         self.roll_n = 0.0
         self.w_spread = w_spread
         self.track_rate = track_rate                 # laps/s: a timetable for the balls instead of paying progress
@@ -182,7 +182,7 @@ class Fig8Env(MultiWaveEnv):
         """cm: each ball's surface gap to its nearest other ball (centres in 3D)."""
         if self.n < 2:
             return np.full(1, np.inf)
-        D = np.linalg.norm(b[:, None, :] - b[None, :, :], axis=2) * 100 - 200 * BALL_R
+        D = np.linalg.norm(b[:, None, :] - b[None, :, :], axis=2) * 100 - 200 * self.ball_r
         np.fill_diagonal(D, np.inf)
         return D.min(1)
 
@@ -218,7 +218,7 @@ class Fig8Env(MultiWaveEnv):
         for k, name in enumerate(BALLS):
             if k < self.n:
                 xy = self.fig8(self.s[k]) + (rng.normal(0, 0.003, 2) if self.randomize else 0.0)
-                set_ball(m, d, name, [xy[0], xy[1], PALM_Z + BALL_R + 0.01])
+                set_ball(m, d, name, [xy[0], xy[1], PALM_Z + self.ball_r + 0.01])
             else:
                 set_ball(m, d, name, PARK[k - self.n])
         self.t_wave = rng.uniform(0, BASE["T"]) if self.randomize else 0.0
@@ -265,7 +265,7 @@ class Fig8Env(MultiWaveEnv):
         if self.track_rate and self.clear:
             prog = prog * np.clip(gk / self.clear, 0.0, 1.0)
         off = np.clip((self.dist - OFF0) / OFF_W, 0.0, 1.0)
-        g = np.array([np.linalg.norm(b[p, :2] - b[q, :2]) * 100 - 200 * BALL_R
+        g = np.array([np.linalg.norm(b[p, :2] - b[q, :2]) * 100 - 200 * self.ball_r
                       for p in range(self.n) for q in range(p + 1, self.n)])
         err = self._slot_err()
         reward = (ALIVE + 0.5 * prog.mean() + 0.5 * prog.min() - W_OFF * float(off.sum())

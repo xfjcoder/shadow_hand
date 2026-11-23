@@ -38,9 +38,10 @@ PALM_START = 0.3                          # fraction of episodes starting with t
 class WaveEnv(gym.Env):
     metadata = {"render_modes": []}
 
-    def __init__(self, episode_seconds=None, randomize=True, ref_deg=REF_DEG):
+    def __init__(self, episode_seconds=None, randomize=True, ref_deg=REF_DEG, ball_r=BALL_R):
         super().__init__()
-        self.w, self.row = stage7_wave.make(0.0, 0.3, BASE["flex_row"], ball=BALL_R)
+        self.ball_r = ball_r                     # m: ball radius
+        self.w, self.row = stage7_wave.make(0.0, 0.3, BASE["flex_row"], ball=ball_r)
         self.m, self.d = self.w.m, self.w.d
         m = self.m
         self.n_sub = int(round(CONTROL_DT / m.opt.timestep))
@@ -102,11 +103,11 @@ class WaveEnv(gym.Env):
         rng, m, d, w = self.np_random, self.m, self.d, self.w
         mj.mj_setState(m, d, w.st0, stage7_wave.S)
         if self.randomize and rng.random() < PALM_START:
-            p = [rng.uniform(0.28, 0.31), rng.uniform(-0.01, 0.09), PALM_Z + BALL_R + 0.01]
+            p = [rng.uniform(0.28, 0.31), rng.uniform(-0.01, 0.09), PALM_Z + self.ball_r + 0.01]
         else:
             i0 = rng.uniform(1.0, 6.0) if self.randomize else 1.5
             x_off = rng.uniform(0.01, 0.03) if self.randomize else 0.02
-            p = [self.row[:, 0].mean() + x_off, np.interp(i0, np.arange(8), self.row[:, 1]), PALM_Z + BALL_R + 0.01]
+            p = [self.row[:, 0].mean() + x_off, np.interp(i0, np.arange(8), self.row[:, 1]), PALM_Z + self.ball_r + 0.01]
         set_ball(m, d, BALLS[0], p)
         for b, q in zip(BALLS[1:], PARK):
             set_ball(m, d, b, q)
@@ -164,14 +165,14 @@ class MultiWaveEnv(WaveEnv):
     - W_RATE |a|^2; any ball lost ends it with -DROP. Starts: the balls spaced evenly round the loop's path (a
     random offset, a little jitter), so with two balls one is on the finger row while the other comes back."""
 
-    def __init__(self, n=2, episode_seconds=None, randomize=True, ref_deg=REF_DEG, w_edge=0.0, w_fast=0.0, flex_n=BASE_FLEX_N, drop=DROP):
+    def __init__(self, n=2, episode_seconds=None, randomize=True, ref_deg=REF_DEG, w_edge=0.0, w_fast=0.0, flex_n=BASE_FLEX_N, drop=DROP, ball_r=BALL_R):
         self.n, self.w_edge = n, w_edge          # w_edge: penalty per ball, ramping 0 -> w_edge from EDGE_X to EDGE_X - EDGE_W
         self.drop = drop                         # the cost of a lost ball
         self.w_fast = w_fast                     # w_fast: per ball below FAST_X, ramping 0 -> w_fast as -vx goes FAST_V -> +FAST_W
         self.flex_n, self.roll_n = flex_n, BASE_ROLL_N            # the base, per instance (script variants)
         self.wall_r = self.wall_l = BASE["wall"]                  # right / left index-finger end walls
         self.amp_k = np.ones(8)                                   # per-finger scale of the wave's lift
-        super().__init__(episode_seconds=episode_seconds, randomize=randomize, ref_deg=ref_deg)
+        super().__init__(episode_seconds=episode_seconds, randomize=randomize, ref_deg=ref_deg, ball_r=ball_r)
         nobs = 2 * len(self.hq) + 9 * n + 2
         self.observation_space = spaces.Box(-np.inf, np.inf, shape=(nobs,), dtype=np.float32)
         x_row, x_palm = self.row[:, 0].mean() + 0.02, 0.285       # the loop's path: out along the row, back on the palm
@@ -226,7 +227,7 @@ class MultiWaveEnv(WaveEnv):
         for k, name in enumerate(BALLS):
             if k < self.n:
                 xy = self._on_path(s0 + k / self.n) + (rng.normal(0, 0.003, 2) if self.randomize else 0.0)
-                set_ball(m, d, name, [xy[0], xy[1], PALM_Z + BALL_R + 0.01])
+                set_ball(m, d, name, [xy[0], xy[1], PALM_Z + self.ball_r + 0.01])
             else:
                 set_ball(m, d, name, PARK[k - self.n])
         self.t_wave = rng.uniform(0, BASE["T"]) if self.randomize else 0.0
@@ -253,7 +254,7 @@ class MultiWaveEnv(WaveEnv):
         self.th_prev = th
         self.turn += dth
         prog = np.clip(dth / self.ref, -1.0, 1.0)
-        g = np.array([np.linalg.norm(b[p, :2] - b[q, :2]) * 100 - 200 * BALL_R
+        g = np.array([np.linalg.norm(b[p, :2] - b[q, :2]) * 100 - 200 * self.ball_r
                       for p in range(self.n) for q in range(p + 1, self.n)])
         reward = (ALIVE + 0.5 * prog.mean() + 0.5 * prog.min() - W_CROWD_N * float(np.sum(np.maximum(1.0 - g, 0.0)))
                   - W_RATE * float(np.sum(a ** 2))

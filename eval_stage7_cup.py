@@ -31,6 +31,7 @@ def main():
     ap.add_argument("--record", default=None)
     ap.add_argument("--tilt-k", type=float, default=0.1, help="--ball-act: rad of hand tilt per unit of a per-ball action")
     ap.add_argument("--lead", type=float, default=None, help="--track-rate: the timetable waits, leading the balls by at most this (laps)")
+    ap.add_argument("--ball-r", type=float, default=None, help="--env fig8: ball radius (m; default 0.019)")
     ap.add_argument("--pace", default=None, help="--track-rate: the balls' natural pace over the 8 (.npy): the timetable's clock")
     ap.add_argument("--grace", type=float, default=0.0, help="--track-rate: spin-up seconds before the timetable runs")
     ap.add_argument("--ball-act", action="store_true", help="--env fig8: per-ball tilt actions")
@@ -46,7 +47,7 @@ def main():
     kw = dict(episode_seconds=args.seconds, randomize=not args.settled)
     if args.env == "fig8":
         env = Fig8Env(n=args.n_balls, flex_n=FLEX_8 if args.flex_n is None else args.flex_n, track_rate=args.track_rate, ball_act=args.ball_act, grace=args.grace, tilt_k=args.tilt_k, lead=args.lead, pace=args.pace,
-                      **kw)
+                      **({"ball_r": args.ball_r} if args.ball_r else {}), **kw)
     elif wave:
         env = MultiWaveEnv(n=args.n_balls, flex_n=args.flex_n or 0.0, **kw) if args.n_balls > 1 else WaveEnv(**kw)
     else:
@@ -88,7 +89,7 @@ def main():
     if args.record:
         np.savez(args.record, qpos=np.array(best[1]["qpos"]), balls=np.array(best[1]["balls"]),
                  phase=np.array(best[1]["phase"]), center=center,
-                 rc=0.04 if wave else float(np.mean(np.linalg.norm(best[1]["balls"][0][:, :2] - center, axis=1))), ball=BALL_R,
+                 rc=0.04 if wave else float(np.mean(np.linalg.norm(best[1]["balls"][0][:, :2] - center, axis=1))), ball=getattr(env, "ball_r", BALL_R),
                  roll_at="seam")
         print(f"recorded the episode whose slowest ball turned {best[0]:+.0f} deg to {args.record}")
 
