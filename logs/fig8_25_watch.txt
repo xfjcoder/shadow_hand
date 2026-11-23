@@ -6,3 +6,8 @@
 14:21 ppo_63999840_steps.zip kept 31/40  laps/30 s 2.74  slot err median 0.073  all within 0.06 3%  |  touching 15%  under 1 cm 55%  closest gap median 0.9 cm
 14:53 ppo_65999835_steps.zip kept 35/40  laps/30 s 2.95  slot err median 0.070  all within 0.06 5%  |  touching 13%  under 1 cm 47%  closest gap median 1.1 cm
 15:22 ppo_67999830_steps.zip kept 31/40  laps/30 s 2.85  slot err median 0.070  all within 0.06 6%  |  touching 10%  under 1 cm 42%  closest gap median 1.2 cm
+15:51 ppo_69999825_steps.zip kept 36/40  laps/30 s 3.03  slot err median 0.066  all within 0.06 6%  |  touching 10%  under 1 cm 39%  closest gap median 1.3 cm
+16:20 ppo_71999820_steps.zip kept 36/40  laps/30 s 3.18  slot err median 0.065  all within 0.06 7%  |  touching 9%  under 1 cm 34%  closest gap median 1.5 cm
+16:49 ppo_73999815_steps.zip kept 31/40  laps/30 s 2.90  slot err median 0.065  all within 0.06 7%  |  touching 7%  under 1 cm 30%  closest gap median 1.6 cm
+17:18 ppo_75999810_steps.zip kept 31/40  laps/30 s 2.98  slot err median 0.064  all within 0.06 8%  |  touching 6%  under 1 cm 24%  closest gap median 1.9 cm
+17:46 ppo_77999805_steps.zip kept 29/40  laps/30 s 2.90  slot err median 0.064  all within 0.06 5%  |  touching 5%  under 1 cm 19%  closest gap median 2.0 cm
