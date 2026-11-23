@@ -32,7 +32,8 @@ running a policy trained with slot_tol: it never saw errors past slot_tol, and t
 over half a lap behind reads as ahead; without lead the balls then wait a whole lap for the timetable.
 With clear (cm), each ball's timetable pay scales with its surface gap to the nearest ball, 0 touching, full at clear
 (the crowd cost alone, 0.05 a step against pay up to 1, left fig8_22's balls touching 23% of the time; exact slots
-clear 1.6-1.8 cm). With touch_end, two balls touching ends the episode as a late ball does.
+clear 1.6-1.8 cm). With touch_end, two balls touching ends the episode as a late ball does. offsets (laps, one per
+ball) replaces spacing()'s slots, e.g. four balls as a train (0, .2, .4, .6): no pair 0.43-0.57 apart meets at the crossing.
 """
 import gymnasium as gym
 import mujoco as mj
@@ -58,10 +59,11 @@ SEAM_W = 0.005                            # m: a ball within ~this of the seam's
 
 class Fig8Env(MultiWaveEnv):
     def __init__(self, n=1, episode_seconds=None, randomize=True, ref_deg=REF_DEG, drop=DROP, flex_n=FLEX_8,
-                 w_spread=0.0, track_rate=None, slot_tol=None, ball_act=False, grace=0.0, tilt_k=TILT_K, lead=None, late_cost=0.0, bank=None, p_bank=0.0, pace=None, clear=None, touch_end=False, ball_r=BALL_R):
+                 w_spread=0.0, track_rate=None, slot_tol=None, ball_act=False, grace=0.0, tilt_k=TILT_K, lead=None, late_cost=0.0, bank=None, p_bank=0.0, pace=None, clear=None, touch_end=False, ball_r=BALL_R, offsets=None):
         super().__init__(n=n, episode_seconds=episode_seconds, randomize=randomize, ref_deg=ref_deg, drop=drop,
                          flex_n=flex_n, ball_r=ball_r)
         self.roll_n = 0.0
+        self.offsets = None if offsets is None else np.asarray(offsets, float)   # slots instead of spacing()'s
         self.w_spread = w_spread
         self.track_rate = track_rate                 # laps/s: a timetable for the balls instead of paying progress
         self.slot_tol = slot_tol                     # laps: timetable mode, any ball further out of its slot ends it
@@ -103,6 +105,8 @@ class Fig8Env(MultiWaveEnv):
         Four balls that way pass 2.8 cm apart (they are 3.8 cm); the offsets below (a grid search for the
         widest closest pass, moving at a constant rate in s) keep them 4.0 cm apart. Two balls go as near half a
         lap apart as clears the crossing: 0.4 (closest pass 4.4 cm; at 0.45 it is 2.3 cm), not 1/4."""
+        if self.offsets is not None:
+            return self.offsets
         if self.n == 2:
             return np.array([0.0, 0.4])
         if self.n == 4:
