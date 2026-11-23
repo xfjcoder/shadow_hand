@@ -25,18 +25,19 @@ KEEP = 0.1                   # laps: every ball this close to its slot
 
 
 def job(a):
-    ck, n, track, tilt_k, seed, seconds = a
+    ck, n, track, tilt_k, seed, seconds, pace, offsets, keep = a
     p = Path(ck)
     vn = pickle.load(open(p.parent / f"ppo_vecnormalize_{p.stem.split('_')[-2]}_steps.pkl", "rb"))
     model = PPO.load(ck, device="cpu")
-    env = Fig8Env(n=n, track_rate=track, ball_act=True, grace=3, tilt_k=tilt_k, lead=0.1, episode_seconds=seconds)
+    env = Fig8Env(n=n, track_rate=track, ball_act=True, grace=3, tilt_k=tilt_k, lead=0.1, episode_seconds=seconds,
+                  pace=pace, **({"offsets": offsets} if offsets else {}))
     o, _ = env.reset(seed=seed)
     out, every = [], int(round(EVERY / CONTROL_DT))
     while True:
         o, r, te, tr, info = env.step(model.predict(vn.normalize_obs(o), deterministic=False)[0])
         if te or tr:
             break
-        if env.t * CONTROL_DT > env.grace + 1 and env.t % every == 0 and np.all(np.abs(env._ref_err()) < KEEP):
+        if env.t * CONTROL_DT > env.grace + 1 and env.t % every == 0 and np.all(np.abs(env._ref_err()) < keep):
             st = np.empty(mj.mj_stateSize(env.m, SPEC_BANK))
             mj.mj_getState(env.m, env.d, st, SPEC_BANK)
             out.append((st, env.t_wave, env.s.copy(), env.dist.copy(), env.ref))
@@ -53,9 +54,12 @@ def main():
     ap.add_argument("--seed0", type=int, default=5000)
     ap.add_argument("--seconds", type=float, default=30.0)
     ap.add_argument("--procs", type=int, default=12)
+    ap.add_argument("--keep", type=float, default=KEEP)
+    ap.add_argument("--pace", default=None)
+    ap.add_argument("--offsets", type=float, nargs="+", default=None)
     ap.add_argument("--out", required=True)
     args = ap.parse_args()
-    jobs = [(args.ckpt, args.n, args.track_rate, args.tilt_k, args.seed0 + i, args.seconds) for i in range(args.seeds)]
+    jobs = [(args.ckpt, args.n, args.track_rate, args.tilt_k, args.seed0 + i, args.seconds, args.pace, args.offsets, args.keep) for i in range(args.seeds)]
     with Pool(args.procs) as P:
         rows = [r for rs in P.map(job, jobs) for r in rs]
     np.savez(args.out, state=np.array([r[0] for r in rows]), t_wave=np.array([r[1] for r in rows]),
