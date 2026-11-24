@@ -63,6 +63,8 @@ class Fig8Env(MultiWaveEnv):
         super().__init__(n=n, episode_seconds=episode_seconds, randomize=randomize, ref_deg=ref_deg, drop=drop,
                          flex_n=flex_n, ball_r=ball_r)
         self.roll_n = 0.0
+        self.est = None                              # (ball positions, s) measured: _tilt uses them (Stage 8)
+        self.du = None                               # the tilts' actuator offsets given directly (a Stage 8 student)
         self.offsets = None if offsets is None else np.asarray(offsets, float)   # slots instead of spacing()'s
         self.w_spread = w_spread
         self.track_rate = track_rate                 # laps/s: a timetable for the balls instead of paying progress
@@ -140,9 +142,9 @@ class Fig8Env(MultiWaveEnv):
         it along the 8 (u > 0 forward). A tilt moves every ball on the hand, but balls on the finger leg and the
         palm leg run opposite ways, so one tilt can speed one and hold back the other (probe_stage7_fig8.py).
         Calibrated: +1 rad of WRJ1 tilts the palm normal ~-1 in x, +1 rad of FRJ ~-0.97 in y, either hand."""
-        b = self.balls_n()
+        b, s = (self.balls_n(), self.s) if self.est is None else self.est
         left = 1.0 / (1.0 + np.exp(-(b[:, 1] - self.c8[1]) / SEAM_W))      # the left hand is y > the seam
-        v = u[:, None] * self.tangent(self.s % 1.0)
+        v = u[:, None] * self.tangent(s % 1.0)
         du = np.zeros(self.m.nu)
         for h, w in ((0, 1.0 - left), (1, left)):                          # rh = 0, L_lh = 1 as in tilt_x / tilt_y
             n = self.tilt_k * (w[:, None] * v).sum(0)
@@ -240,7 +242,7 @@ class Fig8Env(MultiWaveEnv):
 
     def step(self, action):
         a = np.clip(action, -1, 1)
-        u = self.base() + (self._tilt(a[self.m.nu:]) if self.ball_act else 0.0)
+        u = self.base() + (self.du if self.du is not None else self._tilt(a[self.m.nu:]) if self.ball_act else 0.0)
         a = a[:self.m.nu]
         self.d.ctrl[:] = np.clip(u + self.res * a, self.w.lo, self.w.hi)
         for _ in range(self.n_sub):

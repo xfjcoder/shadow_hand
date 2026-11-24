@@ -1,0 +1,10 @@
+== true velocity, alpha 0.7 beta 0.3
+noise 0.50 cm  delay   0 ms: kept 38/40  laps/30 s 3.20  worst slot err median 0.094  touching 3%  gap median 2.1 cm  estimate err median 0.79 cm
+noise 1.00 cm  delay   0 ms: kept 35/40  laps/30 s 2.89  worst slot err median 0.089  touching 1%  gap median 2.0 cm  estimate err median 1.57 cm
+== delays, alpha 0.7 beta 0.3
+noise 0.00 cm  delay  20 ms: kept 24/40  laps/30 s 2.34  worst slot err median 0.115  touching 9%  gap median 1.7 cm  estimate err median 0.27 cm
+noise 0.25 cm  delay  20 ms: kept 19/40  laps/30 s 1.99  worst slot err median 0.104  touching 11%  gap median 1.5 cm  estimate err median 0.65 cm
+noise 0.00 cm  delay  40 ms: kept 16/40  laps/30 s 1.38  worst slot err median 0.127  touching 17%  gap median 1.2 cm  estimate err median 0.56 cm
+noise 0.25 cm  delay  40 ms: kept 14/40  laps/30 s 1.35  worst slot err median 0.117  touching 15%  gap median 1.2 cm  estimate err median 0.97 cm
+noise 0.00 cm  delay  80 ms: kept 4/40  laps/30 s 0.27  worst slot err median 0.173  touching 30%  gap median 0.6 cm  estimate err median 1.17 cm
+noise 0.25 cm  delay  80 ms: kept 3/40  laps/30 s 0.30  worst slot err median 0.173  touching 23%  gap median 0.7 cm  estimate err median 1.82 cm

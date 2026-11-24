@@ -1,0 +1,20 @@
+== alpha 1 beta 1
+noise 0.10 cm  delay   0 ms: kept 35/40  laps/30 s 3.18  worst slot err median 0.087  touching 3%  gap median 1.9 cm  estimate err median 0.21 cm
+noise 0.25 cm  delay   0 ms: kept 9/40  laps/30 s 0.13  worst slot err median 0.216  touching 30%  gap median 0.4 cm  estimate err median 0.53 cm
+noise 0.50 cm  delay   0 ms: kept 2/40  laps/30 s -0.23  worst slot err median 0.240  touching 26%  gap median 0.5 cm  estimate err median 1.07 cm
+noise 1.00 cm  delay   0 ms: kept 1/40  laps/30 s -0.31  worst slot err median 0.275  touching 24%  gap median 0.6 cm  estimate err median 2.13 cm
+== alpha 0.7 beta 0.3
+noise 0.10 cm  delay   0 ms: kept 28/40  laps/30 s 2.65  worst slot err median 0.108  touching 6%  gap median 1.8 cm  estimate err median 0.18 cm
+noise 0.25 cm  delay   0 ms: kept 30/40  laps/30 s 2.76  worst slot err median 0.096  touching 4%  gap median 1.9 cm  estimate err median 0.42 cm
+noise 0.50 cm  delay   0 ms: kept 11/40  laps/30 s 1.41  worst slot err median 0.113  touching 15%  gap median 1.1 cm  estimate err median 0.83 cm
+noise 1.00 cm  delay   0 ms: kept 2/40  laps/30 s -0.02  worst slot err median 0.216  touching 28%  gap median 0.4 cm  estimate err median 1.65 cm
+== alpha 0.5 beta 0.15
+noise 0.10 cm  delay   0 ms: kept 25/40  laps/30 s 2.42  worst slot err median 0.113  touching 8%  gap median 1.6 cm  estimate err median 0.24 cm
+noise 0.25 cm  delay   0 ms: kept 28/40  laps/30 s 2.54  worst slot err median 0.111  touching 9%  gap median 1.7 cm  estimate err median 0.40 cm
+noise 0.50 cm  delay   0 ms: kept 19/40  laps/30 s 2.40  worst slot err median 0.098  touching 7%  gap median 1.7 cm  estimate err median 0.72 cm
+noise 1.00 cm  delay   0 ms: kept 3/40  laps/30 s 0.32  worst slot err median 0.185  touching 22%  gap median 0.6 cm  estimate err median 1.40 cm
+== alpha 0.3 beta 0.05
+noise 0.10 cm  delay   0 ms: kept 15/40  laps/30 s 1.10  worst slot err median 0.146  touching 24%  gap median 0.8 cm  estimate err median 0.52 cm
+noise 0.25 cm  delay   0 ms: kept 6/40  laps/30 s 0.82  worst slot err median 0.149  touching 29%  gap median 0.7 cm  estimate err median 0.57 cm
+noise 0.50 cm  delay   0 ms: kept 10/40  laps/30 s 1.16  worst slot err median 0.129  touching 18%  gap median 1.2 cm  estimate err median 0.74 cm
+noise 1.00 cm  delay   0 ms: kept 7/40  laps/30 s 0.54  worst slot err median 0.147  touching 20%  gap median 0.9 cm  estimate err median 1.21 cm

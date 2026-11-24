@@ -1,0 +1,4 @@
+runs/student_01/student_4.pt (camera 40 ms, drop 0.0): kept 91/120  laps/30 s 2.32  seconds median 30.0  slot err median 0.108  touching 14%
+runs/student_01/student_8.pt (camera 40 ms, drop 0.0): kept 71/120  laps/30 s 1.29  seconds median 30.0  slot err median 0.132  touching 16%
+camera delay   0 ms  filter 1.0/1.0: kept 103/120  laps/30 s 2.96  worst slot err median 0.094  touching 4%  gap median 2.1 cm  estimate err median 0.19 cm (p90 0.39)
+camera delay  40 ms  filter 1.0/1.0: kept 72/120  laps/30 s 2.29  worst slot err median 0.105  touching 8%  gap median 1.6 cm  estimate err median 0.57 cm (p90 1.12)

@@ -1,0 +1,19 @@
+{
+ "tracker": "runs/stage8_tracker/tracker.pt",
+ "teacher": "runs/fig8_27/checkpoints/ppo_103999740_steps.zip",
+ "run_name": "student_01",
+ "iters": 8,
+ "episodes": 60,
+ "eval_episodes": 40,
+ "beta0": 0.5,
+ "epochs": 15,
+ "k": 4,
+ "cam_delay": 2,
+ "touch_delay": 1,
+ "pix_noise": 3.0,
+ "touch_noise": 0.1,
+ "cam_drop": 0.0,
+ "no_cam": false,
+ "no_touch": false,
+ "procs": 15
+}

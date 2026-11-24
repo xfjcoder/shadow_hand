@@ -1,0 +1,6 @@
+camera delay   0 ms  filter 1.0/1.0: kept 35/40  laps/30 s 3.11  worst slot err median 0.096  touching 5%  gap median 2.1 cm  estimate err median 0.19 cm (p90 0.39)
+camera delay   0 ms  filter 0.7/0.3: kept 32/40  laps/30 s 2.82  worst slot err median 0.108  touching 7%  gap median 1.8 cm  estimate err median 0.23 cm (p90 0.45)
+camera delay  20 ms  filter 1.0/1.0: kept 31/40  laps/30 s 2.91  worst slot err median 0.097  touching 5%  gap median 1.9 cm  estimate err median 0.31 cm (p90 0.62)
+camera delay  20 ms  filter 0.7/0.3: kept 25/40  laps/30 s 2.50  worst slot err median 0.108  touching 8%  gap median 1.7 cm  estimate err median 0.38 cm (p90 0.70)
+camera delay  40 ms  filter 1.0/1.0: kept 22/40  laps/30 s 2.21  worst slot err median 0.108  touching 11%  gap median 1.5 cm  estimate err median 0.56 cm (p90 1.15)
+camera delay  40 ms  filter 0.7/0.3: kept 17/40  laps/30 s 1.66  worst slot err median 0.119  touching 13%  gap median 1.5 cm  estimate err median 0.61 cm (p90 1.17)
