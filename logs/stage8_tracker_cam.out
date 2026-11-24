@@ -1,0 +1,10 @@
+112194 train / 12866 val frames (12 val episodes)
+epoch 1: train loss 1.795  val error median 1.58 cm  p90 5.30  p99 9.54  (1025 s)
+epoch 2: train loss 0.625  val error median 0.88 cm  p90 3.77  p99 8.24  (623 s)
+epoch 3: train loss 0.474  val error median 0.79 cm  p90 3.56  p99 7.78  (626 s)
+epoch 4: train loss 0.371  val error median 0.61 cm  p90 1.76  p99 4.95  (624 s)
+epoch 5: train loss 0.151  val error median 0.40 cm  p90 0.97  p99 2.39  (623 s)
+epoch 6: train loss 0.100  val error median 0.38 cm  p90 0.89  p99 2.09  (624 s)
+epoch 7: train loss 0.088  val error median 0.32 cm  p90 0.81  p99 2.03  (631 s)
+epoch 8: train loss 0.084  val error median 0.31 cm  p90 0.80  p99 2.00  (649 s)
+best val median 0.31 cm -> runs/stage8_tracker_cam/tracker.pt

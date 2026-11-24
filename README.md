@@ -1176,6 +1176,72 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    python3 train_stage7_cup.py --env fig8 --n-balls 3 --run-name fig8_18 --resume runs/fig8_18/init/ppo_0_steps.zip --track-rate 0.13 --ball-act --tilt-k 0.3 --grace 3 --slot-tol 0.4 --slot-tol-min 0.1 --slot-seconds 10 --ref-deg 180 --episode-seconds 30 --drop 200 --timesteps 40000000
    ```
 
+8. **Senses instead of the true ball state: camera + touch, teacher-student -- DONE: a camera-only student
+   keeps three balls 104/120 with a 40 ms late camera.** Every policy so far read the balls' exact positions
+   and velocities from the simulator. Here the three-ball teacher (fig8_27 @104M) is moved onto senses a real
+   hand could have, then distilled into a student that never sees the true state.
+
+   - **Senses** (`stage8_sense.py`): an overhead 64 px camera 0.30 m above the crossing (EGL, 0.7 ms a frame;
+     the balls recoloured red / green / blue), delayed and with pixel noise; 48 touch pads, the ball contact
+     normal force on each hand body, noisy and delayed. The waiting timetable runs on the estimated balls too.
+   - **The teacher is fragile to its ball state** (`eval_stage8_noise.py`, 40 eps): exact positions 36/40;
+     with position noise and filtered velocity 0.1 cm 35/40, 0.25 cm 30/40, 0.5 cm 19/40, 1 cm <=7/40 -- but
+     0.5 cm noise with the TRUE velocity 38/40: it breaks on the velocity, not the position. Latency (forward
+     predicted): 20 ms 24/40, 40 ms 16/40, 80 ms 4/40.
+   - **Ball tracker** (`train_stage8_tracker.py`): CoordConv + one heat map per ball + soft-argmax + an MLP
+     (with the touch pads) to 3D position, trained on 125k frames of the teacher (`collect_stage8.py`, run
+     with ball-state noise so it visits off-nominal states). Held-out episodes: **0.13 cm median, p90 0.33**
+     (20 epochs); camera only 0.31 cm (8 epochs).
+   - **Teacher on the tracker** (`eval_stage8_tracker.py`, no true ball state reaches it; 120 fresh seeds,
+     touch 20 ms late, 3/255 pixel noise): camera 0 ms late 103/120, 2.96 laps/30 s; **40 ms late 72/120**.
+     The alpha-beta filter between tracker and teacher made it worse at every delay (40 eps: 32 vs 35, 25 vs
+     31, 17 vs 22) -- the tracker is precise enough raw; the delay is what hurts.
+   - **DAgger student** (`train_stage8_student.py`): an MLP 512x512 from the last 4 tracker frames (it can
+     learn velocity and the delay itself), the touch pads, the hand's joints and the two clocks, to the hand
+     residual and the four tilts directly. Labels: the teacher's deterministic action from the true state on
+     every visited state. Round 0 the teacher drives; in round k >= 1 each step is the teacher's with
+     probability 0.5^k, else the student's; 60 eps a round, all data kept. The round is chosen on 40 eps of
+     seeds 7000+, then tested on 120 of seeds 50000+ (`eval_stage8_student.py`), all with the camera 40 ms late:
+
+     | 40 ms late camera, 120 fresh eps | kept | laps/30 s | slot err | touching |
+     |---|---|---|---|---|
+     | teacher on the tracker (0 ms late, for reference) | 103/120 | 2.96 | 0.094 | 4% |
+     | teacher on the tracker | 72/120 | 2.29 | 0.105 | 8% |
+     | student camera + touch (round 4) | 91/120 | 2.32 | 0.108 | 14% |
+     | **student camera only (round 7)** | **104/120** | **2.64** | **0.104** | 12% |
+     | student camera + touch, 30% of frames lost (round 6) | 72/120 | 1.38 | 0.144 | 24% |
+     | student touch only, no camera (round 8) | 46/120 | 0.08 | 0.200 | 38% |
+
+   - **Reading it.** The students beat the teacher at the same delay -- the frame history lets them
+     compensate the latency the teacher cannot -- and the camera-only one matches the teacher with a
+     zero-delay camera on keeping the balls (still ~10% slower). **Touch does not help**: over rounds 4-7
+     the camera-only student is ahead in three of four (72/91, 85/75, 83/75, 104/96 vs camera + touch), one
+     DAgger run each, so "no gain" is the safe claim, not "touch hurts". Touch alone keeps the balls in 38%
+     of episodes only by barely turning them (0.08 laps): the pads say a ball is on a hand, not where on the
+     figure-8 it is. DAgger is noisy round to round (camera + touch rounds 4-8: 91, 75, 75, 96, 71 of 120),
+     so pick a round on separate seeds. "Kept" means no ball dropped; a few kept episodes turn backwards.
+
+   | | |
+   |---|---|
+   | camera + touch student, round 4 (best of 8 eps; scene / its own 40 ms late camera / true balls filled, tracker estimate ringed) | ![](media/stage8_student_01.gif) |
+   | camera-only student, round 7 (same; 7 of the 8 kept) | ![](media/stage8_student_notouch.gif) |
+
+   ```
+   T=runs/fig8_27/checkpoints/ppo_103999740_steps.zip
+   MUJOCO_GL=egl python3 eval_stage8_noise.py $T --sigma 0 0.001 0.0025 0.005 0.01 --n 40
+   MUJOCO_GL=egl python3 eval_stage8_noise.py $T --delay 1 2 4 --n 40
+   MUJOCO_GL=egl python3 collect_stage8.py $T --out data/stage8_frames.npz
+   python3 train_stage8_tracker.py data/stage8_frames.npz --out runs/stage8_tracker/tracker.pt --epochs 20
+   python3 train_stage8_tracker.py data/stage8_frames.npz --out runs/stage8_tracker_cam/tracker.pt --epochs 8 --no-touch
+   MUJOCO_GL=egl python3 eval_stage8_tracker.py runs/stage8_tracker/tracker.pt --cam-delay 0 2 --alpha 1 --beta 1 --n 120 --seed0 50000 --touch-delay 1 --pix-noise 3
+   MUJOCO_GL=egl python3 train_stage8_student.py --tracker runs/stage8_tracker/tracker.pt --run-name student_01
+   MUJOCO_GL=egl python3 train_stage8_student.py --tracker runs/stage8_tracker/tracker.pt --run-name student_drop30 --cam-drop 0.3
+   MUJOCO_GL=egl python3 train_stage8_student.py --tracker runs/stage8_tracker/tracker.pt --run-name student_nocam --no-cam
+   MUJOCO_GL=egl python3 train_stage8_student.py --tracker runs/stage8_tracker_cam/tracker.pt --run-name student_notouch --no-touch
+   MUJOCO_GL=egl python3 eval_stage8_student.py runs/student_01/student_4.pt runs/student_notouch/student_7.pt --n 120
+   MUJOCO_GL=egl python3 render_stage8_student.py runs/student_notouch/student_7.pt media_full/stage8_student_notouch.gif --title "DAgger student, camera only"
+   ```
+
 ## Repository layout
 
 ```
