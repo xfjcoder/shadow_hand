@@ -1088,10 +1088,12 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    | 60 episodes, clock 0.045 laps/s | kept | full 30 s on time (tol 0.2) | median s on time | worst slot error, median | touching | at the crossing |
    |---|---|---|---|---|---|---|
    | start (fig8_04 + timetable inputs), 30 eps, tol 0.4 | 30/30 | 10% (tol 0.4) | 10.3 | 0.20 | 64% | 9% |
-   | **fig8_31 @26M** | **59/60** | **43%** | **25.9** | **0.09** | 61% | 10% |
+   | fig8_31 @26M | 59/60 | 43% | 25.9 | 0.09 | 61% | 10% |
+   | **fig8_31 @32M, the result** (120 eps: seeds 8000+ and 9000+) | **120/120** | **69%** (72%, 67%) | **30.0** | **0.07-0.08** | 61% | 8% |
 
-   The four balls keep their train slots now, but they touch most of the time (followers), and one in
-   ten moments a pair touches at the crossing.
+   Checkpoints 28-36M all score 62-72% (scratchpad `run4.py`, 60 eps each); 32M is the best and held up on a
+   second 60. The four balls keep their train slots now, but they touch most of the time (followers), and
+   about one moment in twelve a pair touches at the crossing.
 
    Gallery, in training order (best of the episodes recorded for each):
 
@@ -1118,6 +1120,7 @@ circulating around each other in one hand) didn't work on a 4-finger hand.
    | **fig8_26 @88M**, from fig8_25 @76M, `--drop 400` | ![](media/stage7_fig8_26_88M.gif) | over 80 episodes: 68/80 kept (fig8_22 @54M 73/80), touching 7.5% (24%), under 1 cm 22% (70%), gap median 1.95 cm (0.5) |
    | **fig8_27 @104M, the result** (from fig8_26 @88M) | ![](media/stage7_fig8_27_104M.gif) | 110/120 kept, 3.0 laps, touching 6%, gap median 2.0 cm |
    | fig8_31 @26M, **four balls** as a train (slots 0, .21, .42, .63; 3.8 cm balls, contact allowed; best of 8 episodes shown) | ![](media/stage7_fig8_31_26M.gif) | 60 episodes, timetable 0.045 laps/s: 59/60 kept; on time (no ball >0.2 lap out) for the full 30 s in 43%, median 25.9 s; touching 61% of the time, 10% at the crossing |
+   | **fig8_31 @32M, the four-ball result** (same; best of 8 episodes shown, 8/8 kept) | ![](media/stage7_fig8_31_32M.gif) | 120 episodes: 120/120 kept, on time (no ball >0.2 lap out) the full 30 s in 69%, slot error median 0.08, touching 61%, 8% at the crossing |
 
    ```
    python3 stage7_cup.py --out media_full/stage7_cup.png                  # the cup: settle + hold tests
