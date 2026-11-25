@@ -21,7 +21,7 @@ Contents
 12. [Learning from demonstrations: behaviour cloning and motion tracking](#12-learning-from-demonstrations)
 13. [Timing many balls: timetables, early termination, controllability](#13-timing-many-balls)
 14. [From true state to senses: teacher-student distillation (Stage 8)](#14-teacher-student-distillation)
-15. [Domain randomisation (Stage 8, in progress)](#15-domain-randomisation)
+15. [Domain randomisation (Stage 8)](#15-domain-randomisation)
 16. [How results are judged](#16-how-results-are-judged)
 17. [Glossary](#17-glossary)
 
@@ -443,14 +443,36 @@ variation. `Senses(dr=1.0)` redraws the following at every reset, visual only, w
 | pixel noise / defocus / smear | up to 8/255 / 3×3 blend / up to 35% of the previous frame | sensor, lens, exposure |
 | gamma / white balance | ×0.82-1.22 / ±8% | camera processing |
 
-**Measured so far:**
-- The clean-trained camera-only student, unchanged, keeps 71/120 at half-strength randomisation and
-  53/120 at full strength, with almost no turning.
-- The cause is the tracker, whose error rises from 0.13-0.31 cm to 1.3-1.6 cm on randomised frames.
-- 128k randomised frames have been collected (`collect_stage8.py --dr 1`).
+**Step 1, the tracker.** The clean-trained trackers fall apart on randomised frames: median error rises
+from 0.13-0.31 cm to 1.3-1.7 cm, and the worst 1% reaches 7-10 cm. Retrained on 128k randomised frames
+(`collect_stage8.py --dr 1`, camera only, 20 epochs), the new tracker gets 0.42 cm on randomised frames
+and 0.37 cm on clean ones. Learning to ignore the look costs almost nothing on the clean camera.
 
-**Next:** retrain the tracker on randomised frames, run DAgger again with `--dr 1` (it can warm-start with
-`--init`), and test on both randomised and clean cameras.
+**Step 2, the student.** DAgger again with `--dr 1`. 120 fresh episodes, camera 40 ms late:
+
+| student | tracker | camera | kept | laps/30 s |
+|---|---|---|---|---|
+| clean-trained (reference) | old | clean | 104/120 | 2.64 |
+| clean-trained, zero-shot | old | randomised | 53/120 | 0.21 |
+| clean-trained | new | randomised | 80/120 | 1.53 |
+| **randomised DAgger, round 8** | new | randomised | **93/120** | 1.64 |
+| same | new | clean | 73/120 | 1.66 |
+| wider net (1024×3), round 7 | new | randomised | 73/120 | 1.92 |
+| 3-round ensemble (small / wide) | new | randomised | 94 / 83 of 120 | 1.55 / 1.90 |
+
+**Lessons:**
+- **Randomise the perception first.** Swapping in the randomised tracker did most of the work
+  (53 → 80 kept). Retraining the policy on top added less (80 → 93).
+- **Offline accuracy is not the whole story.** On clean frames the old and new camera-only trackers have
+  the same median error, frame-to-frame jitter (0.13 cm), velocity error and lag (about 6 ms). Even so,
+  the clean-trained student loses speed when its tracker is swapped (2.64 → 1.71 laps on the clean
+  camera). A DAgger student adapts to the particular errors of the tracker it was trained with.
+- **A bigger network fit the data better but did not drive better.** Its training loss was 0.0041 against
+  0.0074, but it kept and turned the balls no better. Results swing a lot from one DAgger round to the
+  next, and that swing is larger than any of the differences above. Some of the clean 104/120 comes from
+  picking the best round.
+- The randomised student is robust: about 1.65 laps whether the camera is clean, half or fully
+  randomised. It still turns the balls about a third slower than the clean specialist.
 
 **Not yet modelled:** lens distortion, occlusion by other objects, and identical-looking balls. With
 identical balls, telling them apart would mean tracking over time.

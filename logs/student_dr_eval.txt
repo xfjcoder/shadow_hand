@@ -1,0 +1,11 @@
+runs/student_dr/student_5.pt (camera 40 ms, drop 0.0, dr 1.0): kept 81/120  laps/30 s 1.24  seconds median 30.0  slot err median 0.133  touching 21%
+runs/student_dr/student_7.pt (camera 40 ms, drop 0.0, dr 1.0): kept 81/120  laps/30 s 1.09  seconds median 30.0  slot err median 0.155  touching 35%
+runs/student_dr/student_8.pt (camera 40 ms, drop 0.0, dr 1.0): kept 93/120  laps/30 s 1.64  seconds median 30.0  slot err median 0.131  touching 21%
+runs/student_notouch/student_7.pt (camera 40 ms, drop 0.0, dr 1.0): kept 80/120  laps/30 s 1.53  seconds median 30.0  slot err median 0.122  touching 21%
+runs/student_dr/student_8.pt (camera 40 ms, drop 0.0, dr 0.0): kept 73/120  laps/30 s 1.66  seconds median 30.0  slot err median 0.130  touching 23%
+runs/student_notouch/student_7.pt (camera 40 ms, drop 0.0, dr 0.0): kept 93/120  laps/30 s 1.71  seconds median 30.0  slot err median 0.116  touching 18%
+runs/student_dr/student_8.pt (camera 40 ms, drop 0.0, dr 0.5): kept 84/120  laps/30 s 1.67  seconds median 30.0  slot err median 0.128  touching 26%
+runs/student_dr_big/student_7.pt (camera 40 ms, drop 0.0, dr 1.0): kept 73/120  laps/30 s 1.92  seconds median 30.0  slot err median 0.114  touching 14%
+runs/student_dr_big/student_8.pt (camera 40 ms, drop 0.0, dr 1.0): kept 76/120  laps/30 s 1.39  seconds median 30.0  slot err median 0.136  touching 21%
+runs/student_dr/student_5.pt+runs/student_dr/student_7.pt+runs/student_dr/student_8.pt (camera 40 ms, drop 0.0, dr 1.0): kept 94/120  laps/30 s 1.55  seconds median 30.0  slot err median 0.138  touching 26%
+runs/student_dr_big/student_5.pt+runs/student_dr_big/student_7.pt+runs/student_dr_big/student_8.pt (camera 40 ms, drop 0.0, dr 1.0): kept 83/120  laps/30 s 1.90  seconds median 30.0  slot err median 0.118  touching 15%

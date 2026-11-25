@@ -38,7 +38,7 @@ def main():
     a = json.load(open(Path(args.student).parent / "args.json"))
     cfg = dict(tracker=a["tracker"], teacher=a["teacher"], k=a["k"], cam_delay=a["cam_delay"],
                touch_delay=a["touch_delay"], pix_noise=a["pix_noise"], touch_noise=a["touch_noise"],
-               cam_drop=a["cam_drop"], no_cam=a["no_cam"], no_touch=a["no_touch"])
+               cam_drop=a["cam_drop"], no_cam=a["no_cam"], no_touch=a["no_touch"], dr=a.get("dr", 0.0))
     with Pool(min(args.n, 15)) as P:
         R = P.map(rollout, [(cfg, args.seed0 + i, 0.0, args.student, True) for i in range(args.n)])
     S = [r[2] for r in R]

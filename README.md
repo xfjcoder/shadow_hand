@@ -1182,7 +1182,8 @@ pointers to the code and the stage below where it was used.
    ```
 
 8. **Senses instead of the true ball state: camera + touch, teacher-student -- DONE: a camera-only student
-   keeps three balls 104/120 with a 40 ms late camera.** Every policy so far read the balls' exact positions
+   keeps three balls 104/120 with a 40 ms late camera; with a randomised camera (lighting, colours, pose,
+   noise) 93/120 at 1.64 laps/30 s.** Every policy so far read the balls' exact positions
    and velocities from the simulator. Here the three-ball teacher (fig8_27 @104M) is moved onto senses a real
    hand could have, then distilled into a student that never sees the true state.
 
@@ -1230,6 +1231,31 @@ pointers to the code and the stage below where it was used.
    |---|---|
    | camera + touch student, round 4 (best of 8 eps; scene / its own 40 ms late camera / true balls filled, tracker estimate ringed) | ![](media/stage8_student_01.gif) |
    | camera-only student, round 7 (same; 7 of the 8 kept) | ![](media/stage8_student_notouch.gif) |
+   | randomised-camera student, round 8 (same; 5 of the 8 kept) | ![](media/stage8_student_dr.gif) |
+
+   - **Domain randomisation** (`Senses(dr=1)`, ranges in [the tutorial](docs/TUTORIAL.md#15-domain-randomisation)):
+     each episode redraws camera pose, lighting, hand and ball colours, noise, blur, smear, gamma and white
+     balance. The clean trackers fail on it (median 1.3-1.7 cm, p99 7-10 cm). A tracker retrained on 128k
+     randomised frames (camera only, 20 epochs) gets **0.42 cm randomised, 0.37 cm clean**. DAgger was then
+     rerun on the randomised camera (120 fresh eps, camera 40 ms late):
+
+     | | tracker | camera | kept | laps/30 s |
+     |---|---|---|---|---|
+     | clean-trained camera-only student | old | clean | 104/120 | 2.64 |
+     | same, zero-shot | old | randomised | 53/120 | 0.21 |
+     | same | new | randomised | 80/120 | 1.53 |
+     | **randomised student, round 8** | new | randomised | **93/120** | **1.64** |
+     | same | new | half randomised / clean | 84 / 73 of 120 | 1.67 / 1.66 |
+     | wider student 1024x3, round 7 | new | randomised | 73/120 | 1.92 |
+     | 3-round ensembles, small / wide | new | randomised | 94 / 83 of 120 | 1.55 / 1.90 |
+
+     Most of the gain is the tracker (53 -> 80 kept); retraining the student adds the rest (-> 93). The
+     randomised student holds ~1.65 laps on any camera, a third slower than the clean specialist. The
+     tracker is not obviously the limit: on clean frames the old and new trackers match on error, jitter
+     (0.13 cm frame to frame), velocity error and lag (~6 ms). The clean student still slows with the new
+     tracker (2.64 -> 1.71) -- a DAgger student adapts to its own tracker's errors. A wider network fit
+     better (loss 0.0041 vs 0.0074) without driving better; round-to-round DAgger swings are larger than
+     these differences.
 
    ```
    T=runs/fig8_27/checkpoints/ppo_103999740_steps.zip
@@ -1245,6 +1271,13 @@ pointers to the code and the stage below where it was used.
    MUJOCO_GL=egl python3 train_stage8_student.py --tracker runs/stage8_tracker_cam/tracker.pt --run-name student_notouch --no-touch
    MUJOCO_GL=egl python3 eval_stage8_student.py runs/student_01/student_4.pt runs/student_notouch/student_7.pt --n 120
    MUJOCO_GL=egl python3 render_stage8_student.py runs/student_notouch/student_7.pt media_full/stage8_student_notouch.gif --title "DAgger student, camera only"
+   MUJOCO_GL=egl python3 collect_stage8.py $T --dr 1 --out data/stage8_frames_dr.npz
+   python3 train_stage8_tracker.py data/stage8_frames_dr.npz --out runs/stage8_tracker_dr/tracker.pt --epochs 20 --no-touch
+   MUJOCO_GL=egl python3 train_stage8_student.py --tracker runs/stage8_tracker_dr/tracker.pt --run-name student_dr --no-touch --dr 1 --init runs/student_notouch/student_7.pt
+   MUJOCO_GL=egl python3 train_stage8_student.py --tracker runs/stage8_tracker_dr/tracker.pt --run-name student_dr_big --no-touch --dr 1 --hidden 1024 --layers 3 --epochs 25
+   MUJOCO_GL=egl python3 eval_stage8_student.py runs/student_dr/student_8.pt runs/student_dr/student_5.pt+runs/student_dr/student_7.pt+runs/student_dr/student_8.pt
+   MUJOCO_GL=egl python3 eval_stage8_student.py runs/student_dr/student_8.pt --dr 0
+   MUJOCO_GL=egl python3 render_stage8_student.py runs/student_dr/student_8.pt media_full/stage8_student_dr.gif --title "DAgger student, randomised camera"
    ```
 
 ## Repository layout

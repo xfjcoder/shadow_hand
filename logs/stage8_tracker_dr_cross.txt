@@ -1,0 +1,11 @@
+data/stage8_frames.npz       runs/stage8_tracker/tracker.pt       median 0.13  p90 0.33  p99 0.85 cm
+data/stage8_frames.npz       runs/stage8_tracker_cam/tracker.pt   median 0.31  p90 0.80  p99 2.00 cm
+data/stage8_frames.npz       runs/stage8_tracker_dr/tracker.pt    median 0.37  p90 0.80  p99 1.98 cm
+data/stage8_frames_dr.npz    runs/stage8_tracker/tracker.pt       median 1.31  p90 3.41  p99 10.32 cm
+data/stage8_frames_dr.npz    runs/stage8_tracker_cam/tracker.pt   median 1.69  p90 3.68  p99 7.56 cm
+data/stage8_frames_dr.npz    runs/stage8_tracker_dr/tracker.pt    median 0.42  p90 0.91  p99 2.05 cm
+
+clean frames, val episodes (scratchpad jitter.py / lagbias.py):
+runs/stage8_tracker/tracker.pt       |err| median 0.13  step-to-step error change median 0.100 p90 0.252 cm  velocity error (3-step) median 0.046 cm/step
+runs/stage8_tracker_cam/tracker.pt   |err| median 0.31  step-to-step error change median 0.128 p90 0.324 cm  velocity error (3-step) median 0.085 cm/step  lag -0.26 steps
+runs/stage8_tracker_dr/tracker.pt    |err| median 0.37  step-to-step error change median 0.129 p90 0.337 cm  velocity error (3-step) median 0.082 cm/step  lag -0.14 steps (DR frames: -0.30)

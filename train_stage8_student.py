@@ -88,14 +88,26 @@ class StudentSense:
 
 
 class Student(nn.Module):
-    def __init__(self, n_in, n_out, mean, std):
+    def __init__(self, n_in, n_out, mean, std, hidden=512, layers=2):
         super().__init__()
         self.register_buffer("mean", torch.as_tensor(mean))
         self.register_buffer("std", torch.as_tensor(std))
-        self.net = nn.Sequential(nn.Linear(n_in, 512), nn.ReLU(), nn.Linear(512, 512), nn.ReLU(), nn.Linear(512, n_out))
+        L, w = [], n_in
+        for _ in range(layers):
+            L += [nn.Linear(w, hidden), nn.ReLU()]
+            w = hidden
+        self.net = nn.Sequential(*L, nn.Linear(w, n_out))
+        self.hidden, self.layers = hidden, layers
 
     def forward(self, x):
         return self.net((x - self.mean) / self.std)
+
+
+def load_student(path):
+    ck = torch.load(path, weights_only=False)
+    net = Student(ck["n_in"], ck["n_out"], ck["mean"], ck["std"], ck.get("hidden", 512), ck.get("layers", 2))
+    net.load_state_dict(ck["state"])
+    return net.eval()
 
 
 def tilt_ids(env):
@@ -113,10 +125,8 @@ def rollout(a):
     sense = StudentSense(env, net, origin, cfg, seed)
     student = None
     if student_path and beta < 1.0:
-        ck = torch.load(student_path, weights_only=False)
-        student = Student(ck["n_in"], ck["n_out"], ck["mean"], ck["std"])
-        student.load_state_dict(ck["state"])
-        student.eval()
+        nets = [load_student(p) for p in student_path.split("+")]     # "a.pt+b.pt": average an ensemble's actions
+        student = lambda x: torch.stack([n(x) for n in nets]).mean(0)
     rng = np.random.default_rng(seed + 13)
     env.reset(seed=seed)
     env.est, env.du = None, None
@@ -154,10 +164,10 @@ def rollout(a):
     return np.array(X), np.array(Y), summ, frames
 
 
-def fit(X, Y, init, epochs, out, n_in, n_out, threads=16):
+def fit(X, Y, init, epochs, out, n_in, n_out, hidden=512, layers=2, threads=16):
     torch.set_num_threads(threads)
     mean, std = X.mean(0), X.std(0) + 1e-3
-    net = Student(n_in, n_out, mean, std)
+    net = Student(n_in, n_out, mean, std, hidden, layers)
     if init is not None:                              # warm start (the normalisation is refitted)
         net.net.load_state_dict(init.net.state_dict())
     opt = torch.optim.Adam(net.parameters(), lr=1e-3)
@@ -173,7 +183,8 @@ def fit(X, Y, init, epochs, out, n_in, n_out, threads=16):
             loss.backward()
             opt.step()
             L.append(loss.item())
-    torch.save({"state": net.state_dict(), "n_in": n_in, "n_out": n_out, "mean": mean, "std": std}, out)
+    torch.save({"state": net.state_dict(), "n_in": n_in, "n_out": n_out, "mean": mean, "std": std, "hidden": hidden,
+                "layers": layers}, out)
     return net, float(np.mean(L))
 
 
@@ -203,6 +214,8 @@ def main():
     ap.add_argument("--no-touch", action="store_true")
     ap.add_argument("--dr", type=float, default=0.0, help="camera domain randomisation scale (stage8_sense.Senses)")
     ap.add_argument("--init", default=None, help="a student .pt to warm-start from")
+    ap.add_argument("--hidden", type=int, default=512)
+    ap.add_argument("--layers", type=int, default=2)
     ap.add_argument("--procs", type=int, default=15)
     args = ap.parse_args()
     cfg = dict(tracker=args.tracker, teacher=args.teacher, k=args.k, cam_delay=args.cam_delay,
@@ -213,9 +226,7 @@ def main():
     json.dump(vars(args), open(run / "args.json", "w"), indent=1)
     XS, YS, net, path = [], [], None, None
     if args.init:
-        ck = torch.load(args.init, weights_only=False)
-        net = Student(ck["n_in"], ck["n_out"], ck["mean"], ck["std"])
-        net.load_state_dict(ck["state"])
+        net = load_student(args.init)
     with Pool(args.procs) as P:
         for it in range(args.iters + 1):
             beta = 1.0 if it == 0 else args.beta0 * 0.5 ** (it - 1)
@@ -225,7 +236,7 @@ def main():
             YS += [r[1] for r in R]
             X, Y = np.concatenate(XS), np.concatenate(YS)
             path = str(run / f"student_{it}.pt")
-            net, loss = fit(X, Y, net, args.epochs, path, X.shape[1], Y.shape[1])
+            net, loss = fit(X, Y, net, args.epochs, path, X.shape[1], Y.shape[1], args.hidden, args.layers)
             E = P.map(rollout, [(cfg, 7000 + i, 0.0, path, False) for i in range(args.eval_episodes)])
             print(f"iter {it} (beta {beta:.3f}, data {len(X)}): rollouts {summarise([r[2] for r in R])} | fit loss "
                   f"{loss:.4f} | STUDENT ALONE: {summarise([r[2] for r in E])}  ({time.time() - t0:.0f} s)", flush=True)

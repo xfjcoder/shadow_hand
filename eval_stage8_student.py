@@ -26,7 +26,7 @@ def main():
     args = ap.parse_args()
     with Pool(args.procs) as P:
         for s in args.students:
-            a = json.load(open(Path(s).parent / "args.json"))
+            a = json.load(open(Path(s.split("+")[0]).parent / "args.json"))     # "a.pt+b.pt": an ensemble
             cfg = dict(tracker=a["tracker"], teacher=a["teacher"], k=a["k"], cam_delay=a["cam_delay"],
                        touch_delay=a["touch_delay"], pix_noise=a["pix_noise"], touch_noise=a["touch_noise"],
                        cam_drop=a["cam_drop"], no_cam=a["no_cam"], no_touch=a["no_touch"], dr=a.get("dr", 0.0))
