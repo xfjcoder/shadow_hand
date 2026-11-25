@@ -21,10 +21,10 @@ NOISE = (0.0, 0.0, 0.3, 0.6)          # cm of ball-state noise for the teacher, 
 
 
 def job(a):
-    ck, seed, size = a
+    ck, seed, size, dr = a
     model, vn = load(ck)
     env = Fig8Env(**TEACHER)
-    sen = Senses(env, size=size, cam_delay=0, touch_delay=0, touch_noise=0.0, touch_floor=0.0)
+    sen = Senses(env, size=size, cam_delay=0, touch_delay=0, touch_noise=0.0, touch_floor=0.0, seed=seed, dr=dr)
     sen.reset()
     rng = np.random.default_rng(seed)
     sigma = NOISE[seed % len(NOISE)]
@@ -53,10 +53,11 @@ def main():
     ap.add_argument("--seed0", type=int, default=20000)
     ap.add_argument("--size", type=int, default=64)
     ap.add_argument("--procs", type=int, default=15)
+    ap.add_argument("--dr", type=float, default=0.0, help="camera domain randomisation scale (new look per episode)")
     ap.add_argument("--out", required=True)
     args = ap.parse_args()
     with Pool(args.procs) as P:
-        R = P.map(job, [(args.ckpt, args.seed0 + i, args.size) for i in range(args.episodes)])
+        R = P.map(job, [(args.ckpt, args.seed0 + i, args.size, args.dr) for i in range(args.episodes)])
     out = {k: np.concatenate([r[0][k] for r in R]) for k in R[0][0]}
     out["episode"] = np.concatenate([np.full(len(r[0]["balls"]), r[1]) for r in R])
     np.savez(args.out, **out)

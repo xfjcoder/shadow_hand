@@ -1,0 +1,2 @@
+runs/student_notouch/student_7.pt (camera 40 ms, drop 0.0, dr 0.5): kept 71/120  laps/30 s 1.25  seconds median 30.0  slot err median 0.145  touching 21%
+runs/student_notouch/student_7.pt (camera 40 ms, drop 0.0, dr 1.0): kept 53/120  laps/30 s 0.21  seconds median 25.1  slot err median 0.191  touching 33%

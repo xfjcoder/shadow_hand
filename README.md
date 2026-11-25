@@ -4,6 +4,11 @@ A fixed-base Shadow Hand E3M5 (24 joints, 20 actuators, 5 fingers) dexterous man
 in MuJoCo -- started right after closing `allegro_hand`, whose main goal (baoding: two balls
 circulating around each other in one hand) didn't work on a 4-finger hand.
 
+**New here? Read the [methods tutorial](docs/TUTORIAL.md) first**: every method used, from CEM search and
+PPO reward design through curricula, sampling MPC, motion imitation, timetables, and the Stage 8
+teacher-student distillation (CNN tracker, DAgger, ablations, domain randomisation), each explained with
+pointers to the code and the stage below where it was used.
+
 ## Scoping decisions
 
 - **Why the Shadow Hand, and why now.** On the Allegro, every baoding attempt (scripted and RL)
@@ -1254,6 +1259,7 @@ shadow_hand/
 │   ├── scene_two_balls.xml                # Stage 3: hand + two 45mm balls
 │   ├── scene_three_balls.xml              # Stage 6: hand + three 45mm balls
 │   └── scene_three_balls_slick.xml        # Stage 6: the same, polished (ball-ball friction 0.15)
+├── docs/TUTORIAL.md                       # methods tutorial: every method used, with pointers
 ├── hand_env.py                            # names, palmar_axis, contact-face classifier, grasp/hold tests
 ├── eval_stage1_verify.py                  # Stage 1: tracking / palmar axis / coupling / gravity checks
 ├── demo_stage1_kinematic_sweep.py         # Stage 1: actuator sweep GIF

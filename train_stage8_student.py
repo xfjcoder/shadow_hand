@@ -43,7 +43,7 @@ class StudentSense:
     def __init__(self, env, net, origin, cfg, seed):
         self.env, self.cfg = env, cfg
         self.sen = Senses(env, size=net.coords.shape[-1], cam_delay=cfg["cam_delay"], touch_delay=cfg["touch_delay"],
-                          pix_noise=cfg["pix_noise"], touch_noise=cfg["touch_noise"], seed=seed)
+                          pix_noise=cfg["pix_noise"], touch_noise=cfg["touch_noise"], seed=seed, dr=cfg.get("dr", 0.0))
         self.meas = Measure(self.sen, net, origin)
         self.obs = BallObserver(env, latency=cfg["cam_delay"])          # for the waiting timetable only
         self.rng = np.random.default_rng(seed + 7)
@@ -201,15 +201,21 @@ def main():
     ap.add_argument("--cam-drop", type=float, default=0.0)
     ap.add_argument("--no-cam", action="store_true")
     ap.add_argument("--no-touch", action="store_true")
+    ap.add_argument("--dr", type=float, default=0.0, help="camera domain randomisation scale (stage8_sense.Senses)")
+    ap.add_argument("--init", default=None, help="a student .pt to warm-start from")
     ap.add_argument("--procs", type=int, default=15)
     args = ap.parse_args()
     cfg = dict(tracker=args.tracker, teacher=args.teacher, k=args.k, cam_delay=args.cam_delay,
                touch_delay=args.touch_delay, pix_noise=args.pix_noise, touch_noise=args.touch_noise,
-               cam_drop=args.cam_drop, no_cam=args.no_cam, no_touch=args.no_touch)
+               cam_drop=args.cam_drop, no_cam=args.no_cam, no_touch=args.no_touch, dr=args.dr)
     run = Path("runs") / args.run_name
     run.mkdir(parents=True, exist_ok=True)
     json.dump(vars(args), open(run / "args.json", "w"), indent=1)
     XS, YS, net, path = [], [], None, None
+    if args.init:
+        ck = torch.load(args.init, weights_only=False)
+        net = Student(ck["n_in"], ck["n_out"], ck["mean"], ck["std"])
+        net.load_state_dict(ck["state"])
     with Pool(args.procs) as P:
         for it in range(args.iters + 1):
             beta = 1.0 if it == 0 else args.beta0 * 0.5 ** (it - 1)

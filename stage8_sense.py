@@ -35,11 +35,17 @@ def recolor(m):
 
 class Senses:
     def __init__(self, env, size=64, cam_delay=1, touch_delay=0, pix_noise=0.0, touch_noise=0.1, touch_floor=0.02,
-                 seed=0):
+                 seed=0, dr=0.0):
         """cam_delay / touch_delay in control steps (20 ms); pix_noise: std of added pixel noise (0-255 scale);
-        touch_noise: multiplicative std; touch_floor: N, readings below it read 0 (and additive std of floor / 2)."""
+        touch_noise: multiplicative std; touch_floor: N, readings below it read 0 (and additive std of floor / 2).
+        dr: domain randomisation scale (0 off, 1 the ranges in randomize()), redrawn at every reset()."""
         self.env, m = env, env.m
         recolor(m)
+        self.dr = dr
+        self.base = dict(light_diffuse=m.light_diffuse.copy(), light_specular=m.light_specular.copy(),
+                         light_pos=m.light_pos.copy(), light_dir=m.light_dir.copy(), mat_rgba=m.mat_rgba.copy(),
+                         head_amb=m.vis.headlight.ambient.copy(), head_dif=m.vis.headlight.diffuse.copy())
+        self.ball_g = [m.geom(name).id for name in BALLS]
         self.r = mj.Renderer(m, height=size, width=size)
         for f in ("SHADOW", "REFLECTION", "SKYBOX"):
             self.r.scene.flags[getattr(mj.mjtRndFlag, f"mjRND_{f}")] = 0
@@ -59,10 +65,53 @@ class Senses:
     def reset(self):
         self.cams = deque(maxlen=self.cam_delay + 1)
         self.touches = deque(maxlen=self.touch_delay + 1)
+        self.prev = None
+        self.look = dict(pix_noise=self.pix_noise, blur=0.0, smear=0.0, gamma=1.0, gain=np.ones(3))
+        if self.dr:
+            self.randomize()
+
+    def randomize(self):
+        """New camera, lighting, colours and image quality for this episode (what changes between real sessions:
+        the camera's mounting, the room's light, the balls' paint, the sensor). Visual only: physics unchanged."""
+        m, k, u, b = self.env.m, self.dr, self.rng.uniform, self.base
+        self.cam.lookat[:] = [self.env.c8[0] + u(-1, 1) * 0.006 * k, self.env.c8[1] + u(-1, 1) * 0.006 * k,
+                              PALM_Z + u(-1, 1) * 0.004 * k]
+        self.cam.distance = CAM_DIST + u(-1, 1) * 0.02 * k
+        self.cam.elevation = -90 + u(0, 5) * k                               # tilted up to 5 deg off vertical
+        self.cam.azimuth = 90 + u(-6, 6) * k                                  # rotated in the image plane
+        bright = np.exp(u(-1, 1) * 0.45 * k)                                  # ~0.64x-1.57x light
+        tint = 1 + u(-1, 1, 3) * 0.12 * k
+        m.light_diffuse[:] = np.clip(b["light_diffuse"] * bright * tint, 0, 1)
+        m.light_specular[:] = b["light_specular"] * u(1 - 0.8 * k, 1 + 0.5 * k)
+        m.light_pos[:] = b["light_pos"] + u(-1, 1, b["light_pos"].shape) * 0.3 * k
+        d = b["light_dir"] + u(-1, 1, b["light_dir"].shape) * 0.35 * k
+        m.light_dir[:] = d / np.linalg.norm(d, axis=1, keepdims=True)
+        m.vis.headlight.ambient[:] = np.clip(b["head_amb"] * u(0.5, 1 + 2 * k), 0, 1)
+        m.vis.headlight.diffuse[:] = np.clip(b["head_dif"] * u(1 - 0.5 * k, 1 + 0.5 * k), 0, 1)
+        m.mat_rgba[:, :3] = np.clip(b["mat_rgba"][:, :3] * (1 + u(-1, 1, (m.nmat, 1)) * 0.25 * k)
+                                    * (1 + u(-1, 1, (m.nmat, 3)) * 0.08 * k), 0, 1)
+        for i, g in enumerate(self.ball_g):                                   # paint: shade and hue drift
+            m.geom_rgba[g, :3] = np.clip(COLORS[i, :3] * (1 + u(-1, 1) * 0.25 * k) + u(-1, 1, 3) * 0.1 * k, 0, 1)
+        self.look = dict(pix_noise=u(0, 8) * k, blur=u(0, 0.7) * k, smear=u(0, 0.35) * k,
+                         gamma=np.exp(u(-1, 1) * 0.2 * k), gain=1 + u(-1, 1, 3) * 0.08 * k)
 
     def image(self):
         self.r.update_scene(self.env.d, self.cam)
-        return self.r.render()
+        img = self.r.render()
+        if not self.dr:
+            return img
+        L = self.look
+        x = img.astype(np.float32)
+        raw = x
+        if self.prev is not None and L["smear"]:                              # exposure overlapping the last frame
+            x = (1 - L["smear"]) * x + L["smear"] * self.prev
+        self.prev = raw
+        if L["blur"]:                                                         # defocus: blend with a 3x3 box
+            p = np.pad(x, ((1, 1), (1, 1), (0, 0)), mode="edge")
+            box = sum(p[i:i + x.shape[0], j:j + x.shape[1]] for i in range(3) for j in range(3)) / 9
+            x = (1 - L["blur"]) * x + L["blur"] * box
+        x = 255 * (np.clip(x * L["gain"], 0, 255) / 255) ** L["gamma"]
+        return np.clip(x, 0, 255).astype(np.uint8)
 
     def touch(self):
         """N: each pad's summed normal force from the balls."""
@@ -82,8 +131,8 @@ class Senses:
         self.cams.append(self.image())
         self.touches.append(self.touch())
         img = self.cams[0]
-        if self.pix_noise:
-            img = np.clip(img + self.rng.normal(0, self.pix_noise, img.shape), 0, 255).astype(np.uint8)
+        if self.look["pix_noise"]:
+            img = np.clip(img + self.rng.normal(0, self.look["pix_noise"], img.shape), 0, 255).astype(np.uint8)
         t = self.touches[0] * (1 + self.rng.normal(0, self.touch_noise, len(self.pads)))
         t = t + self.rng.normal(0, self.touch_floor / 2, len(self.pads))
         return img, np.where(t > self.touch_floor, t, 0.0)
