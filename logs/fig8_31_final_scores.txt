@@ -1,0 +1,7 @@
+@27999939 tol 0.2 clock 0.045: full 30 s 70%  seconds median 30.0  dropped 0/60  slowest ball 0.039 laps/s  worst slot err median 0.08  touching 62%  at crossing 9%
+@29999934 tol 0.2 clock 0.045: full 30 s 67%  seconds median 30.0  dropped 0/60  slowest ball 0.039 laps/s  worst slot err median 0.08  touching 64%  at crossing 9%
+@31999929 tol 0.2 clock 0.045: full 30 s 72%  seconds median 30.0  dropped 0/60  slowest ball 0.040 laps/s  worst slot err median 0.07  touching 60%  at crossing 8%
+@33999924 tol 0.2 clock 0.045: full 30 s 62%  seconds median 30.0  dropped 1/60  slowest ball 0.039 laps/s  worst slot err median 0.08  touching 64%  at crossing 9%
+@35999919 tol 0.2 clock 0.045: full 30 s 65%  seconds median 30.0  dropped 1/60  slowest ball 0.039 laps/s  worst slot err median 0.08  touching 63%  at crossing 8%
+@25999944 seeds 9000: tol 0.2 clock 0.045: full 30 s 47%  seconds median 27.4  dropped 0/60  slowest ball 0.036 laps/s  worst slot err median 0.09  touching 63%  at crossing 11%
+@31999929 seeds 9000: tol 0.2 clock 0.045: full 30 s 67%  seconds median 30.0  dropped 0/60  slowest ball 0.039 laps/s  worst slot err median 0.08  touching 62%  at crossing 8%

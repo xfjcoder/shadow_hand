@@ -1,0 +1,8 @@
+08:33 fig8_30a ppo_1999998_steps.zip train ep median s | per-ball laps median: [0.47 0.53 0.43 0.21]  slowest-ball laps median 0.16 stalled (|ds/dt| < 0.01 lap/s) 48% of ball-time; per ball [0.54 0.38 0.47 0.51] 
+08:34 fig8_30b ppo_1999998_steps.zip train ep median s | per-ball laps median: [1.23 1.16 1.14 1.08]  slowest-ball laps median 1.07 stalled (|ds/dt| < 0.01 lap/s) 38% of ball-time; per ball [0.41 0.34 0.36 0.43] 
+09:21 fig8_30b ppo_3999996_steps.zip train ep median s | per-ball laps median: [0.99 0.87 0.85 0.8 ]  slowest-ball laps median 0.66 stalled (|ds/dt| < 0.01 lap/s) 38% of ball-time; per ball [0.36 0.4  0.38 0.39] 
+09:23 fig8_30a ppo_3999996_steps.zip train ep median s | per-ball laps median: [0.63 0.69 0.59 0.55]  slowest-ball laps median 0.51 stalled (|ds/dt| < 0.01 lap/s) 45% of ball-time; per ball [0.51 0.38 0.41 0.49] 
+10:08 fig8_30b ppo_5999994_steps.zip train ep median s | per-ball laps median: [1.03 0.95 0.89 0.84]  slowest-ball laps median 0.76 stalled (|ds/dt| < 0.01 lap/s) 37% of ball-time; per ball [0.36 0.39 0.36 0.38] 
+fig8_30b reached 6M
+10:10 fig8_30a ppo_5999994_steps.zip train ep median s | per-ball laps median: [0.74 0.74 0.72 0.63]  slowest-ball laps median 0.58 stalled (|ds/dt| < 0.01 lap/s) 43% of ball-time; per ball [0.4  0.45 0.38 0.49] 
+fig8_30a reached 6M

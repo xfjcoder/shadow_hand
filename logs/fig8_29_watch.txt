@@ -1,0 +1,2 @@
+07:41 ppo_1999995_steps.zip tol=0.25 kept 36/40  laps/30 s 0.65  slot err median 0.085  all within 0.06 1%  |  touching 59%  under 1 cm 95%  closest gap median 0.0 cm  touching at the crossing 7%
+COLLAPSE: kept 36 laps 0.65

@@ -1,0 +1,11 @@
+10:44 ppo_7999989_steps.zip train-tol=0.3 | tol 0.4 clock 0.045: full 30 s 13%  seconds median 21.2  dropped 0/30  slowest ball 0.024 laps/s  worst slot err median 0.21  touching 55%  at crossing 9%
+11:13 ppo_9999984_steps.zip train-tol=0.25 | tol 0.4 clock 0.045: full 30 s 10%  seconds median 19.8  dropped 1/30  slowest ball 0.023 laps/s  worst slot err median 0.18  touching 55%  at crossing 8%
+11:43 ppo_11999979_steps.zip train-tol=0.2 | tol 0.4 clock 0.045: full 30 s 50%  seconds median 27.9  dropped 1/30  slowest ball 0.030 laps/s  worst slot err median 0.16  touching 55%  at crossing 9%
+12:12 ppo_13999974_steps.zip train-tol=0.2 | tol 0.4 clock 0.045: full 30 s 77%  seconds median 30.0  dropped 2/30  slowest ball 0.036 laps/s  worst slot err median 0.16  touching 57%  at crossing 8%
+12:41 ppo_15999969_steps.zip train-tol=0.2 | tol 0.4 clock 0.045: full 30 s 57%  seconds median 30.0  dropped 0/30  slowest ball 0.034 laps/s  worst slot err median 0.14  touching 60%  at crossing 11%
+13:12 ppo_17999964_steps.zip train-tol=0.15 | tol 0.4 clock 0.045: full 30 s 43%  seconds median 25.8  dropped 0/30  slowest ball 0.029 laps/s  worst slot err median 0.13  touching 58%  at crossing 11%
+13:40 ppo_19999959_steps.zip train-tol=0.15 | tol 0.4 clock 0.045: full 30 s 33%  seconds median 25.4  dropped 0/30  slowest ball 0.026 laps/s  worst slot err median 0.12  touching 62%  at crossing 13%
+14:11 ppo_21999954_steps.zip train-tol=0.15 | tol 0.4 clock 0.045: full 30 s 37%  seconds median 25.1  dropped 0/30  slowest ball 0.025 laps/s  worst slot err median 0.12  touching 61%  at crossing 10%
+14:40 ppo_23999949_steps.zip train-tol=0.15 | tol 0.4 clock 0.045: full 30 s 33%  seconds median 27.0  dropped 1/30  slowest ball 0.030 laps/s  worst slot err median 0.11  touching 62%  at crossing 12%
+15:10 ppo_25999944_steps.zip train-tol=0.15 | tol 0.4 clock 0.045: full 30 s 57%  seconds median 30.0  dropped 0/30  slowest ball 0.035 laps/s  worst slot err median 0.10  touching 65%  at crossing 11%
+10 checkpoints
